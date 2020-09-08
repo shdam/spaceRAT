@@ -5,19 +5,22 @@
 \title{Project new sample(s) onto the existing scaffold PCA plot}
 \usage{
 projectSample(
-  list_from_buildScaffold,
-  eset_sample,
+  space,
+  exprs_sample,
+  pData_sample,
   group_sample,
   title = "Samples projected on scaffold PCA",
   verbose = T
 )
 }
 \arguments{
-\item{list_from_buildScaffold}{the list returned by function \code{buildScaffold()}}
+\item{space}{a scafoldSpace object, returned by function \code{buildScaffold()}}
 
-\item{eset_sample}{the sample(s) to project, of class ExpressionSet}
+\item{exprs_sample}{expression matrix of new sample}
 
-\item{group_sample}{a column name of pData(eset_sample)}
+\item{pData_sample}{phenotype data corresponding to exprs_sample.}
+
+\item{group_sample}{a column name of pData_sample}
 
 \item{title}{Title of the plot}
 
@@ -27,8 +30,8 @@ projectSample(
 a ggplot object with new samples projected to existing scaffold PCA plot
 }
 \description{
-This function takes in objects returned from function \code{buildScaffold()}, subsets the new dataset, ranks the subset, finally projects the new sample(s) onto the existing scaffold PCA plot.
+This function takes in a scaffoldSpace objects, subsets the new dataset, ranks the subset, finally projects the new sample(s) onto the existing scaffold PCA plot.
 }
 \examples{
-projectSample(l,eset_sample,"cancer_type")
+projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
 }

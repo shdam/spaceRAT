@@ -5,7 +5,8 @@
 \title{Returns a ggplot and PCA parameters for ExpressionSet object}
 \usage{
 buildScaffold(
-  eset_scaffold,
+  exprs_scaffold,
+  pData_scaffold,
   group_scaffold,
   pval_cutoff = 0.05,
   lfc_cutoff = 2,
@@ -14,9 +15,11 @@ buildScaffold(
 )
 }
 \arguments{
-\item{eset_scaffold}{an ExpressionSet}
+\item{exprs_scaffold}{an expression matrix of class matrix, or data frame that can be converted to matrix.}
 
-\item{group_scaffold}{a column name of pData(eset_scaffold)}
+\item{pData_scaffold}{a dataframe corresponding to the expression matrix. The row names of pData_scaffold must be identical to column names of exprs_scaffold.}
+
+\item{group_scaffold}{a column name of pData_scaffold}
 
 \item{pval_cutoff}{a cutoff value for p value when selecting differentially expressed genes. By default 0.05}
 
@@ -25,12 +28,12 @@ buildScaffold(
 \item{pca_scale}{a logical variable determining whether to normalize rows when plotting PCA}
 }
 \value{
-A list containing a ggplot object and a prcomp object
+A scaffoldSpace object
 }
 \description{
 This function performs differential expression analysis to select DE gene, then subset the scaffold dataset, rank the subset, finally produce a PCA plot using ranks.
 }
 \examples{
-buildScaffold(eset_dmap,"cell_types")
-buildScaffold(eset_dmap,"cell_types", pval_cutoff=0.01,pca_scale=T)
+buildScaffold(exprs_dmap,pData_dmap"cell_types")
+buildScaffold(exprs_dmap,pData_dmap,"cell_types", pval_cutoff=0.01,pca_scale=T)
 }
