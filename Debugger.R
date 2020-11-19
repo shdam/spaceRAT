@@ -3,6 +3,7 @@ load("data/exprs_dmap.rda")
 load("data/pData_dmap.rda")
 load("data/exprs_ilaria.rda")
 load("data/pData_ilaria.rda")
+source("R/class_scaffoldSpace.R")
 eset_dmap <- createEset(exprs_dmap,pData_dmap)
 
 

@@ -23,7 +23,7 @@ projectSample <- function(space, exprs_sample, pData_sample, group_sample,title=
         eset_sample <- createEset(exprs_sample,pData_sample)
 
         # add absent genes then subset eset_sample so eset_scaffold and eset_project contain same genes
-        exprs_sample <- exprs(eset_sample)
+        exprs_sample <- Biobase::exprs(eset_sample)
         absent_genes <- space@DEgenes[! space@DEgenes %in% rownames(exprs_sample)]
         absent_exprs <- matrix(0,length(absent_genes),ncol(exprs_sample))
         rownames(absent_exprs) <- absent_genes
@@ -49,10 +49,15 @@ projectSample <- function(space, exprs_sample, pData_sample, group_sample,title=
         # Prepare dataframe for ggplot
         PC1_sample <- transformed_sample[,1]
         PC2_sample <- transformed_sample[,2]
-        sample_group <- pData(eset_sample)[[group_sample]]
+        sample_group <- Biobase::pData(eset_sample)[[group_sample]]
         df_sample <- data.frame(PC1_sample,PC2_sample,sample_group)
 
+
         # project points
-        g <- space@graph+ggplot2::geom_point(data=df_sample, mapping=ggplot2::aes(PC1_sample,PC2_sample,shape=sample_group,color="New_samples"))+ggplot2::ggtitle(title)
+        g <- space@graph+
+                ggplot2::geom_point(data=df_sample, mapping=ggplot2::aes(PC1_sample,PC2_sample,shape=sample_group,color="New samples"))+
+                ggplot2::scale_shape_manual(values=1:length(unique((df_sample$sample_group))))+
+                ggplot2::ggtitle(title)+
+                ggplot2::coord_fixed()
         print(g)
 }
