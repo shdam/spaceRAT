@@ -1,0 +1,22 @@
+/*div #input_ui_1-validate{
+  background-color: #ff6600;
+  width: 50%;
+}
+*/
+
+
+.msg {
+  margin-top: -15px;
+}
+
+#input_ui_1-format {
+  margin-top: 15px;
+}
+
+.dim {
+  display: inline-block;
+}
+
+#empty {
+  margin-top: 20px;
+}
