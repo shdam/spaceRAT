@@ -20,6 +20,5 @@ app_server <- function( input, output, session ) {
         callModule(mod_input_server, "input_ui_1", r)
         observeEvent(r$validate, {
                 callModule(mod_rat_server, "rat_ui_1", r)
-                # callModule(mod_centroids_server, "centroids_ui_1", r)
         })
 }

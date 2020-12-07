@@ -12,10 +12,6 @@ app_ui <- function(request) {
                 fluidPage(
                         theme = shinytheme("spacelab"),
                         titlePanel(
-                                # fluidRow(
-                                #   column(4, h1("RAT")),
-                                #   column(4, offset = 8, img(height = 833/10, width = 1024/10, src = "www/dtu_logo.png"))
-                                # )
                                 title = div("RAT")),
                         sidebarLayout(
 
@@ -24,8 +20,7 @@ app_ui <- function(request) {
                                 ),
 
                                 mainPanel(
-                                        mod_rat_ui("rat_ui_1")#,
-                                        # mod_centroids_ui("centroids_ui_1")
+                                        mod_rat_ui("rat_ui_1")
                                 )
                         )
 

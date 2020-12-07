@@ -46,8 +46,8 @@ mod_input_server <- function(input, output, session, r){
         selectInput(
           inputId = ns("space"),
           label = "Select space:",
-          choices = c("gtex", "other"),
-          selected = "gtex"
+          choices = c("Scaffold PCA", "gtex", "other"),
+          selected = "Scaffold PCA"
         ),
         actionButton(
           inputId = ns("validate"),
@@ -70,9 +70,9 @@ mod_input_server <- function(input, output, session, r){
     r$space <- input$space
 
     # Plot standard labels
-    r$title <- paste("My data in", r$space, "space")
-    r$x <- "PC5"
-    r$y <- "PC9"
+    r$title <- paste("Samples projected on", r$space)
+    r$x <- "PC1"
+    r$y <- "PC2"
     r$subtitle <- str_c("Data source: ", input$source)
 
     # Dropdown edit button ----

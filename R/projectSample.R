@@ -1,6 +1,7 @@
-#' @title Project new sample(s) onto the existing scaffold PCA plot
-#' @description This function takes in a scaffoldSpace objects, subsets the new dataset, ranks the subset, finally projects the new sample(s) onto the existing scaffold PCA plot.
-#' @import Biobase
+#' Project new sample(s) onto the existing scaffold PCA plot
+#'
+#' This function takes in a scaffoldSpace objects, subsets the new dataset, ranks the subset, finally projects the new sample(s) onto the existing scaffold PCA plot.
+#' @importFrom Biobase exprs pData
 #' @param space a scafoldSpace object, returned by function \code{buildScaffold()}
 #' @param exprs_sample expression matrix of new sample
 #' @param pData_sample phenotype data corresponding to exprs_sample.
@@ -59,5 +60,5 @@ projectSample <- function(space, exprs_sample, pData_sample, group_sample,title=
                 ggplot2::scale_shape_manual(values=1:length(unique((df_sample$sample_group))))+
                 ggplot2::ggtitle(title)+
                 ggplot2::coord_fixed()
-        print(g)
+        return(g)
 }
