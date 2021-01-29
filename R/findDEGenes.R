@@ -1,6 +1,8 @@
-#' @title Find Differentially Expressed Genes
-#' @description This function performs DE analysis using limma to find DE genes
-#' @import Biobase
+#' Find Differentially Expressed Genes
+#'
+#' This function performs DE analysis using limma to find DE genes
+#'
+#' @importFrom Biobase pData
 #' @importFrom dplyr select
 #' @importFrom puma createContrastMatrix
 #' @import limma

@@ -1,7 +1,8 @@
-#' @title Returns a ggplot and PCA parameters for ExpressionSet object
-#' @description This function performs differential expression analysis to select DE gene, then subset the scaffold dataset, rank the subset, finally produce a PCA plot using ranks.
+#' Returns a ggplot and PCA parameters for ExpressionSet object
+#'
+#' This function performs differential expression analysis to select DE gene, then subset the scaffold dataset, rank the subset, finally produce a PCA plot using ranks.
 #' @import ggplot2
-#' @import Biobase
+#' @importFrom Biobase pData
 #' @param exprs_scaffold an expression matrix of class matrix, or data frame that can be converted to matrix.
 #' @param pData_scaffold a dataframe corresponding to the expression matrix. The row names of pData_scaffold must be identical to column names of exprs_scaffold.
 #' @param group_scaffold a column name of pData_scaffold
@@ -38,7 +39,7 @@ buildScaffold <- function(exprs_scaffold,pData_scaffold,group_scaffold,pval_cuto
 
         # ggplot2
         g <- ggplot2::ggplot()+ggplot2::geom_point(data=df,mapping=ggplot2::aes(PC1,PC2,color=scaffold_group))+ggplot2::ggtitle(title)
-        print(g)
+        # print(g)
 
         # record standard data in scaffold
         scaffold <- new("scaffoldSpace",

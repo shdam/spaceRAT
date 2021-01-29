@@ -1,5 +1,7 @@
-#' @title Create ExpressionSet object
-#' @description This function creates ExpressionSet from an expression matrix and a phenotype data frame
+#' Create ExpressionSet object
+#'
+#' This function creates ExpressionSet from an expression matrix and a phenotype data frame
+#'
 #' @importFrom Biobase ExpressionSet AnnotatedDataFrame
 #' @param expr_mat an expression matrix of class matrix, or data frame that can be converted to matrix.
 #' @param pheno a dataframe corresponding to the expression matrix. The row names of pheno must be identical to column names of expr_mat.

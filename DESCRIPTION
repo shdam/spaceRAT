@@ -9,7 +9,18 @@ Description: More about what it does (maybe more than one line)
 License: GPL
 Encoding: UTF-8
 LazyData: true
-Imports: limma,Biobase,ggplot2,puma,dplyr
+Imports: 
+    limma,
+    Biobase,
+    ggplot2,
+    puma,
+    dplyr,
+    plotly,
+    magrittr,
+    shinythemes,
+    golem,
+    shinyWidgets,
+    shiny
 RoxygenNote: 7.1.1
 Depends: 
     R (>= 2.10)
