@@ -16,16 +16,30 @@ mod_rat_ui <- function(id){
 }
 
 #' rat Server Function
-#' @import magrittr dplyr
 #' @importFrom plotly ggplotly renderPlotly layout config add_annotations
 #' @noRd
 mod_rat_server <- function(input, output, session, r){
   ns <- session$ns
+
+  # Identify space to use
+  if(r$space == "Scaffold PCA") {
+    g <- buildScaffold(r$scaf_exprs, r$scaf_pheno, r$column)
+
+    pca_plot <- reactive(
+      projectSample(space = g,
+                    exprs_sample = r$sample_exprs,
+                    pData_sample = r$sample_pheno,
+                    group_sample = r$group,
+                    title = r$title)
+    )
+  }
+
+
   # Insert load data script ----
   # load(r$inputFile$datapath)
   # mapped <- map_samples(testdata)
   # r$all_classes <- mapped$data$class
-  r$classes <- r$all_classes
+  # r$classes <- r$all_classes
   # r$data <- mapped$data
 
   # PCA plot ----
@@ -40,28 +54,27 @@ mod_rat_server <- function(input, output, session, r){
     #   )
   # )
 
-  eset_dmap <- createEset(expr_mat = exprs_dmap,
-                          pheno = pData_dmap)
-
-  DEgenes <- findDEGenes(eset = eset_dmap,
-                         group = "cell_types",
-                         pval_cutoff = 0.05,
-                         lfc_cutoff = 2)
-
-  g <- buildScaffold(exprs_scaffold = exprs_dmap,
-                     pData_scaffold = pData_dmap,
-                     group_scaffold = "cell_types")
-
-  pca_plot <- reactive(
-    projectSample(space = g,
-                  exprs_sample = exprs_ilaria,
-                  pData_sample = pData_ilaria,
-                  group_sample = "cancer_type",
-                  title = r$title)
-  )
+  # eset_dmap <- createEset(expr_mat = exprs_dmap,
+  #                         pheno = pData_dmap)
+  #
+  # DEgenes <- findDEGenes(eset = eset_dmap,
+  #                        group = "cell_types",
+  #                        pval_cutoff = 0.05,
+  #                        lfc_cutoff = 2)
+  #
+  # g <- buildScaffold(exprs_scaffold = exprs_dmap,
+  #                    pData_scaffold = pData_dmap,
+  #                    group_scaffold = "cell_types")
+  #
+  # pca_plot <- reactive(
+  #   projectSample(space = g,
+  #                 exprs_sample = exprs_ilaria,
+  #                 pData_sample = pData_ilaria,
+  #                 group_sample = "cancer_type",
+  #                 title = r$title)
+  # )
 
   # Render plot ----
-
   output$pca_plotly <- renderPlotly(
 
     ggplotly(pca_plot()) %>%
