@@ -14,7 +14,14 @@
 #' projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
 
 
-projectSample <- function(space, exprs_sample, pData_sample, group_sample,title="Samples projected on scaffold PCA",verbose=T){
+projectSample <- function(space,
+                          exprs_sample,
+                          pData_sample,
+                          group_sample,
+                          title = "Samples projected on scaffold PCA",
+                          y = "PC2",
+                          x = "PC1",
+                          verbose = T){
         # check gene name concordance
         if (all(! space@DEgenes %in% rownames(exprs_sample))){
                 stop("Row names (i.e. gene names) of scaffold expression matrix and new sample expression matrix do not match! ")
@@ -55,10 +62,17 @@ projectSample <- function(space, exprs_sample, pData_sample, group_sample,title=
 
 
         # project points
-        g <- space@graph+
-                ggplot2::geom_point(data=df_sample, mapping=ggplot2::aes(PC1_sample,PC2_sample,shape=sample_group,color="New samples"))+
-                ggplot2::scale_shape_manual(values=1:length(unique((df_sample$sample_group))))+
-                ggplot2::ggtitle(title)+
-                ggplot2::coord_fixed()
+        g <- space@graph +
+                ggplot2::geom_point(data = df_sample,
+                                    mapping = ggplot2::aes(PC1_sample,
+                                                           PC2_sample,
+                                                           shape = sample_group,
+                                                           color = "New samples")) +
+                ggplot2::scale_shape_manual(values = 1:length(unique((df_sample$sample_group)))) +
+                ggplot2::labs(title = title,
+                              y = y,
+                              x = x) +
+                ggplot2::coord_fixed() +
+                ggplot2::theme_bw()
         return(g)
 }

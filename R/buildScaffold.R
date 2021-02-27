@@ -15,7 +15,14 @@
 #' buildScaffold(exprs_dmap,pData_dmap"cell_types")
 #' buildScaffold(exprs_dmap,pData_dmap,"cell_types", pval_cutoff=0.01,pca_scale=T)
 
-buildScaffold <- function(exprs_scaffold,pData_scaffold,group_scaffold,pval_cutoff=0.05,lfc_cutoff=2, title="Scaffold PCA Plot",pca_scale=FALSE){
+buildScaffold <- function(exprs_scaffold,
+                          pData_scaffold,
+                          group_scaffold,
+                          classes = NULL,
+                          pval_cutoff=0.05,
+                          lfc_cutoff=2,
+                          title="Scaffold PCA Plot",
+                          pca_scale=FALSE){
         # create eset
         eset_scaffold <- createEset(exprs_scaffold,pData_scaffold)
 
@@ -36,6 +43,10 @@ buildScaffold <- function(exprs_scaffold,pData_scaffold,group_scaffold,pval_cuto
         PC2 <- pca$x[,2]
         scaffold_group <- Biobase::pData(eset_scaffold)[[group_scaffold]]
         df <- data.frame(PC1,PC2,scaffold_group)
+        if(!is.null(classes)) {
+          df <- df %>%
+            dplyr::filter(scaffold_group %in% classes)
+        }
 
         # ggplot2
         g <- ggplot2::ggplot()+ggplot2::geom_point(data=df,mapping=ggplot2::aes(PC1,PC2,color=scaffold_group))+ggplot2::ggtitle(title)
