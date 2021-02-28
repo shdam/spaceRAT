@@ -17,6 +17,7 @@ mod_rat_ui <- function(id){
 
 #' rat Server Function
 #' @importFrom plotly ggplotly renderPlotly layout config add_annotations
+#' @importFrom ggalt geom_encircle
 #' @noRd
 mod_rat_server <- function(input, output, session, r){
   ns <- session$ns
@@ -30,7 +31,7 @@ mod_rat_server <- function(input, output, session, r){
   #
 
 
-
+  if(r$space == "dmap"){
   # Prepare sample
   # Store sample files
   r$sample_exprs <- r$exprs_datapath %>% read.csv()
@@ -49,8 +50,6 @@ mod_rat_server <- function(input, output, session, r){
   r$sample_pheno_fin <- r$sample_pheno
   # group <- r$group
 
-
-
   # Identify space to use
   g <- reactive(
     buildScaffold(r$scaf_exprs, r$scaf_pheno, r$column, r$classes)
@@ -65,6 +64,25 @@ mod_rat_server <- function(input, output, session, r){
                   y = r$y,
                   x = r$x)
   )
+  } else if(r$space == "gtex"){
+    # load(r$inputFile$datapath)
+    mapped <- map_samples(gtex_testdata)
+    r$all_classes <- mapped$data$class
+    r$classes <- r$all_classes
+    # r$data <- mapped$data
+
+    # PCA plot ----
+    pca_plot <- reactive(
+      mapped$data %>%
+        dplyr::filter(class %in% r$classes) %>%
+        plot_samples() +
+        labs(title = r$title,
+             x = r$x,
+             y = r$y,
+             subtitle = r$subtitle
+        )
+    )
+  }
 
 
   # Insert load data script ----
@@ -111,6 +129,8 @@ mod_rat_server <- function(input, output, session, r){
 
     ggplotly(
       pca_plot() +
+        # geom_encircle(aes(group=class, fill=class),alpha=0.4) +
+        ggplot2::theme_bw() +
         theme( legend.title = element_blank())
                       ) %>%
       add_annotations( text="Class", xref="paper", yref="paper",

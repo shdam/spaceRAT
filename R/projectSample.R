@@ -58,7 +58,7 @@ projectSample <- function(space,
         PC1_sample <- transformed_sample[,1]
         PC2_sample <- transformed_sample[,2]
         sample_group <- Biobase::pData(eset_sample)[[group_sample]]
-        df_sample <- data.frame(PC1_sample,PC2_sample,sample_group)
+        df_sample <- data.frame(PC1_sample,PC2_sample,class = sample_group)
 
 
         # project points
@@ -66,13 +66,12 @@ projectSample <- function(space,
                 ggplot2::geom_point(data = df_sample,
                                     mapping = ggplot2::aes(PC1_sample,
                                                            PC2_sample,
-                                                           shape = sample_group,
+                                                           shape = class,
                                                            color = "New samples")) +
-                ggplot2::scale_shape_manual(values = 1:length(unique((df_sample$sample_group)))) +
+                ggplot2::scale_shape_manual(values = 1:length(unique((df_sample$class)))) +
                 ggplot2::labs(title = title,
                               y = y,
                               x = x) +
-                ggplot2::coord_fixed() +
-                ggplot2::theme_bw()
+                ggplot2::coord_fixed()
         return(g)
 }

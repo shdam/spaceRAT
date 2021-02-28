@@ -42,14 +42,16 @@ buildScaffold <- function(exprs_scaffold,
         PC1 <- pca$x[,1]
         PC2 <- pca$x[,2]
         scaffold_group <- Biobase::pData(eset_scaffold)[[group_scaffold]]
-        df <- data.frame(PC1,PC2,scaffold_group)
+        df <- data.frame(PC1,PC2,class = scaffold_group)
         if(!is.null(classes)) {
           df <- df %>%
-            dplyr::filter(scaffold_group %in% classes)
+            dplyr::filter(class %in% classes)
         }
 
         # ggplot2
-        g <- ggplot2::ggplot()+ggplot2::geom_point(data=df,mapping=ggplot2::aes(PC1,PC2,color=scaffold_group))+ggplot2::ggtitle(title)
+        g <- ggplot2::ggplot()+
+                ggplot2::geom_point(data=df,mapping=ggplot2::aes(PC1,PC2,color=class))+
+                ggplot2::ggtitle(title)
         # print(g)
 
         # record standard data in scaffold

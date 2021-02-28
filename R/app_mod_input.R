@@ -135,6 +135,7 @@ mod_input_server <- function(input, output, session, r){
       r$column <- "cell_types"
 
     } else if(input$space == "gtex"){
+      # r$inputFile <- r$
       output$noFiles <- renderUI({
         p("Not yet implemented")
       })
