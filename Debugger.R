@@ -11,8 +11,10 @@ source("R/findDEGenes.R")
 DEgenes <- findDEGenes(eset_dmap,"cell_types",0.05,2)
 
 source("R/buildScaffold.R")
+g <- buildScaffold(exprs_dmap,pData_dmap,"cell_types",plot_mode = "tiny_label")
 g <- buildScaffold(exprs_dmap,pData_dmap,"cell_types")
-plot(g)
+
+
 
 source("R/projectSample.R")
 projectSample(g,exprs_ilaria,pData_ilaria,"cancer_type")

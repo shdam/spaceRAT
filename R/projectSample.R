@@ -14,7 +14,7 @@
 #' projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
 
 
-projectSample <- function(space, exprs_sample, pData_sample, group_sample,title="Samples projected on scaffold PCA",verbose=T){
+projectSample <- function(space, exprs_sample, pData_sample, group_sample,title="New samples projected on scaffold PCA",verbose=T){
         # check gene name concordance
         if (all(! space@DEgenes %in% rownames(exprs_sample))){
                 stop("Row names (i.e. gene names) of scaffold expression matrix and new sample expression matrix do not match! ")
@@ -48,16 +48,16 @@ projectSample <- function(space, exprs_sample, pData_sample, group_sample,title=
         transformed_sample <- predict(space@pca,newdata=t(ranked_sample))
 
         # Prepare dataframe for ggplot
-        PC1_sample <- transformed_sample[,1]
-        PC2_sample <- transformed_sample[,2]
-        sample_group <- Biobase::pData(eset_sample)[[group_sample]]
-        df_sample <- data.frame(PC1_sample,PC2_sample,sample_group)
+        PC1_sample <- transformed_sample[,space@pcs[1]]
+        PC2_sample <- transformed_sample[,space@pcs[2]]
+        new_samples <- Biobase::pData(eset_sample)[[group_sample]]
+        df_sample <- data.frame(PC1_sample,PC2_sample,new_samples)
 
 
         # project points
         g <- space@graph+
-                ggplot2::geom_point(data=df_sample, mapping=ggplot2::aes(PC1_sample,PC2_sample,shape=sample_group,color="New samples"))+
-                ggplot2::scale_shape_manual(values=1:length(unique((df_sample$sample_group))))+
+                ggplot2::geom_point(data=df_sample, mapping=ggplot2::aes(PC1_sample,PC2_sample,shape=new_samples),color="black")+
+                ggplot2::scale_shape_manual(values=1:length(unique((new_samples))))+
                 ggplot2::ggtitle(title)+
                 ggplot2::coord_fixed()
         return(g)
