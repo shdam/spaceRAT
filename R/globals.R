@@ -1,0 +1,1 @@
+utils::globalVariables(c(".data", "gtex_testdata", "gtex_scaffold", "class_sample", "exprs_dmap", "pData_dmap")) 

@@ -10,6 +10,8 @@ projectSample(
   pData_sample,
   group_sample,
   title = "Samples projected on scaffold PCA",
+  y = "PC2",
+  x = "PC1",
   verbose = T
 )
 }

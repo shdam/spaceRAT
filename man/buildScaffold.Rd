@@ -8,6 +8,7 @@ buildScaffold(
   exprs_scaffold,
   pData_scaffold,
   group_scaffold,
+  classes = NULL,
   pval_cutoff = 0.05,
   lfc_cutoff = 2,
   title = "Scaffold PCA Plot",

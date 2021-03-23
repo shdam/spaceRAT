@@ -14,7 +14,7 @@
 #' projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
 
 
-projectSample <- function(space, counts_sample, pheno_sample=NULL,colname,title="New samples projected on scaffold PCA",verbose=T){
+projectSample <- function(space, counts_sample, pheno_sample=NULL,colname,title="Samples projected on scaffold PCA",verbose=T){
 
         # create eset
         eset_sample <- createEset(counts_sample,pheno_sample,colname)

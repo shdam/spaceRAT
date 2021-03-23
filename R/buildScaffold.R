@@ -25,12 +25,13 @@ buildScaffold <- function(counts_scaffold,
                           data="logged",
                           pcs=c(1,2),
                           plot_mode="dot",
+                          classes = NULL,
                           pval_cutoff=0.05,
                           lfc_cutoff=2,
                           title="Scaffold PCA Plot",
                           pca_scale=FALSE){
 
-        if(is.character(counts_scaffold) && counts_scaffold=="prebuilt_DMAP"){         # not implemented
+        if(is.character(counts_scaffold) && counts_scaffold=="prebuilt_DMAP"){
                 load("data/DMAP_scaffold.rda")
                 scaffold <- DMAP_scaffold
                 scaffold@pcs <- pcs
@@ -77,6 +78,10 @@ buildScaffold <- function(counts_scaffold,
         PC2 <- pca$x[,pcs[2]]
         scaffold_group <- Biobase::pData(eset_scaffold)[[colname]]
         df <- data.frame(PC1,PC2,scaffold_group)
+        if(!is.null(classes)) {
+          df <- df %>%
+            dplyr::filter(class %in% classes)
+        }
 
         # calculate centroids
         library(dplyr)

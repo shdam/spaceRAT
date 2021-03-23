@@ -14,8 +14,8 @@ mod_input_ui <- function(id){
     selectInput(
       inputId = ns("space"),
       label = "Select space:",
-      choices = c("Scaffold PCA", "gtex", "other"),
-      selected = "Scaffold PCA"
+      choices = c("dmap", "gtex", "other"), #"Build scaffold"
+      selected = "dmap"
     ),
     uiOutput(ns("scaffold")),
     uiOutput(ns("doneScaf")),
@@ -29,7 +29,7 @@ mod_input_ui <- function(id){
     ),
     fileInput(
       inputId = ns('sample_pheno'),
-      label = "Choose an phenotype matrix:",
+      label = "Choose a phenotype matrix:",
       multiple = FALSE
     ),
     textInput(
@@ -39,13 +39,19 @@ mod_input_ui <- function(id){
       value = "cancer_type"
     ) %>%
       tagAppendAttributes(class = "dim"),
-    actionButton(inputId = ns("upSample"),
-                 label = "Process"),
-    uiOutput(ns("doneSample")),
+    # actionButton(inputId = ns("upSample"),
+    #              label = "Process"),
+    actionButton(
+        inputId = ns("validate"),
+        label = "Plot"
+    ),
+    # uiOutput(ns("doneSample")),
+    uiOutput(ns("noFiles")),
     # p("Currently, the program only works with the 'processed_data/testdata.Rdata'-file, please upload that file for testing.")%>%
       # tagAppendAttributes(class = "msg"),
     uiOutput(ns("edit")),
     uiOutput(ns("fileCheck")),
+    br(),
     uiOutput(ns("save")),
     uiOutput(ns("plotname"))
   )
@@ -61,10 +67,10 @@ mod_input_ui <- function(id){
 mod_input_server <- function(input, output, session, r){
   ns <- session$ns
   # Allow large files
-  options(shiny.maxRequestSize = 6000*1024^2) # 6 GB
+  options(shiny.maxRequestSize = 6000*1000^2) # 6 GB
   # Upload Scaffold files ----
   observeEvent( input$space, {
-    if (input$space == "Scaffold PCA"){
+    if (input$space == "Build scaffold"){
       r$column <- "cell_types"
       output$scaffold <- renderUI({
         list(
@@ -94,58 +100,21 @@ mod_input_server <- function(input, output, session, r){
     } else {output$scaffold <- NULL}
   })
 
-  # Uploaded scaffold files ----
-  observeEvent( input$upScaffold, {
-    # Store files
-    r$scaf_exprs <- input$scaf_exprs$datapath %>% read.csv()
-    r$scaf_pheno <- input$scaf_pheno$datapath %>% read.csv()
-    rownames(r$scaf_exprs) <- r$scaf_exprs[,1] # rownames of expression matrix are gene names, colnames are sample names
-    r$scaf_exprs <- r$scaf_exprs[,-1]            # every element of matrix should be numbers.
-    rownames(r$scaf_pheno) <- r$scaf_pheno[,1]   # rownames of phenotype table are sample names, colnames can be whatever.
-    r$scaf_pheno <- r$scaf_pheno[,-1,drop = F]   # drop=F prevents conversion from data.frame to vector
-    if(!all(colnames(r$scaf_exprs) == rownames(r$scaf_pheno))) stop("Column names in scaffold expression matrix does not correspond to rows in phonetype table.")
-    #
-    r$column <- input$column
-    output$doneScaf <- renderUI({
-      list(
-        p("Processed")
-        # selectInput(
-        #   inputId = ns("source"),
-        #   label = "Select data source:",
-        #   choices = c("Human", "Mouse"),
-        #   selected = "Human"
-        # )
-      )
-    })
-    output$edit <- NULL
-    output$save <- NULL
-  })
-
-
   # Uploaded sample files ----
-  observeEvent( input$upSample, {
-    # Store files
-    r$sample_exprs <- input$sample_exprs$datapath %>% read.csv()
-    rownames(r$sample_exprs) <- r$sample_exprs[,1] # rownames of expression matrix are gene names, colnames are sample names
-    r$sample_exprs <- r$sample_exprs[,-1]            # every element of matrix should be numbers.
-    r$sample_pheno <- input$sample_pheno$datapath %>% read.csv()
-    rownames(r$sample_pheno) <- r$sample_pheno[,1]   # rownames of phenotype table are sample names, colnames can be whatever.
-    r$sample_pheno <- r$sample_pheno[,-1,drop = F]   # drop=F prevents conversion from data.frame to vector
-    if(!all(colnames(r$sample_exprs) == rownames(r$sample_pheno))) stop("Column names in sample expression matrix does not correspond to rows in phonetype table.")
-    #
-    r$group <- input$group
-    output$doneSample <- renderUI({
-      r$rmPlot <- TRUE
-      list(
-        p("Processed"),
-        actionButton(
-            inputId = ns("validate"),
-            label = "Plot"
-          )
-      )
-    })
+  observeEvent({input$sample_pheno; input$sample_exprs}, { #input$upSample
+    output$noFiles <- NULL
     output$edit <- NULL
     output$save <- NULL
+    r$rmPlot <- TRUE
+    # output$doneSample <- renderUI({
+    #   list(
+    #     # p("Processed"),
+    #     actionButton(
+    #         inputId = ns("validate"),
+    #         label = "Plot"
+    #       )
+    #   )
+    # })
   })
 
   # Plot button is pressed ----
@@ -153,22 +122,52 @@ mod_input_server <- function(input, output, session, r){
     # Hide stuff
     output$fileCheck <- NULL
     output$doneScaf <- NULL
-    output$doneSample <- NULL
+    # output$doneSample <- NULL
+
+    # If no input
+    if(input$space != "Build scaffold" & (is.null(input$scaf_exprs) & is.null(input$scaf_pheno))){
+    if(!is.null(input$sample_exprs) & !is.null(input$sample_pheno)){
+
+    # Store scaffold files
+    if(input$space == "dmap") {
+      r$scaf_exprs <- exprs_dmap
+      r$scaf_pheno <- pData_dmap
+      r$column <- "cell_types"
+
+    } else if(input$space == "gtex"){
+      # r$inputFile <- r$
+      output$noFiles <- renderUI({
+        p("Not yet implemented")
+      })
+    } else if(input$space == "Build scaffold"){
+      # Store scaffold files
+      r$scaf_exprs <- input$scaf_exprs$datapath %>% read.csv()
+      r$scaf_pheno <- input$scaf_pheno$datapath %>% read.csv()
+
+    } else {
+      output$noFiles <- renderUI({
+        p("Not yet implemented")
+      })
+    }
+
+    # Store sample
+    r$exprs_datapath <- input$sample_exprs$datapath
+    r$pheno_datapath <- input$sample_pheno$datapath
+    r$group <- input$group
 
     # Input values
-    r$validate <- input$validate
-    r$source <- input$source
-    r$inputFile <- input$inputFile
     r$space <- input$space
+    r$validate <- input$validate
 
 
     # Plot standard labels
     r$title <- paste("Samples projected on", r$space)
     r$x <- "PC1"
     r$y <- "PC2"
-    r$subtitle <- str_c("Data source: ", input$source)
+    r$subtitle <- ""
 
     # Dropdown edit button ----
+    # Sys.sleep(3)
     output$edit <- renderUI({
       list(
         dropdown(
@@ -224,9 +223,12 @@ mod_input_server <- function(input, output, session, r){
     output$plotname <- NULL
     r$plotname <- NULL
 
+
     # Save plot ----
     output$save <- renderUI({
       list(
+        dropMenu(
+          actionButton(ns("down"), "Download"),
         radioButtons(
           inputId = ns("format"),
           label = "Choose output format:",
@@ -258,8 +260,18 @@ mod_input_server <- function(input, output, session, r){
         ),
         # Download button ----
         downloadButton(ns("downloadData"), "Download data")
-      )
+      ))
     })
+    } else{ # End if no input ----
+      output$noFiles <- renderUI(
+        p("A file is missing!")
+      )
+    }
+    } else{ # No scaffold given
+      output$noFiles <- renderUI(
+        p("A file is missing!")
+      )
+    }
   })
 
   # Apply changes ----
@@ -268,7 +280,6 @@ mod_input_server <- function(input, output, session, r){
     r$x <- input$x
     r$y <- input$y
     r$classes <- input$classes
-    r$source <- input$source
     r$subtitle <- input$subtitle
     output$plotname <- NULL
     r$plotname <- NULL
