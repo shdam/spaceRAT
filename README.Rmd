@@ -82,8 +82,9 @@ run_app()
 
 ### Running without Shiny
 
-
 **Load external data from directory "/RAT_package" for illustration.**
+
+The package assume the count matrix to be log transformed. If you want to input raw data, please specify `data=raw` in function `buildScaffold()`
 ```{r}
 # dmap will be the scaffold dataset
 

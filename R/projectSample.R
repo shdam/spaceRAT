@@ -3,9 +3,9 @@
 #' This function takes in a scaffoldSpace objects, subsets the new dataset, ranks the subset, finally projects the new sample(s) onto the existing scaffold PCA plot.
 #' @importFrom Biobase exprs pData
 #' @param space a scafoldSpace object, returned by function \code{buildScaffold()}
-#' @param exprs_sample expression matrix of new sample
-#' @param pData_sample phenotype data corresponding to exprs_sample.
-#' @param group_sample a column name of pData_sample
+#' @param counts_sample expression matrix of new sample
+#' @param pheno_sample phenotype data corresponding to exprs_sample.
+#' @param colname a column name of pData_sample
 #' @param title Title of the plot
 #' @param verbose a logical vector indicating whether to report the number of genes added to eset_sample to make it compatible with eset_scaffold
 #' @export
@@ -14,24 +14,20 @@
 #' projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
 
 
-projectSample <- function(space, exprs_sample, pData_sample, group_sample,title="New samples projected on scaffold PCA",verbose=T){
-        # check gene name concordance
-        if (all(! space@DEgenes %in% rownames(exprs_sample))){
-                stop("Row names (i.e. gene names) of scaffold expression matrix and new sample expression matrix do not match! ")
-        }
+projectSample <- function(space, counts_sample, pheno_sample=NULL,colname,title="New samples projected on scaffold PCA",verbose=T){
 
         # create eset
-        eset_sample <- createEset(exprs_sample,pData_sample)
+        eset_sample <- createEset(counts_sample,pheno_sample,colname)
 
         # add absent genes then subset eset_sample so eset_scaffold and eset_project contain same genes
-        exprs_sample <- Biobase::exprs(eset_sample)
-        absent_genes <- space@DEgenes[! space@DEgenes %in% rownames(exprs_sample)]
-        absent_exprs <- matrix(0,length(absent_genes),ncol(exprs_sample))
+        counts_sample <- Biobase::exprs(eset_sample)
+        absent_genes <- space@DEgenes[! space@DEgenes %in% rownames(counts_sample)]
+        absent_exprs <- matrix(0,length(absent_genes),ncol(counts_sample))
         rownames(absent_exprs) <- absent_genes
-        exprs_sample <- rbind(exprs_sample,absent_exprs)
+        counts_sample <- rbind(counts_sample,absent_exprs)
 
         if (verbose){
-                message(paste0(length(absent_genes)," genes are added to sample, with imputed expression level 0."))
+                message(paste0(length(absent_genes)," genes are added to count matrix, with imputed expression level 0."))
         }
 
         if (length(absent_genes)/length(space@DEgenes)>1/3){
@@ -39,10 +35,10 @@ projectSample <- function(space, exprs_sample, pData_sample, group_sample,title=
         }
 
         #subset
-        exprs_sample <- exprs_sample[space@DEgenes,]
+        counts_sample <- counts_sample[space@DEgenes,]
 
         # rank and transform exprs_project
-        ranked_sample<- apply(exprs_sample,2,rank)
+        ranked_sample<- apply(counts_sample,2,rank)
 
         # PCA transform the sample data
         transformed_sample <- predict(space@pca,newdata=t(ranked_sample))
@@ -50,7 +46,7 @@ projectSample <- function(space, exprs_sample, pData_sample, group_sample,title=
         # Prepare dataframe for ggplot
         PC1_sample <- transformed_sample[,space@pcs[1]]
         PC2_sample <- transformed_sample[,space@pcs[2]]
-        new_samples <- Biobase::pData(eset_sample)[[group_sample]]
+        new_samples <- Biobase::pData(eset_sample)[[colname]]
         df_sample <- data.frame(PC1_sample,PC2_sample,new_samples)
 
 

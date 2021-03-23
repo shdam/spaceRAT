@@ -1,48 +1,75 @@
 #' Create ExpressionSet object
 #'
-#' This function creates ExpressionSet from an expression matrix and a phenotype data frame
+#' This function creates ExpressionSet from an expression matrix and a phenotype data frame. This function also does data preprocessing. Samples lacking either count data or phenotype annotation are removed. NAs are replaced by 0.
 #'
 #' @importFrom Biobase ExpressionSet AnnotatedDataFrame
-#' @param expr_mat an expression matrix of class matrix, or data frame that can be converted to matrix.
+#' @param counts an expression matrix of class matrix, or data frame that can be converted to matrix.
 #' @param pheno a dataframe corresponding to the expression matrix. The row names of pheno must be identical to column names of expr_mat.
+#' @param colname a column name of pData_scaffold. Differential analysis will be performed using this column of phenotype as independent variables.
 #' @export
 #' @return An ExpressionSet object
 #' @examples
 #' create_eset(exprs_dmap,pData_dmap)
 
-createEset <- function(expr_mat,pheno){
+createEset <- function(counts,pheno,colname,to="ensembl_gene_id"){
 
-        # check class of exprs, convert to matrix
-        if (!is.matrix(expr_mat)){
-                tryCatch(expr_mat <- data.matrix(expr_mat),
+        # check class of counts, convert to matrix
+        if (!is.matrix(counts)){
+                tryCatch(counts<- data.matrix(counts),
                          error=function(e) {
                                  stop("Expression matrix cannot be converted to matrix:",e)
                          })
         }
 
-        # check class of pData, convert to dataframe
+        # check class of pheno, convert to dataframe
         if (!is.data.frame(pheno)){
-                tryCatch(pheno <- data.frame(pheno),
+                tryCatch(pheno <- as.data.frame(pheno),
                          error=function(e){
                                  stop("Phenotype data cannot be converted to data frame:", e)
                          })
         }
 
-        # check whether row/col names match
-        if (any(! colnames(expr_mat) %in% rownames(pheno))){
-                stop("Row/column names do not match! Some column name(s) of expression matrix doesn't exist in row names of phenotype data.")
+        # convert gene names
+        counts <- convertGeneName(counts,to=to)
+
+        #select the specified column of phenotype table as final phenotype table
+        pheno <- pheno[,colname,drop=F]
+
+        # remove rows with NA in pheno and throw message
+        complete_idx <- which(complete.cases(pheno))
+        na_rownum <- dim(pheno)[1]-length(complete_idx)
+        if (na_rownum){
+                pheno <- pheno[complete_idx,,drop=F]
+                message(na_rownum, " row(s) in phenotype table have no data in the required column, thus removed.")
         }
-        if (any(! rownames(pheno) %in% colnames(expr_mat))) {
-                stop("Row/column names do not match! Some row name(s) of phenotype data doesn't exist in column names of expression matrix.")
+
+        # subset counts to only contain samples with annotation
+        idx <- which(!colnames(counts) %in% rownames(pheno))
+        if (length(idx)>0){
+                counts <- counts[,-idx,drop=F]
+                message(length(idx)," sample(s) have no phenotype annotation, thus removed.")
 
         }
-        idx <- match(colnames(expr_mat),rownames(pheno))
+        idx <- which(! rownames(pheno) %in% colnames(counts))
+        if (length(idx)>0){
+                pheno <- pheno[,-idx,drop=F]
+                message(length(idx)," sample(s) have no expression count data, thus removed.")
+
+        }
 
         # match row/col names
+        idx <- match(colnames(counts),rownames(pheno))
         pheno <- pheno[idx,,drop=F]
 
+        # fill NA in count matrix with 0.
+        sum_na <-sum(is.na(counts))
+        if (sum_na>0){
+                counts[is.na(counts)] <- 0
+                message("Count matrix has ",sum_na, " missing values. Replace NA by 0.")
+        }
+
         # return ExpressionSet
-        Biobase::ExpressionSet(expr_mat, phenoData=Biobase::AnnotatedDataFrame(pheno))
+        Biobase::ExpressionSet(counts, phenoData=Biobase::AnnotatedDataFrame(pheno))
 
 
 }

@@ -1,13 +1,10 @@
 #' Find Differentially Expressed Genes
 #'
-#' This function performs DE analysis using limma to find DE genes
+#' This function performs DE analysis using limma to find differentially expressed genes between cell X and non-X for all types of cells that has at least 3 samples in the count matrix.
 #'
 #' @importFrom Biobase pData
-#' @importFrom dplyr select
-#' @importFrom puma createContrastMatrix
-#' @import limma
+#' @importFrom limma lmFit contrasts.fit eBayes topTable
 #' @param eset an ExpressionSet
-#' @param group a column name of pData(eset)
 #' @param pval_cutoff a cutoff value for p value when selecting differentially expressed genes. By default 0.05
 #' @param lfc_cutoff a cutoff value for logFC when selecting differentially expressed genes. By default 2
 #' @export
@@ -15,19 +12,16 @@
 #' @examples
 #' find_de_genes(eset_dmap,"cell_types")
 
-findDEGenes <- function(eset,group,pval_cutoff=0.05,lfc_cutoff=2){
-  Biobase::pData(eset) <- dplyr::select(Biobase::pData(eset),group)
-  design <- model.matrix(~0+Biobase::pData(eset)[[group]])
-  cm <- puma::createContrastMatrix(eset) # This function only takes in ExpressionSet object
-  vs_others_cols <- grep("_vs_others", colnames(cm))
-  cm <- cm[,vs_others_cols]
-  n <- length(unique(Biobase::pData(eset)[[group]]))
-  cm[cm== -1] <- -1/(n-1)
+findDEGenes <- function(eset,pval_cutoff=0.05,lfc_cutoff=2){
+  cell_types <- Biobase::pData(eset)[,1]
+  design <- model.matrix(~0+ cell_types)
+  colnames(design) <- gsub("cell_types","",colnames(design))
+  cm <- createContrast(eset)
   fit <- limma::lmFit(eset,design)
-  fit <- suppressWarnings(limma::contrasts.fit(fit, contrast=cm))
+  fit <- limma::contrasts.fit(fit, contrast=cm)
   fit <- limma::eBayes(fit)
   de_genes <- sapply(colnames(cm), function(name){
-    rownames(limma::topTable(fit, coef=name, number = Inf, lfc =lfc_cutoff, p.value = pval_cutoff, adjust.method="fdr", sort.by="p"))
+    rownames(limma::topTable(fit, coef=name, number = Inf, lfc =lfc_cutoff, p.value = pval_cutoff, adjust.method="fdr"))
   })
   unique(unlist(de_genes))
 
