@@ -13,7 +13,6 @@ Imports:
     limma,
     Biobase,
     ggplot2,
-    puma,
     dplyr,
     plotly,
     magrittr,
