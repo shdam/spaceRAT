@@ -8,3 +8,4 @@ renv/
 .Rbuildignore
 .Rprofile
 doc
+inst/doc

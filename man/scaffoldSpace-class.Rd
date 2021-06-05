@@ -11,10 +11,14 @@ A S4 class to store all the information of scaffold PCA space
 \section{Slots}{
 
 \describe{
-\item{\code{DEgenes}}{a vector containing names of differentially expressed genes in scaffold dataset}
+\item{\code{DEgene}}{a character vector containing names of differentially expressed genes in scaffold dataset}
 
-\item{\code{graph}}{a gg object returned by ggplot}
+\item{\code{label}}{a character vector containing labels of each data point}
 
-\item{\code{pca}}{a prcomp object returned by function \code{prcomp()}}
+\item{\code{pca}}{a prcomp object returned by function \code{\link{prcomp}}}
+
+\item{\code{pcs}}{the two indices of principle components to be plot}
+
+\item{\code{plot_mode}}{a character indicating whether to add tiny label at each data point. Options are "dot" or "tiny_label"}
 }}
 

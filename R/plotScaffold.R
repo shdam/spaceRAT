@@ -1,6 +1,6 @@
 #' Plot a scaffoldSpace object
 #'
-#' This function plot a scafoldSpace object created by buildScaffold() function.
+#' This function plot a scafoldSpace object created by \code{buildScaffold} function.
 #' @import magrittr
 #' @import  ggplot2
 #' @importFrom dplyr filter group_by summarise
@@ -9,8 +9,8 @@
 #' @importFrom grDevices colorRampPalette
 #' @param space a scaffoldSpace object returned by buildScaffold function.
 #' @param title title for the plot
-#' @param class classes not to show.
-#' @export
+#' @param classes classes not to show.
+#' @noRd
 #' @return NULL. This function doesn't return any value.
 
 

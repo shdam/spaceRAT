@@ -1,20 +1,29 @@
 #' Project new sample(s) onto the existing scaffold PCA plot
 #'
-#' This function takes in a scaffoldSpace objects, subsets the new dataset, ranks the subset, finally projects the new sample(s) onto the existing scaffold PCA plot.
+#' This function takes in a \code{\link{scaffoldSpace}} objects, subsets the new dataset, ranks the subset,
+#' finally projects the new sample(s) onto the existing scaffold PCA plot.
+#'
 #' @importFrom Biobase exprs pData
-#' @param space a scafoldSpace object, returned by function \code{buildScaffold()}
-#' @param counts_sample expression matrix of new sample
-#' @param pheno_sample phenotype data corresponding to counts_sample. If not specified, the output plot will not show legends for new samples.
-#' @param colname a column name of pheno_sample. This argument should be set together with pheno_sample. If pheno_sample is not specified, this argument will be ignored, thus the output plot will not show legends for new samples.
+#' @param space A scafoldSpace object, returned by function \code{\link{buildScaffold}}
+#' @param counts_sample Expression matrix of new sample, can be either logged or raw data.
+#' @param pheno_sample Phenotype data corresponding to \code{counts_sample}. If not specified, the output plot will not show legends for new samples.
+#' @param colname A column name of pheno_sample. This argument should be set together with \code{pheno_sample}.
+#' If \code{pheno_sample} is not specified, this argument will be ignored, thus the output plot will not show legends for new samples.
+#'
 #' @param title Title of the plot
-#' @param verbose a logical vector indicating whether to report the number of genes added to eset_sample to make it compatible with eset_scaffold
+#' @param verbose A logical vector indicating whether to report the number of genes added to eset_sample to make it compatible with \coed{eset_scaffold}
 #' @export
-#' @return a ggplot object with new samples projected to existing scaffold PCA plot
+#' @return A ggplot object with new samples projected to existing scaffold PCA plot
 #' @examples
 #' projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
 
 
-projectSample <- function(space, counts_sample, pheno_sample=NULL,colname=NULL, title="Samples projected on scaffold PCA",verbose=T){
+projectSample <- function(space,
+                          counts_sample,
+                          pheno_sample=NULL,
+                          colname=NULL,
+                          title="Samples projected on scaffold PCA",
+                          verbose=T){
 
         # create eset
         if (!is.null(pheno_sample)){
@@ -70,10 +79,12 @@ projectSample <- function(space, counts_sample, pheno_sample=NULL,colname=NULL, 
         df_sample <- data.frame(PC1_sample,PC2_sample,new_samples)
 
         # project points
+        suppressMessages(
         g <- graph+
                 ggplot2::geom_point(data=df_sample, mapping=ggplot2::aes(PC1_sample,PC2_sample,shape=new_samples),color="black")+
                 ggplot2::scale_shape_manual(values=1:length(unique((new_samples))))+
                 ggplot2::ggtitle(title)+
                 ggplot2::coord_fixed()
+        )
         return(g)
 }

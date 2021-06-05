@@ -6,8 +6,8 @@
 #' @importFrom tibble column_to_rownames
 #' @param counts an expression matrix of class matrix
 #' @param to a character specifying the gene id to convert to. Options are "ensembl_gene_id" (default), "ensembl_transcript_id", "entrezgene_id", "hgnc_symbol" and "refseq_mrna".
-#' @export
 #' @return A count matrix with transformed gene names as row names
+#' @noRd
 #' @examples
 #' convertGeneName(exprs_dmap,to="hgnc_symbol")
 

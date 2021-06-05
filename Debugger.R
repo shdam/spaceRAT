@@ -16,6 +16,7 @@ source("R/loadingPlot.R")
 source("R/projectSample.R")
 
 #------------------------------------
+# internal
 # test createEset()
 #------------------------------------
 eset_dmap <- createEset(exprs_dmap,pData_dmap,"cell_types")
@@ -26,6 +27,7 @@ eset_dmap <- createEset(exprs_dmap,pData_dmap,"cell_types")
 
 
 #------------------------------------
+# internal
 # test convertGeneName()
 #------------------------------------
 dmap <- read.table("data_DMap.gct",skip=2,sep="\t",header=T,quote = "",colClasses = c("character","character",rep("numeric", 211)))
@@ -33,7 +35,7 @@ library(dplyr)
 dmap <- dmap %>% group_by(NAME) %>% filter(row_number()==1) %>% tibble::column_to_rownames(var="NAME")
 counts <- convertGeneName(dmap,to="hgnc_symbol")
 counts <- convertGeneName(counts,to="entrezgene_id")
-counts <- convertGeneName(dmap,to="refseq_mrna")
+counts <- convertGeneName(counts,to="refseq_mrna")
 counts <- convertGeneName(dmap,to="ensembl_gene_id")
 
 #test convert transcript
@@ -64,31 +66,36 @@ mapGene(dmap$Description[1:5],to="refseq_mrna")
 #-------------------------------------------
 DEgenes <- findDEGenes(eset_dmap,0.05,2)
 
-
+#-------------------------------------------
+# user interface
 # test buildScaffold()
+#-------------------------------------------
 library(leukemiasEset)
 data("leukemiasEset")
 g1 <- buildScaffold(exprs(leukemiasEset),pData(leukemiasEset),"LeukemiaType",plot_mode ="dot",pcs=c(1,2))
 g2 <- buildScaffold(exprs_dmap,pData_dmap,"cell_types",plot_mode="tiny_label",pcs=c(1,2))
 g3 <- buildScaffold(exprs_ilaria,pData_ilaria,"cancer_type",pcs=c(1,2))
 DMAP_scaffold <- buildScaffold(exprs_dmap,pData_dmap,"cell_types")
-usethis::use_data(DMAP_scaffold)
+# usethis::use_data(DMAP_scaffold)
 # test use of prebuilt
 g <- buildScaffold("prebuilt_DMAP")
 g <- buildScaffold("prebuilt_DMAP",plot_mode="tiny_label",pcs=c(2,3))
 
-
+#---------------------------------------------------------
+# user interface
 # test loadingPlot
+#--------------------------------------------------------
 loadingPlot(g1)
 loadingPlot(g2)
 loadingPlot(g3)
-loadingPlot(g,num_genes = 5)
+loadingPlot(g3,gene_name ="ensembl_gene_id")
+loadingPlot(g,num_genes = 1)
 
-
-# test projectSample
-projectSample(g1,exprs_ilaria,pData_ilaria,"cancer_type")
-g2 <- buildScaffold(exprs_dmap,pData_dmap,"cell_types",pcs=c(3,4))
-
+#----------------------------------------------------------
+# user interface
+# test projectSample()
+#---------------------------------------------------------
+projectSample(g1,exprs_ilaria,pData_ilaria,"cancer_type") # really nice alignment with AML
 projectSample(g2,exprs_ilaria,pData_ilaria,"cancer_type")
 projectSample(g3,exprs_dmap,pData_dmap,"cell_types")
 
@@ -97,6 +104,12 @@ projectSample(g,exprs(leukemiasEset),pData(leukemiasEset),"LeukemiaType")
 
 # test projectSample without phenotype table
 projectSample(g,exprs(leukemiasEset))
+
+
+#
+
+# GTEX
+plot_samples(map_samples())
 
 
 

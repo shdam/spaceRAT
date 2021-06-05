@@ -2,39 +2,72 @@
 % Please edit documentation in R/buildScaffold.R
 \name{buildScaffold}
 \alias{buildScaffold}
-\title{Returns a ggplot and PCA parameters for ExpressionSet object}
+\title{Returns either a prebuilt scaffoldSpace object, or a new one calculated from input expression matrix}
 \usage{
 buildScaffold(
-  exprs_scaffold,
-  pData_scaffold,
-  group_scaffold,
+  counts_scaffold,
+  pheno_scaffold,
+  colname,
+  data = "logged",
+  pcs = c(1, 2),
+  plot_mode = "dot",
   classes = NULL,
   pval_cutoff = 0.05,
   lfc_cutoff = 2,
   title = "Scaffold PCA Plot",
-  pca_scale = FALSE
+  pca_scale = FALSE,
+  auto_plot = TRUE
 )
 }
 \arguments{
-\item{exprs_scaffold}{an expression matrix of class matrix, or data frame that can be converted to matrix.}
+\item{counts_scaffold}{An expression matrix of class matrix, or a data frame that can be converted to matrix. Column names are sample names.
+Row names are gene names, which can be Ensembl Gene ID, HGNC Symbol, Entrez Gene ID Ensembl, Transcript ID or Refseq mRNA.
+All gene ID will be automatically converted to Ensembl Gene ID .
+Counts of several transcript ID corresponding to same gene will be added and recorded as the counts of the gene.
+To use the prebuilt scaffold, simply set count_scaffold="prebuilt_DMAP", or "prebuilt_GTEX", and no need to specify any other parameter.}
 
-\item{pData_scaffold}{a dataframe corresponding to the expression matrix. The row names of pData_scaffold must be identical to column names of exprs_scaffold.}
+\item{pheno_scaffold}{A phenotype table corresponding to the expression matrix.
+Row names are sample names, identical to column names of \code{counts_scaffold}.}
 
-\item{group_scaffold}{a column name of pData_scaffold}
+\item{colname}{A column name of pheno_scaffold. Differential expression analysis will be performed using this column of phenotype as independent variables.}
 
-\item{pval_cutoff}{a cutoff value for p value when selecting differentially expressed genes. By default 0.05}
+\item{data}{A character indicating whether the count matrix is log-tansformed or raw. By default \code{data="logged"}.
+If the count matrix is raw counts, please specify \code{data="raw"}}
 
-\item{lfc_cutoff}{a cutoff value for logFC when selecting differentially expressed genes. By default 2}
+\item{pcs}{A numeric vector containing 2 numbers, indicating which two principle components to plot.}
 
-\item{pca_scale}{a logical variable determining whether to normalize rows when plotting PCA}
+\item{plot_mode}{A character indicating whether to add tiny labels to each data point.
+By default \code{plot_mode="dot"} and tiny labels will not be attached.
+If more than 12 cell types are to be displayed, setting \code{plot_mode="tiny_label"} may yield better visualization.
+Shorter names for phenotypes (e.g. cell types) is strongly recommended in "tiny_label" mode.}
+
+\item{pval_cutoff}{A cutoff value for p value when selecting differentially expressed genes. By default \code{pval_cutoff=0.05}.}
+
+\item{lfc_cutoff}{A cutoff value for logFC when selecting differentially expressed genes. By default \code{lfc_cutoff=2}.}
+
+\item{title}{Title for the plot}
+
+\item{pca_scale}{A logical variable determining whether to normalize rows when plotting PCA}
+
+\item{auto_plot}{A logical variabe deterining whether to plot the resulting scaffold space when calling the function.}
 }
 \value{
 A scaffoldSpace object
 }
 \description{
-This function performs differential expression analysis to select DE gene, then subset the scaffold dataset, rank the subset, finally produce a PCA plot using ranks.
+This function returns a \code{\link{scaffoldSpace}} object that contains all parameters needed for plotting the PCA transformed sample space.
+By default this function plots the resulting scaffoldSpace object before returning it, but this autoplot mode can be turned off by specifying \code{auto_plot=FALSE}.
+To build your own scaffold space, pass as arguments a count matrix, a phenotype table, an a column name of the phenotype table to the function.
+To use prebuilt scaffold space, simply call: buildScaffold("prebuilt_NAME"), e.g.buildScaffold("prebuilt_DMAP").
+}
+\details{
+When building a user-defined scaffold space, this function first preprocesses count matrix by removing genes with total counts less than 10. see \code{data} for more detail.
+Then it performs differential expression analysis to select differentially expressed genes (DE genes),
+subsets the scaffold dataset to contain only the DE genes, ranks the genes within each sample, finally perform principle component analysis (PCA) using ranks.
 }
 \examples{
+buildScaffold("prebuilt_DMAP")
+buildScaffold("prebuilt_GTEX")
 buildScaffold(exprs_dmap,pData_dmap"cell_types")
 buildScaffold(exprs_dmap,pData_dmap,"cell_types", pval_cutoff=0.01,pca_scale=T)
 }

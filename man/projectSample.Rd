@@ -6,33 +6,33 @@
 \usage{
 projectSample(
   space,
-  exprs_sample,
-  pData_sample,
-  group_sample,
+  counts_sample,
+  pheno_sample = NULL,
+  colname = NULL,
   title = "Samples projected on scaffold PCA",
-  y = "PC2",
-  x = "PC1",
   verbose = T
 )
 }
 \arguments{
-\item{space}{a scafoldSpace object, returned by function \code{buildScaffold()}}
+\item{space}{A scafoldSpace object, returned by function \code{\link{buildScaffold}}}
 
-\item{exprs_sample}{expression matrix of new sample}
+\item{counts_sample}{Expression matrix of new sample, can be either logged or raw data.}
 
-\item{pData_sample}{phenotype data corresponding to exprs_sample.}
+\item{pheno_sample}{Phenotype data corresponding to \code{counts_sample}. If not specified, the output plot will not show legends for new samples.}
 
-\item{group_sample}{a column name of pData_sample}
+\item{colname}{A column name of pheno_sample. This argument should be set together with \code{pheno_sample}.
+If \code{pheno_sample} is not specified, this argument will be ignored, thus the output plot will not show legends for new samples.}
 
 \item{title}{Title of the plot}
 
-\item{verbose}{a logical vector indicating whether to report the number of genes added to eset_sample to make it compatible with eset_scaffold}
+\item{verbose}{A logical vector indicating whether to report the number of genes added to eset_sample to make it compatible with \coed{eset_scaffold}}
 }
 \value{
-a ggplot object with new samples projected to existing scaffold PCA plot
+A ggplot object with new samples projected to existing scaffold PCA plot
 }
 \description{
-This function takes in a scaffoldSpace objects, subsets the new dataset, ranks the subset, finally projects the new sample(s) onto the existing scaffold PCA plot.
+This function takes in a \code{\link{scaffoldSpace}} objects, subsets the new dataset, ranks the subset,
+finally projects the new sample(s) onto the existing scaffold PCA plot.
 }
 \examples{
 projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")

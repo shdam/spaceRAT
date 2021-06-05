@@ -5,8 +5,8 @@
 #' @importFrom dplyr select group_by_at across everything summarise filter
 #' @param vec charactor vector of gene names
 #' @param to a character specifying the gene id to convert to. Options are "ensembl_gene_id", "ensembl_transcript_id", "entrezgene_id", "hgnc_symbol" and "refseq_mrna".
-#' @export
 #' @return a data frame with orginal gene names as first column, converted gene names as second column.
+#' @noRd
 
 mapGene <- function(vec,to){
 

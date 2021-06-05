@@ -14,6 +14,6 @@ Kindly offered by Fred
 exprs_ilaria
 }
 \description{
-exprs_ilaria records expression matrix of Acute Myeloid Leukemia of erythroid subtype.
+exprs_ilaria contains expression matrix of Acute Myeloid Leukemia of erythroid subtype.
 }
 \keyword{datasets}

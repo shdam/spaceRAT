@@ -79,6 +79,10 @@ run_app()
 
 **Load external data from directory “/RAT\_package” for illustration.**
 
+The package assume the count matrix to be log transformed. If you want
+to input raw data, please specify `data=raw` in function
+`buildScaffold()`
+
 ``` r
 # dmap will be the scaffold dataset
 
@@ -131,6 +135,13 @@ this package.
 
 ``` r
 library(RAT)
+#> Registered S3 methods overwritten by 'ggalt':
+#>   method                  from   
+#>   grid.draw.absoluteGrob  ggplot2
+#>   grobHeight.absoluteGrob ggplot2
+#>   grobWidth.absoluteGrob  ggplot2
+#>   grobX.absoluteGrob      ggplot2
+#>   grobY.absoluteGrob      ggplot2
 # To see the scaffold space 
 space <- buildScaffold(dmap_exprs,dmap_pheno,"cell_types") # "cell_types" is a column name of dmap_pData
 ```
@@ -147,7 +158,7 @@ scafffoled PCA plot, together with new samples
 
 ``` r
 projectSample(space,ilaria_exprs,ilaria_pheno,"cancer_type") # "cancer_type" is a column name of dmap_pData
-#> 6 genes are added to sample, with imputed expression level 0.
+#> 6 genes are added to count matrix, with imputed expression level 0.
 ```
 
 <img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />

@@ -1,13 +1,14 @@
 #' Create ExpressionSet object
 #'
-#' This function creates ExpressionSet from an expression matrix and a phenotype data frame. This function also does data preprocessing. Samples lacking either count data or phenotype annotation are removed. NAs are replaced by 0.
+#' This function creates ExpressionSet from an expression matrix and a phenotype data frame.
+#' This function also performs data preprocessing: samples lacking either count data or phenotype annotation are removed. NAs are replaced by 0.
 #'
 #' @importFrom Biobase ExpressionSet AnnotatedDataFrame
-#' @param counts an expression matrix of class matrix, or data frame that can be converted to matrix.
-#' @param pheno a dataframe corresponding to the expression matrix. The row names of pheno must be identical to column names of expr_mat.
-#' @param colname a column name of pData_scaffold. Differential analysis will be performed using this column of phenotype as independent variables.
-#' @export
+#' @param counts An expression matrix of class matrix, or data frame that can be converted to matrix.
+#' @param pheno A dataframe corresponding to the expression matrix.
+#' @param colname A column name of \code{pheno}. Differential analysis will be performed using this column of phenotype as independent variables.
 #' @return An ExpressionSet object
+#' @noRd
 #' @examples
 #' create_eset(exprs_dmap,pData_dmap)
 

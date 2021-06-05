@@ -14,6 +14,6 @@ Kindly offered by Fred
 pData_ilaria
 }
 \description{
-pData_ilaria records phenotype data corresponding to exprs_ilaria
+pData_ilaria contains phenotype data corresponding to exprs_ilaria
 }
 \keyword{datasets}
