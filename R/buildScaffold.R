@@ -1,13 +1,14 @@
 #' Returns either a prebuilt scaffoldSpace object, or a new one calculated from input expression matrix
 #'
 #' This function returns a \code{\link{scaffoldSpace}} object that contains all parameters needed for plotting the PCA transformed sample space.
-#' By default this function plots the resulting scaffoldSpace object before returning it, but this autoplot mode can be turned off by specifying \code{auto_plot=FALSE}.
-#' To build your own scaffold space, pass as arguments a count matrix, a phenotype table, an a column name of the phenotype table to the function.
 #' To use prebuilt scaffold space, simply call: buildScaffold("prebuilt_NAME"), e.g.buildScaffold("prebuilt_DMAP").
+#' To build your own scaffold space, pass as arguments a count matrix, a phenotype table, an a column name of the phenotype table to the function.
 #'
-#' When building a user-defined scaffold space, this function first preprocesses count matrix by removing genes with total counts less than 10. see \code{data} for more detail.
+#' When building a user-defined scaffold space, this function first preprocesses count matrix by removing genes with total counts less than 10.
 #' Then it performs differential expression analysis to select differentially expressed genes (DE genes),
-#' subsets the scaffold dataset to contain only the DE genes, ranks the genes within each sample, finally perform principle component analysis (PCA) using ranks.
+#' subsets the scaffold dataset to contain only the DE genes, ranks the genes within each sample, finally performs principle component analysis (PCA) using ranks.
+#'
+#' By default this function plots the resulting \code{\link{scaffoldSpace}} object before returning it, but this autoplot mode can be turned off by specifying \code{auto_plot=FALSE}.
 #'
 #' @importFrom Biobase pData exprs
 #'
@@ -20,7 +21,9 @@
 #' @param pheno_scaffold A phenotype table corresponding to the expression matrix.
 #' Row names are sample names, identical to column names of \code{counts_scaffold}.
 #'
-#' @param colname A column name of pheno_scaffold. Differential expression analysis will be performed using this column of phenotype as independent variables.
+#' @param colname A column name of \code{pheno_scaffold}. Cells will be grouped by this column of values.
+#' Thus, differential expression analysis will be performed using this column of phenotype as independent variables.
+#'
 #' @param data A character indicating whether the count matrix is log-tansformed or raw. By default \code{data="logged"}.
 #' If the count matrix is raw counts, please specify \code{data="raw"}
 #'

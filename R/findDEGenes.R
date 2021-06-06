@@ -4,9 +4,9 @@
 #'
 #' @importFrom Biobase pData
 #' @importFrom limma lmFit contrasts.fit eBayes topTable
-#' @param eset an ExpressionSet
-#' @param pval_cutoff a cutoff value for p value when selecting differentially expressed genes. By default \code{pval_cutoff=0.05}
-#' @param lfc_cutoff a cutoff value for log fold change when selecting differentially expressed genes. By default \code{lfc_cutoff=2}
+#' @param eset An \code{\link{ExpressionSet}} object
+#' @param pval_cutoff A cutoff value for p value when selecting differentially expressed genes. By default \code{pval_cutoff=0.05}
+#' @param lfc_cutoff A cutoff value for log fold change when selecting differentially expressed genes. By default \code{lfc_cutoff=2}
 #' @return A vector of names of differentially expressed genes
 #' @noRd
 #' @examples

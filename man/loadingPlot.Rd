@@ -11,15 +11,16 @@ loadingPlot(space, num_genes = 3, gene_name = "hgnc_symbol", angle = 30)
 
 \item{num_genes}{An optional parameter indicating number of genes to be shown.}
 
-\item{gene_name}{A character indicating which type of gene name to show by the side of arrows.}
+\item{gene_name}{A character indicating which type of gene name to show by the side of arrows. By default HGNC symbol is shown.}
 
 \item{angle}{A number for the degree of rotation of labels on the plot.}
 }
 \value{
-a ggplot object of loading plot, automatically printed
+A data frame indicating the loading scores of the genes that contribute most to the selected principle components.
+The loading plot is printed automatically, thus not returned.
 }
 \description{
-This function takes a scaffoldSpace object and generate a loading plot to visualize the genes that contribute most to selected principle components.
+This function takes a \code{\link{scaffoldSpace}} object and generates a loading plot to visualize the genes that contribute most to the selected principle components.
 }
 \examples{
 space <- buildScaffold(exprs_dmap,pData_dmap"cell_types")

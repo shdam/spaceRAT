@@ -1,17 +1,19 @@
-#' Project new sample(s) onto the existing scaffold PCA plot
+#' Project new sample(s) onto existing scaffold PCA plot
 #'
-#' This function takes in a \code{\link{scaffoldSpace}} objects, subsets the new dataset, ranks the subset,
+#' This function takes in a \code{\link{scaffoldSpace}} objects, subsets the new dataset to contain only the genes that defines the scaffold space,
+#' ranks the subset within new sample(s),
 #' finally projects the new sample(s) onto the existing scaffold PCA plot.
 #'
 #' @importFrom Biobase exprs pData
-#' @param space A scafoldSpace object, returned by function \code{\link{buildScaffold}}
-#' @param counts_sample Expression matrix of new sample, can be either logged or raw data.
+#' @param space A scaffoldSpace object, returned by function \code{\link{buildScaffold}}
+#' @param counts_sample Expression matrix of new sample, can be either logged or raw data without specification.
 #' @param pheno_sample Phenotype data corresponding to \code{counts_sample}. If not specified, the output plot will not show legends for new samples.
-#' @param colname A column name of pheno_sample. This argument should be set together with \code{pheno_sample}.
-#' If \code{pheno_sample} is not specified, this argument will be ignored, thus the output plot will not show legends for new samples.
+#' @param colname A column name of \code{pheno_sample}. This column of values will be used to annotate projected samples.
+#' This argument should be set together with \code{pheno_sample}.
+#' If \code{pheno_sample} is not specified, this argument will be ignored, and the output plot will not show legends for new samples.
 #'
-#' @param title Title of the plot
-#' @param verbose A logical vector indicating whether to report the number of genes added to eset_sample to make it compatible with \coed{eset_scaffold}
+#' @param title Title of the plot.
+#' @param verbose A logical vector indicating whether to report the number of genes imputed to make \code{counts_sample} compatible with \code{counts_scaffold}
 #' @export
 #' @return A ggplot object with new samples projected to existing scaffold PCA plot
 #' @examples
@@ -22,8 +24,8 @@ projectSample <- function(space,
                           counts_sample,
                           pheno_sample=NULL,
                           colname=NULL,
-                          title="Samples projected on scaffold PCA",
-                          verbose=T){
+                          title="Samples projected onto scaffold PCA",
+                          verbose=TRUE){
 
         # create eset
         if (!is.null(pheno_sample)){
@@ -31,7 +33,7 @@ projectSample <- function(space,
                 counts_sample <- Biobase::exprs(eset_sample)
         }
 
-        # add absent genes then subset eset_sample so eset_scaffold and eset_project contain same genes
+        # add absent genes then subset eset_sample so counts_scaffold and counts_project contain same genes
         absent_genes <- space@DEgene[! space@DEgene %in% rownames(counts_sample)]
         absent_exprs <- matrix(0,length(absent_genes),ncol(counts_sample))
         rownames(absent_exprs) <- absent_genes
@@ -67,22 +69,23 @@ projectSample <- function(space,
                 idx <- rank(c(label,"New_samples"))[length(label)+1]
                 cols <- append(cols,"#000000",after = idx-1)
                 df_sample <- data.frame(PC1_sample,PC2_sample)
-                g <- graph+
+                suppressMessages(g <- graph+
                         ggplot2::geom_point(data=df_sample, mapping=ggplot2::aes(PC1_sample,PC2_sample,color="New_samples"))+
-                        ggplot2::scale_color_manual(values = cols)
+                        ggplot2::scale_color_manual(values = cols)+
                         ggplot2::ggtitle(title)+
                         ggplot2::coord_fixed()
+                )
                 return (g)
         }
 
-        new_samples <- Biobase::pData(eset_sample)[[colname]]
-        df_sample <- data.frame(PC1_sample,PC2_sample,new_samples)
+        New_samples <- Biobase::pData(eset_sample)[[colname]]
+        df_sample <- data.frame(PC1_sample,PC2_sample,New_samples)
 
         # project points
         suppressMessages(
         g <- graph+
-                ggplot2::geom_point(data=df_sample, mapping=ggplot2::aes(PC1_sample,PC2_sample,shape=new_samples),color="black")+
-                ggplot2::scale_shape_manual(values=1:length(unique((new_samples))))+
+                ggplot2::geom_point(data=df_sample, mapping=ggplot2::aes(PC1_sample,PC2_sample,shape=New_samples),color="black")+
+                ggplot2::scale_shape_manual(values=1:length(unique((New_samples))))+
                 ggplot2::ggtitle(title)+
                 ggplot2::coord_fixed()
         )

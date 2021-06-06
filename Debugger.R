@@ -4,16 +4,17 @@ load("data/pData_dmap.rda")
 load("data/exprs_ilaria.rda")
 load("data/pData_ilaria.rda")
 load("data/gene_name_mapper_hs.rda")
+load("data/DMAP_scaffold.rda")
 source("R/createEset.R")
 source("R/class_scaffoldSpace.R")
 source("R/convertGeneName.R")
-source("R/createContrast.R")
 source("R/convertGeneName.R")
 source("R/mapGene.R")
 source("R/findDEGenes.R")
 source("R/buildScaffold.R")
 source("R/loadingPlot.R")
 source("R/projectSample.R")
+source("R/plotScaffold.R")
 
 #------------------------------------
 # internal
@@ -79,7 +80,7 @@ DMAP_scaffold <- buildScaffold(exprs_dmap,pData_dmap,"cell_types")
 # usethis::use_data(DMAP_scaffold)
 # test use of prebuilt
 g <- buildScaffold("prebuilt_DMAP")
-g <- buildScaffold("prebuilt_DMAP",plot_mode="tiny_label",pcs=c(2,3))
+g <- buildScaffold("prebuilt_DMAP",plot_mode="tiny_label",pcs=c(3,4))
 
 #---------------------------------------------------------
 # user interface

@@ -2,36 +2,38 @@
 % Please edit documentation in R/projectSample.R
 \name{projectSample}
 \alias{projectSample}
-\title{Project new sample(s) onto the existing scaffold PCA plot}
+\title{Project new sample(s) onto existing scaffold PCA plot}
 \usage{
 projectSample(
   space,
   counts_sample,
   pheno_sample = NULL,
   colname = NULL,
-  title = "Samples projected on scaffold PCA",
-  verbose = T
+  title = "Samples projected onto scaffold PCA",
+  verbose = TRUE
 )
 }
 \arguments{
-\item{space}{A scafoldSpace object, returned by function \code{\link{buildScaffold}}}
+\item{space}{A scaffoldSpace object, returned by function \code{\link{buildScaffold}}}
 
-\item{counts_sample}{Expression matrix of new sample, can be either logged or raw data.}
+\item{counts_sample}{Expression matrix of new sample, can be either logged or raw data without specification.}
 
 \item{pheno_sample}{Phenotype data corresponding to \code{counts_sample}. If not specified, the output plot will not show legends for new samples.}
 
-\item{colname}{A column name of pheno_sample. This argument should be set together with \code{pheno_sample}.
-If \code{pheno_sample} is not specified, this argument will be ignored, thus the output plot will not show legends for new samples.}
+\item{colname}{A column name of \code{pheno_sample}. This column of values will be used to annotate projected samples.
+This argument should be set together with \code{pheno_sample}.
+If \code{pheno_sample} is not specified, this argument will be ignored, and the output plot will not show legends for new samples.}
 
-\item{title}{Title of the plot}
+\item{title}{Title of the plot.}
 
-\item{verbose}{A logical vector indicating whether to report the number of genes added to eset_sample to make it compatible with \coed{eset_scaffold}}
+\item{verbose}{A logical vector indicating whether to report the number of genes imputed to make \code{counts_sample} compatible with \code{counts_scaffold}}
 }
 \value{
 A ggplot object with new samples projected to existing scaffold PCA plot
 }
 \description{
-This function takes in a \code{\link{scaffoldSpace}} objects, subsets the new dataset, ranks the subset,
+This function takes in a \code{\link{scaffoldSpace}} objects, subsets the new dataset to contain only the genes that defines the scaffold space,
+ranks the subset within new sample(s),
 finally projects the new sample(s) onto the existing scaffold PCA plot.
 }
 \examples{

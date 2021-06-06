@@ -77,61 +77,17 @@ run_app()
 
 ### Running without Shiny
 
-**Load external data from directory “/RAT\_package” for illustration.**
+It takes two steps to perform ranked analysis of transcriptome: build a
+scaffold PCA space, then project your new samples onto the PCA space.
 
-The package assume the count matrix to be log transformed. If you want
-to input raw data, please specify `data=raw` in function
-`buildScaffold()`
+**Build a scaffold PCA space**
 
-``` r
-# dmap will be the scaffold dataset
+There are two ways to get a scaffold PCA space. You can either obtain
+the prebuilt DMAP or GTEX space, or build a scaffold space of your own,
+by passing as arguments a count matrix, a phenotype table, an a column
+name of the phenotype table to function `buildScaffold()`.
 
-# load expression matrix
-dmap_exprs <- read.csv("exprs_dmap.csv") # input data type can be anything like csv  
-rownames(dmap_exprs) <- dmap_exprs[,1]   # rownames of expression matrix are gene names, colnames are sample names
-dmap_exprs <- dmap_exprs[,-1]            # every element of matrix should be numbers.
-
-# load phenotype table
-dmap_pheno <- read.csv("pData_dmap.csv") # input data type can be anything like csv  
-rownames(dmap_pheno) <- dmap_pheno[,1]   # rownames of phenotype table are sample names, colnames can be whatever.
-dmap_pheno <- dmap_pheno[,-1,drop = F]   # drop=F prevents conversion from data.frame to vector
-
-# check row-col concordance
-# colnames of expression matrix should be identical to rownames of phenotype table
-all(colnames(dmap_exprs)==rownames(dmap_pheno)) 
-#> [1] TRUE
-
-# ilaria will be new samples for projection
-
-# load expression matrix
-ilaria_exprs <- read.csv("exprs_ilaria.csv") # input data type can be anything like csv  
-rownames(ilaria_exprs) <- ilaria_exprs[,1]   # rownames of expression matrix are gene names, colnames are sample names
-ilaria_exprs <- ilaria_exprs[,-1]            # every element of matrix should be numbers.
-
-# load phenotype table
-ilaria_pheno <- read.csv("pData_ilaria.csv")  # input data type can be anything like csv  
-rownames(ilaria_pheno) <- ilaria_pheno[,1]    # rownames of phenotype table are sample names, colnames can be whatever.
-ilaria_pheno <- ilaria_pheno[,-1,drop = F]    # drop=F prevents conversion from data.frame to vector
-
-# check row-col concordance
-# colnames of expression matrix should be identical to rownames of phenotype table
-all(colnames(ilaria_exprs)==rownames(ilaria_pheno)) 
-#> [1] TRUE
-```
-
-Users mainly need 2 functions: `buildScaffold` and `projectSample`.
-
-**`buildScaffold()`**
-
-`buildScaffold` takes in an expression matrix (`exprs_scaffold`), a
-phenotype table (`pData_scaffold`), a column name within phenotype table
-(`group_scaffold`), and returns a scaffoldSpace object, containing a
-vector of names of differentially expressed genes in scaffold dataset, a
-gg object returned by ggplot, and a prcomp object returned by function .
-Type `?buildScaffold` in console to see more optional parameters (which
-might be able to be adjusted in the webapp). Type `?scaffoldSpace` in
-console to see more information of the S4 class scaffoldSpace defined in
-this package.
+To get the prebuilt DMAP space:
 
 ``` r
 library(RAT)
@@ -142,23 +98,146 @@ library(RAT)
 #>   grobWidth.absoluteGrob  ggplot2
 #>   grobX.absoluteGrob      ggplot2
 #>   grobY.absoluteGrob      ggplot2
-# To see the scaffold space 
-space <- buildScaffold(dmap_exprs,dmap_pheno,"cell_types") # "cell_types" is a column name of dmap_pData
+g <- buildScaffold("prebuilt_DMAP")
+```
+
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+
+You can also turn on the “tiny\_label” mode by specifying `plot_mode`.
+You can also visualize other principle components by specifying `pcs`.
+
+``` r
+# I plan to use "prebuilt_GTEX" when GTEX is done.
+g <- buildScaffold("prebuilt_DMAP",plot_mode = "tiny_label",pcs=c(3,4))
+#> plot_mode='tiny_label', shorter names for cell types in phenotype table yields better visualization.
 ```
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 
-For now, calling buildScaffold will automatically print out the scaffold
-PCA plot. This can be changed in “R/buildScaffold.R”.
+Notice, please assign the returned value of `buildScaffold()` to a named
+variable, which will be used later.
 
-**`projectSample`** `projectSample()` takes in a scaffoldSpace object
-output by function `buildScaffold()`, an expression matrix, a
-corresponding phenotype table, and a column name. It outputs the
-scafffoled PCA plot, together with new samples
+To build your own space, first prepare count matrix and phenotype table.
+Count matrix should have class `matrix`, or a data frame that can be
+converted to `matrix`. Column names are sample names. Row names are gene
+names, which can be Ensembl Gene ID, HGNC Symbol, Entrez Gene ID
+Ensembl, Transcript ID or Refseq mRNA. All gene ID will be automatically
+converted to Ensembl Gene ID. Counts of several transcript ID
+corresponding to same gene will be added and recorded as the counts of
+the gene. Below is a valid (logged) count matrix:
 
 ``` r
-projectSample(space,ilaria_exprs,ilaria_pheno,"cancer_type") # "cancer_type" is a column name of dmap_pData
+exprs_dmap[1:5,1:5]
+#>                     HSC1_1    HSC1_13     HSC1_14     HSC1_2     HSC1_3
+#> ENSG00000100296 -0.2305090 -0.2332090  0.09349099 -0.3661090 -0.3439090
+#> ENSG00000122707  0.7680782  0.1729782  0.33177820  0.6280782  0.7424782
+#> ENSG00000149308  0.1828161 -0.3864839 -0.02568389 -0.2718839  0.3774161
+#> ENSG00000133026  2.2084867  1.4643867  1.72818673  1.4515867  1.8478867
+#> ENSG00000005339  0.2062100 -0.2908900 -0.14789005 -0.2360900 -0.1336900
+```
+
+Phenotype table should have row names as sample names identical to count
+matrix, as well as at least one column for cell types, or any sample
+feature suitable for grouping cells and perform differential expression
+analysis. For example:
+
+``` r
+pData_dmap[1:5,,drop=FALSE]
+#>         cell_types
+#> HSC1_1         HSC
+#> HSC1_13        HSC
+#> HSC1_14        HSC
+#> HSC1_2         HSC
+#> HSC1_3         HSC
+```
+
+Then call:
+
+``` r
+g <- buildScaffold(exprs_dmap,pData_dmap,"cell_types")
+```
+
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+
+Here `"cell_types"` is the name of a column of `pData_dmap`, according
+to which cells are grouped and labeled. Differential expression analysis
+will also be performed using this column of phenotype as independent
+variables.
+
+When building a user-defined scaffold space, `buildScaffold()` first
+preprocesses count matrix. It removes genes with total counts less than
+10 and replaces `NA` by 0. Then it performs differential expression
+analysis to select differentially expressed genes (DE genes), subsets
+the scaffold dataset to contain only the DE genes, ranks the genes
+within each sample, finally performs principle component analysis (PCA)
+using ranks.
+
+By default `buildScaffold()` takes in logged count matrix. It can also
+handle raw count data if `data="raw"` is specified.
+
+**Make sense of scaffold space** Function `loadingPlot()` visualizes the
+genes that contribute most to the selected principle components, thus
+facilitating the understanding of scaffold space. It returns a data
+frame containing the loading scores as well.
+
+``` r
+loadingPlot(g)
+#> Convert gene names of count matrix from ensembl_gene_id to hgnc_symbol.
+```
+
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+
+    #>    hgnc_symbol          PC1          PC2               class
+    #> 7          NPL  0.007833693  0.088749767 Top 3 genes for PC2
+    #> 8        RBM38 -0.011073407  0.086074949 Top 3 genes for PC2
+    #> 9        EPB42 -0.032247860  0.085560895 Top 3 genes for PC2
+    #> 2       CHST15  0.084423068  0.014613938 Top 3 genes for PC1
+    #> 3        IFI30  0.081726360  0.005384923 Top 3 genes for PC1
+    #> 1         LY86  0.086668813 -0.005077950 Top 3 genes for PC1
+    #> 6        MLLT3 -0.073783950 -0.009267613 Top 3 genes for PC1
+    #> 5        HACD1 -0.071847724 -0.013786594 Top 3 genes for PC1
+    #> 4         MYCN -0.071340434 -0.049321903 Top 3 genes for PC1
+    #> 10       PROM1 -0.057783139 -0.082193237 Top 3 genes for PC2
+    #> 11     HLA-DRA  0.029497749 -0.083010708 Top 3 genes for PC2
+    #> 12      TARBP1 -0.042512424 -0.083242973 Top 3 genes for PC2
+
+**Project new samples** To project new samples onto the scaffold PCA
+plot, first prepare the count matrix of new samples. For example:
+
+``` r
+exprs_ilaria[1:5,1:5]
+#>                 SJAEL011865 SJAEL011868 SJAEL011872 SJAEL011873 SJAEL011874
+#> ENSG00000000003       96.00        62.0       11.00       84.00      146.00
+#> ENSG00000000005        3.00         0.0        0.00        2.00        3.00
+#> ENSG00000000419     1344.00      2566.0      644.00     1007.00     1866.00
+#> ENSG00000000457      349.54       536.2      143.83      229.16      194.75
+#> ENSG00000000460      810.46      1405.8      162.17      749.84      239.25
+```
+
+Then run:
+
+``` r
+projectSample(g, exprs_ilaria)
+#> 6 genes are added to count matrix, with imputed expression level 0.
+#> Scale for 'colour' is already present. Adding another scale for 'colour',
+#> which will replace the existing scale.
+```
+
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+
+By passing corresponding phenotype table and column name to
+`projectSample()`, the plot can show more information about new samples:
+
+``` r
+pData_ilaria[1:5,,drop=F]
+#>                                  cancer_type
+#> SJAEL011865                          AML-MRC
+#> SJAEL011868                          AML-MRC
+#> SJAEL011872 AML, NOS (non erythroid subtype)
+#> SJAEL011873 AML, NOS (non erythroid subtype)
+#> SJAEL011874                            t-AML
+projectSample(g, exprs_ilaria,pData_ilaria,"cancer_type")
 #> 6 genes are added to count matrix, with imputed expression level 0.
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />

@@ -1,101 +1,44 @@
 ---
-output: github_document
+title: "RAT: Ranked Analysis of Transcriptomes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{RAT: Ranked Analysis of Transcriptomes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
+  comment = "#>"
 )
 ```
 
-# RAT
-
-<!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-<!-- badges: end -->
-
-## Install as package
-### 1. Create virtual environment with renv
-Initialize a local R environment:
-```{r, eval = FALSE}
-# Open project in Rstudio
-# Install and initialize renv 
-install.packages("renv")
-library(renv)
-renv::init()
-```
-
-### 2. Install package from github
-``` {r, eval = FALSE}
-# To ensure Rstudio looks up BioConductor packages run:
-setRepositories(ind = c(1:6, 8))
-# Then install package with
-devtools::install_github("XueningHe/RAT_package")
-```
-
-
-## Install as cloned repository
-
-### 1. Clone repository
-```{sh, eval = FALSE}
-# In terminal at desired directory
-git clone git@github.com:XueningHe/RAT_package.git
-```
-
-### 2. Install dependecies
-```{r, eval = FALSE}
-# Open RAT.Rproj in Rstudio
-
-# To ensure Rstudio looks up BioConductor packages run:
-setRepositories(ind = c(1:6, 8))
-# Install renv
-install.packages("renv")
-library(renv)
-# Restore from lock file
-renv::restore()
-```
-
-### 3. Load package
-```{r, eval = FALSE}
-install.packages("devtools")
-library(devtools)
-devtools::load_all(getwd())
-```
-
-## Usage
-
-### Load Shiny app
-
-```{r, eval = FALSE}
+```{r setup}
 library(RAT)
-
-run_app()
-
 ```
-*Some text about how the shiny app works.*
+
+Need a high level summary here.
+
+Another nice feature about this package is that it can handle messy data and automatically performs gene name conversion, making it very suitable for exploratory data analysis.
+
+To be more specific, it takes two steps to perform ranked analysis of transcriptome: build a scaffold PCA space, then project your new samples onto the PCA space. 
 
 
-### Running without Shiny
 
-It takes two steps to perform ranked analysis of transcriptome: build a scaffold PCA space, then project your new samples onto the PCA space. 
 
-**Build a scaffold PCA space**
+
+###  Build a scaffold PCA space
 
 There are two ways to get a scaffold PCA space. You can either obtain the prebuilt DMAP or GTEX space, or build a scaffold space of your own, by passing as arguments a count matrix, a phenotype table, an a column name of the phenotype table to function `buildScaffold()`.  
   
 To get the prebuilt DMAP space:
-```{r} 
-library(RAT)
+```{r fig1, fig.height = 4, fig.width = 6} 
 g <- buildScaffold("prebuilt_DMAP")
 ```
 
 You can also turn on the "tiny_label" mode by specifying `plot_mode`. You can also visualize other principle components by specifying `pcs`.  
-```{r}
+```{r fig2, fig.height = 4, fig.width = 6}
 # I plan to use "prebuilt_GTEX" when GTEX is done.
 g <- buildScaffold("prebuilt_DMAP",plot_mode = "tiny_label",pcs=c(3,4))
 ```
@@ -114,7 +57,7 @@ pData_dmap[1:5,,drop=FALSE]
 ```
 
 Then call:
-```{r}
+```{r fig3, fig.height = 4, fig.width = 6}
 g <- buildScaffold(exprs_dmap,pData_dmap,"cell_types")
 ```
 
@@ -124,14 +67,14 @@ When building a user-defined scaffold space, `buildScaffold()` first preprocesse
 
 By default `buildScaffold()` takes in logged count matrix. It can also handle raw count data if `data="raw"` is specified. 
 
-**Make sense of scaffold space**
+### Make sense of scaffold space
 Function `loadingPlot()` visualizes the genes that contribute most to the selected principle components, thus facilitating the understanding of scaffold space. It returns a data frame containing the loading scores as well.
-```{r}
+```{r fig4, fig.height = 4, fig.width = 6}
 loadingPlot(g)
 ```
 
 
-**Project new samples**
+### Project new samples
 To project new samples onto the scaffold PCA plot, first prepare the count matrix of new samples. For example:
 ```{r}
 exprs_ilaria[1:5,1:5]
@@ -139,13 +82,13 @@ exprs_ilaria[1:5,1:5]
 
 
 Then run:
-```{r}
+```{r fig5, fig.height = 4, fig.width = 6}
 projectSample(g, exprs_ilaria)
 ```
 
 By passing corresponding phenotype table and column name to `projectSample()`, the plot can show more information about new samples:
 
-```{r}
+```{r fig6, fig.height = 6, fig.width = 8}
 pData_ilaria[1:5,,drop=F]
 projectSample(g, exprs_ilaria,pData_ilaria,"cancer_type")
 ```

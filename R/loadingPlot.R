@@ -1,16 +1,19 @@
 #' Generate a loading plot of scaffold PCA
 #'
-#' This function takes a scaffoldSpace object and generate a loading plot to visualize the genes that contribute most to selected principle components.
+#' This function takes a \code{\link{scaffoldSpace}} object and generates a loading plot to visualize the genes that contribute most to the selected principle components.
 #' @importFrom tibble rownames_to_column
 #' @import ggplot2
 #'
 #' @param space A scaffoldSpace object created by function \code{\link{buildScaffold}}.
 #' @param num_genes An optional parameter indicating number of genes to be shown.
-#' @param gene_name A character indicating which type of gene name to show by the side of arrows.
+#' @param gene_name A character indicating which type of gene name to show by the side of arrows. By default HGNC symbol is shown.
+#  Other options are "ensembl_gene_id", "ensembl_transcript_id", "entrezgene_id" and "refseq_mrna".
 #' @param angle A number for the degree of rotation of labels on the plot.
 #'
 #' @export
-#' @return a ggplot object of loading plot, automatically printed
+#' @return A data frame indicating the loading scores of the genes that contribute most to the selected principle components.
+#' The loading plot is printed automatically, thus not returned.
+#'
 #' @examples
 #' space <- buildScaffold(exprs_dmap,pData_dmap"cell_types")
 #' loadingPlot(space)
