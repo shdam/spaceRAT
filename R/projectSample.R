@@ -23,7 +23,7 @@
 projectSample <- function(space,
                           counts_sample,
                           pheno_sample=NULL,
-                          colname=NULL,
+                          colname="cancer_type",
                           title="Samples projected onto scaffold PCA",
                           verbose=TRUE){
 
@@ -35,8 +35,8 @@ projectSample <- function(space,
 
         # add absent genes then subset eset_sample so counts_scaffold and counts_project contain same genes
         absent_genes <- space@DEgene[! space@DEgene %in% rownames(counts_sample)]
-        absent_exprs <- matrix(0,length(absent_genes),ncol(counts_sample))
-        rownames(absent_exprs) <- absent_genes
+        absent_exprs <- matrix(0,length(absent_genes),ncol(counts_sample), dimnames = list(absent_genes, colnames(counts_sample)))
+        # rownames(absent_exprs) <- absent_genes
         counts_sample <- rbind(counts_sample,absent_exprs)
 
         if (verbose){

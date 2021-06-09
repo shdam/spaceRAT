@@ -11,6 +11,7 @@
 mod_rat_ui <- function(id){
   ns <- NS(id)
   tagList(
+    uiOutput(ns("error")),
     plotlyOutput(outputId = ns("pca_plotly"))
   )
 }
@@ -31,58 +32,95 @@ mod_rat_server <- function(input, output, session, r){
   #
 
 
-  if(r$space == "dmap"){
-  # Prepare sample
-  # Store sample files
-  r$sample_exprs <- r$exprs_datapath %>% read.csv()
-  rownames(r$sample_exprs) <- r$sample_exprs[,1] # rownames of expression matrix are gene names, colnames are sample names
-  r$sample_exprs <- r$sample_exprs[,-1]            # every element of matrix should be numbers.
-  r$sample_pheno <- r$pheno_datapath %>% read.csv()
-  rownames(r$sample_pheno) <- r$sample_pheno[,1]   # rownames of phenotype table are sample names, colnames can be whatever.
-  r$sample_pheno <- r$sample_pheno[,-1,drop = F]   # drop=F prevents conversion from data.frame to vector
-  if(!all(colnames(r$sample_exprs) == rownames(r$sample_pheno))) stop("Column names in sample expression matrix does not correspond to rows in phonetype table.")
-  #
 
-  r$all_classes <- unique(r$scaf_pheno[,r$column])
-  r$classes <- r$all_classes
-
-  r$sample_exprs_fin <- r$sample_exprs
-  r$sample_pheno_fin <- r$sample_pheno
-  # group <- r$group
-
-  # Identify space to use
-  g <- reactive(
-    buildScaffold(r$scaf_exprs, r$scaf_pheno, r$column, r$classes)
-  )
-
-  pca_plot <- reactive(
-    projectSample(space = g(),
-                  exprs_sample = r$sample_exprs_fin,
-                  pData_sample = r$sample_pheno_fin,
-                  group_sample = r$group,
-                  title = r$title,
-                  y = r$y,
-                  x = r$x)
-  )
-  } else if(r$space == "gtex"){
-    # load(r$inputFile$datapath)
-    mapped <- map_samples(gtex_testdata)
-    r$all_classes <- mapped$data$class
-    r$classes <- r$all_classes
-    # r$data <- mapped$data
-
-    # PCA plot ----
-    pca_plot <- reactive(
-      mapped$data %>%
-        dplyr::filter(class %in% r$classes) %>%
-        plot_samples() +
-        labs(title = r$title,
-             x = r$x,
-             y = r$y,
-             subtitle = r$subtitle
+  observeEvent( r$space, {
+    # Loading plot
+    if(r$space == "dmap"){
+      r$g <- reactive(
+        buildScaffold("prebuilt_DMAP",
+                      auto_plot = FALSE,
+                      plot_mode = r$plot_mode)
         )
-    )
-  }
+
+      output$pca_plotly <- renderPlotly(
+        ggplotly(
+          loadingPlot(r$g())
+          )
+      )
+    }
+  })
+
+  observeEvent( r$validate, {
+
+    if(r$space == "dmap"){
+      # Prepare sample
+      # Store sample files
+    r$sample_exprs <- r$exprs_datapath %>% read.csv()
+    rownames(r$sample_exprs) <- r$sample_exprs[,1] # rownames of expression matrix are gene names, colnames are sample names
+    r$sample_exprs <- r$sample_exprs[,-1]            # every element of matrix should be numbers.
+    if(!is.null(r$pheno_datapath)){
+      r$sample_pheno <- r$pheno_datapath %>% read.csv()
+      rownames(r$sample_pheno) <- r$sample_pheno[,1]   # rownames of phenotype table are sample names, colnames can be whatever.
+      r$sample_pheno <- r$sample_pheno[,-1,drop = F]   # drop=F prevents conversion from data.frame to vector
+      if(!all(colnames(r$sample_exprs) == rownames(r$sample_pheno))) {
+        output$error <- renderUI(p("Column names in sample expression matrix does not correspond to rows in the phenotype table.", id = "error"))
+        stp <- TRUE
+      } else{
+        stp <- FALSE
+      }
+    } else{
+      r$sample_pheno <- NULL
+      stp <- FALSE
+    }
+
+    #
+    if(!stp){
+      print("hello")
+      # r$all_classes <- unique(r$scaf_pheno[,r$column])
+      # r$classes <- r$all_classes
+
+      r$sample_exprs_fin <- r$sample_exprs
+      r$sample_pheno_fin <- r$sample_pheno
+      # group <- r$group
+
+      # Identify space to use
+      # g <- reactive(
+      #   buildScaffold(r$scaf_exprs, r$scaf_pheno, r$column, r$classes)
+      # )
+
+      pca_plot <- reactive(
+        projectSample(space = r$g(),
+                      counts_sample = r$sample_exprs_fin,
+                      pheno_sample = r$sample_pheno_fin,
+                      colname = r$group,
+                      # group_sample = r$group,
+                      title = r$title,
+                      # y = r$y,
+                      # x = r$x
+                      )
+      )
+    }
+
+    } else if(r$space == "gtex"){
+      # load(r$inputFile$datapath)
+      mapped <- map_samples(gtex_testdata)
+      r$all_classes <- mapped$data$class
+      r$classes <- r$all_classes
+      # r$data <- mapped$data
+
+      # PCA plot ----
+      pca_plot <- reactive(
+        mapped$data %>%
+          dplyr::filter(class %in% r$classes) %>%
+          plot_samples() +
+          labs(title = r$title,
+               x = r$x,
+               y = r$y,
+               subtitle = r$subtitle
+          )
+      )
+    }
+
 
 
   # Insert load data script ----
@@ -145,7 +183,7 @@ mod_rat_server <- function(input, output, session, r){
                                          "</sup>"))) %>%
       config(displayModeBar = FALSE)
     )
-
+  })
   # Save plot ----
   observeEvent(r$savePlot, {
     ggsave(plot = pca_plot(),

@@ -17,8 +17,9 @@ app_server <- function( input, output, session ) {
         })
 
         # List the first level callModules here
+        r$plot_mode <- "dot"
         callModule(mod_input_server, "input_ui_1", r)
-        observeEvent({r$validate;r$exprs_datapath;r$pheno_datapath}, {
+        # observeEvent({r$validate;r$exprs_datapath;r$pheno_datapath}, {
                 callModule(mod_rat_server, "rat_ui_1", r)
-        })
+        # })
 }

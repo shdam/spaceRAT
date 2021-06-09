@@ -22,19 +22,32 @@ mod_input_ui <- function(id){
     #
     # Input samples
     h2("Select input samples"),
+    uiOutput( # Expression tooltip
+      outputId = ns("exprinfo")
+    ),
     fileInput(
       inputId = ns('sample_exprs'),
       label = "Choose an expression matrix:",
       multiple = FALSE
+    ),
+    uiOutput( # Phenotype tooltip
+      outputId = ns("phenoinfo")
     ),
     fileInput(
       inputId = ns('sample_pheno'),
       label = "Choose a phenotype matrix:",
       multiple = FALSE
     ),
+    selectInput(
+      inputId = ns("plot_mode"),
+      label = "Plot mode",
+      choices = c("dot", "tiny_label"),
+      selected = "dot",
+      width = "45%"
+    ),
     textInput(
       inputId = ns("group"),
-      label = "Column name of phenotype data:",
+      label = "Column name in phenotype:",
       width = "45%",
       value = "cancer_type"
     ) %>%
@@ -70,6 +83,7 @@ mod_input_server <- function(input, output, session, r){
   options(shiny.maxRequestSize = 6000*1000^2) # 6 GB
   # Upload Scaffold files ----
   observeEvent( input$space, {
+    r$space <- input$space
     if (input$space == "Build scaffold"){
       r$column <- "cell_types"
       output$scaffold <- renderUI({
@@ -100,6 +114,45 @@ mod_input_server <- function(input, output, session, r){
     } else {output$scaffold <- NULL}
   })
 
+
+
+  # Tooltips ----
+  tooltip_expr <- tibble::tribble(
+    ~`gene names`, ~sample1, ~sample2, ~`...`,
+    "gene1", 0.2, 0.3, "...",
+    "gene2", 1.3, 0.1, "..."
+  )
+  tooltip_pheno <- tibble::tribble(
+    ~`sample ID`, ~cancer_type,
+    "sample1", "type1",
+    "sample2", "type2",
+    "...", "..."
+  )
+  output$exprinfo <- renderUI({
+      shinyWidgets::dropdownButton(
+        h4("Example expression matrix layout"),
+        renderTable(tooltip_expr),
+        inline = TRUE,
+        size = "xs",
+        circle = TRUE,
+        # status = "danger",
+        icon = icon("info"), width = "500px",
+        tooltip = shinyWidgets::tooltipOptions(title = "Click to see expression matrix example")
+      )
+  })
+  output$phenoinfo <- renderUI({
+      shinyWidgets::dropdownButton(
+        h4("Example phenotype matrix layout"),
+        renderTable(tooltip_pheno),
+        inline = TRUE,
+        size = "xs",
+        circle = TRUE,
+        # status = "danger",
+        icon = icon("info"), width = "500px",
+        tooltip = shinyWidgets::tooltipOptions(title = "Click to see phenotype matrix example")
+      )
+  })
+
   # Uploaded sample files ----
   observeEvent({input$sample_pheno; input$sample_exprs}, { #input$upSample
     output$noFiles <- NULL
@@ -119,6 +172,7 @@ mod_input_server <- function(input, output, session, r){
 
   # Plot button is pressed ----
   observeEvent( input$validate, {
+    r$validate <- input$validate
     # Hide stuff
     output$fileCheck <- NULL
     output$doneScaf <- NULL
@@ -126,7 +180,7 @@ mod_input_server <- function(input, output, session, r){
 
     # If no input
     if(input$space != "Build scaffold" & (is.null(input$scaf_exprs) & is.null(input$scaf_pheno))){
-    if(!is.null(input$sample_exprs) & !is.null(input$sample_pheno)){
+    if(!is.null(input$sample_exprs)){ # & !is.null(input$sample_pheno)
 
     # Store scaffold files
     if(input$space == "dmap") {
@@ -152,8 +206,10 @@ mod_input_server <- function(input, output, session, r){
 
     # Store sample
     r$exprs_datapath <- input$sample_exprs$datapath
-    r$pheno_datapath <- input$sample_pheno$datapath
+    if(!is.null(input$sample_pheno)) r$pheno_datapath <- input$sample_pheno$datapath
+    else r$pheno_datapath <- NULL
     r$group <- input$group
+    r$plot_mode <- input$plot_mode
 
     # Input values
     r$space <- input$space
@@ -161,7 +217,7 @@ mod_input_server <- function(input, output, session, r){
 
 
     # Plot standard labels
-    r$title <- paste("Samples projected on", r$space)
+    r$title <- paste("Samples projected onto scaffold PCA")#, r$space)
     r$x <- "PC1"
     r$y <- "PC2"
     r$subtitle <- ""

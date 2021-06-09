@@ -12,7 +12,7 @@
 #' @examples
 #' create_eset(exprs_dmap,pData_dmap)
 
-createEset <- function(counts,pheno,colname,to="ensembl_gene_id"){
+createEset <- function(counts,pheno,colname = "cancer_type",to="ensembl_gene_id"){
 
         # check class of counts, convert to matrix
         if (!is.matrix(counts)){
@@ -45,7 +45,7 @@ createEset <- function(counts,pheno,colname,to="ensembl_gene_id"){
         }
 
         # subset counts to only contain samples with annotation
-        idx <- which(!colnames(counts) %in% rownames(pheno))
+        idx <- which(!(colnames(counts) %in% rownames(pheno)))
         if (length(idx)>0){
                 counts <- counts[,-idx,drop=F]
                 message(length(idx)," sample(s) have no phenotype annotation, thus removed.")
@@ -70,7 +70,7 @@ createEset <- function(counts,pheno,colname,to="ensembl_gene_id"){
         }
 
         # return ExpressionSet
-        Biobase::ExpressionSet(counts, phenoData=Biobase::AnnotatedDataFrame(pheno))
+        return(Biobase::ExpressionSet(counts, phenoData=Biobase::AnnotatedDataFrame(pheno)))
 
 
 }

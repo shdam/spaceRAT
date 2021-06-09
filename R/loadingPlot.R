@@ -58,8 +58,8 @@ loadingPlot <- function(space,num_genes=3,gene_name="hgnc_symbol",angle=30){
             ggplot2::coord_fixed()+
             ggplot2::ggtitle("Loading plot")
 
-        print(g)
+        # print(g)
 
-        return(df[order(df[,3],decreasing=T),])
+        return(g)#df = df[order(df[,3],decreasing=T),])
 }
 

@@ -8,7 +8,7 @@ projectSample(
   space,
   counts_sample,
   pheno_sample = NULL,
-  colname = NULL,
+  colname = "cancer_type",
   title = "Samples projected onto scaffold PCA",
   verbose = TRUE
 )
