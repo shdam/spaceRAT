@@ -10,15 +10,16 @@ app_ui <- function(request) {
                 golem_add_external_resources(),
                 # List the first level UI elements here
                 fluidPage(
-                        theme = shinytheme("spacelab"),
-                        titlePanel(
-                                title = div("RAT")),
+                        # theme = shinytheme("spacelab"),
+                        headerPanel(
+                                div(class = "header",
+                                    h1(class = "header", "RAT")
+                                    )
+                                ),
                         sidebarLayout(
-
                                 sidebarPanel(
                                         mod_input_ui("input_ui_1")
                                 ),
-
                                 mainPanel(
                                         mod_rat_ui("rat_ui_1")
                                 )

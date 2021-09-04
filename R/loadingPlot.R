@@ -56,7 +56,8 @@ loadingPlot <- function(space,num_genes=3,gene_name="hgnc_symbol",angle=30){
             ggplot2::ylim(ymin*1.5,ymax*1.5)+
             ggplot2::xlab(xlabel)+ggplot2::ylab(ylabel)+
             ggplot2::coord_fixed()+
-            ggplot2::ggtitle("Loading plot")
+            ggplot2::ggtitle("Loading plot") +
+            ggplot2::labs(color = "Class")
 
         # print(g)
 

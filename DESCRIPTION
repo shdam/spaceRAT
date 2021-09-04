@@ -21,7 +21,9 @@ Imports:
     shinyWidgets,
     shiny,
     readr,
-    tibble
+    tibble,
+    ggalt,
+    mclust
 RoxygenNote: 7.1.1
 Depends: 
     R (>= 3.5.0)

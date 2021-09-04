@@ -15,7 +15,7 @@
 
 ## Dependencies ----
 ## Add one line by package you want to add as dependency
-usethis::use_package( "tibble")
+usethis::use_package( "mclust")
 
 ## Add modules ----
 ## Create a module infrastructure in R/

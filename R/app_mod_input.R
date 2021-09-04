@@ -21,7 +21,7 @@ mod_input_ui <- function(id){
     uiOutput(ns("doneScaf")),
     #
     # Input samples
-    h2("Select input samples"),
+    # h2("Select input samples"),
     uiOutput( # Expression tooltip
       outputId = ns("exprinfo")
     ),
@@ -45,13 +45,7 @@ mod_input_ui <- function(id){
       selected = "dot",
       width = "45%"
     ),
-    textInput(
-      inputId = ns("group"),
-      label = "Column name in phenotype:",
-      width = "45%",
-      value = "cancer_type"
-    ) %>%
-      tagAppendAttributes(class = "dim"),
+    uiOutput(ns("group")),
     # actionButton(inputId = ns("upSample"),
     #              label = "Process"),
     actionButton(
@@ -113,17 +107,32 @@ mod_input_server <- function(input, output, session, r){
         })
     } else {output$scaffold <- NULL}
   })
-
+  # observeEvent( input$plot_mode, {
+  #   r$plot_mode <- input$plot_mode
+  # })
+  observeEvent( r$group, {
+    #   r$plot_mode <- input$plot_mode
+    #
+    output$group <- renderUI({
+      textInput(
+        inputId = ns("group"),
+        label = "Column name in phenotype:",
+        width = "45%",
+        value = r$group
+      ) %>%
+        tagAppendAttributes(class = "dim")
+    })
+  })
 
 
   # Tooltips ----
   tooltip_expr <- tibble::tribble(
-    ~`gene names`, ~sample1, ~sample2, ~`...`,
-    "gene1", 0.2, 0.3, "...",
-    "gene2", 1.3, 0.1, "..."
+    ~` `, ~sample1, ~sample2, ~`...`,
+    "gene1", 200, 900, "...",
+    "gene2", 1300, 5, "..."
   )
   tooltip_pheno <- tibble::tribble(
-    ~`sample ID`, ~cancer_type,
+    ~` `, ~cancer_type,
     "sample1", "type1",
     "sample2", "type2",
     "...", "..."
@@ -246,23 +255,24 @@ mod_input_server <- function(input, output, session, r){
             label = "Subtitle",
             value = r$subtitle
           ),
-          textInput(
-            inputId = ns("x"),
-            label = "x",
-            width = "45%",
-            value = r$x
-          ) %>%
-            tagAppendAttributes(class = "dim"),
-          textInput(
-            inputId = ns("y"),
-            label = "y",
-            width = "45%",
-            value = r$y
-          ) %>%
-            tagAppendAttributes(class = "dim"),
+          # textInput(
+          #   inputId = ns("x"),
+          #   label = "x",
+          #   width = "45%",
+          #   value = r$x
+          # ) %>%
+          #   tagAppendAttributes(class = "dim"),
+          # textInput(
+          #   inputId = ns("y"),
+          #   label = "y",
+          #   width = "45%",
+          #   value = r$y
+          # ) %>%
+          #   tagAppendAttributes(class = "dim"),
 
           # Dropdown styling
           style = "unite", icon = icon("gear"),
+          color = "danger",
           status = "primary", width = "300px",
           tooltip = tooltipOptions(title = "Click to edit plot"),
           animate = animateOptions(

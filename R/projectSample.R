@@ -23,6 +23,7 @@
 projectSample <- function(space,
                           counts_sample,
                           pheno_sample=NULL,
+                          # classes = NULL,
                           colname="cancer_type",
                           title="Samples projected onto scaffold PCA",
                           verbose=TRUE){

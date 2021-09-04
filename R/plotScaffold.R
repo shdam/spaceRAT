@@ -57,7 +57,7 @@ plotScaffold <- function(space,title,classes=NULL){
                 g <- ggplot2::ggplot(data=df)+
                      ggplot2::geom_point(mapping=ggplot2::aes(PC1,PC2,color=Scaffold_group))+
                      ggplot2::scale_color_manual(name="Scaffold_group",values=my_col)+
-                     ggplot2::geom_label(data=centroids_df,ggplot2::aes(mean_PC1,mean_PC2,label=Scaffold_group,color=Scaffold_group),fontface="bold",,show.legend = FALSE)+
+                     ggplot2::geom_label(data=centroids_df,ggplot2::aes(mean_PC1,mean_PC2,label=Scaffold_group,color=Scaffold_group),fontface="bold",show.legend = FALSE)+
                      ggplot2::ggtitle(title)+
                      ggplot2::xlab(xlabel)+
                      ggplot2::ylab(ylabel)+

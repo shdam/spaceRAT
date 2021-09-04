@@ -44,62 +44,73 @@ mod_rat_server <- function(input, output, session, r){
 
       output$pca_plotly <- renderPlotly(
         ggplotly(
-          loadingPlot(r$g())
+          loadingPlot(r$g()),
+          height = 700
           )
       )
+    } else if(r$space == "gtex"){
+      output$pca_plotly <- NULL
+    } else{
+      output$pca_plotly <- NULL
     }
   })
 
-  observeEvent( r$validate, {
-
-    if(r$space == "dmap"){
-      # Prepare sample
-      # Store sample files
+  observeEvent( r$exprs_datapath, {
+    # Prepare sample
+    # Store sample files
     r$sample_exprs <- r$exprs_datapath %>% read.csv()
     rownames(r$sample_exprs) <- r$sample_exprs[,1] # rownames of expression matrix are gene names, colnames are sample names
     r$sample_exprs <- r$sample_exprs[,-1]            # every element of matrix should be numbers.
-    if(!is.null(r$pheno_datapath)){
-      r$sample_pheno <- r$pheno_datapath %>% read.csv()
-      rownames(r$sample_pheno) <- r$sample_pheno[,1]   # rownames of phenotype table are sample names, colnames can be whatever.
-      r$sample_pheno <- r$sample_pheno[,-1,drop = F]   # drop=F prevents conversion from data.frame to vector
-      if(!all(colnames(r$sample_exprs) == rownames(r$sample_pheno))) {
-        output$error <- renderUI(p("Column names in sample expression matrix does not correspond to rows in the phenotype table.", id = "error"))
-        stp <- TRUE
+  })
+  observeEvent( r$pheno_datapath, {
+    r$sample_pheno <- r$pheno_datapath %>% read.csv()
+    rownames(r$sample_pheno) <- r$sample_pheno[,1]   # rownames of phenotype table are sample names, colnames can be whatever.
+    r$sample_pheno <- r$sample_pheno[,-1,drop = F]   # drop=F prevents conversion from data.frame to vector
+  })
+
+  observeEvent( r$validate, {
+    if(r$space == "dmap"){
+      if(!is.null(r$pheno_datapath)){
+        if(!all(colnames(r$sample_exprs) == rownames(r$sample_pheno))) {
+          output$error <- renderUI(p("Column names in sample expression matrix does not correspond to rows in the phenotype table.", id = "error"))
+          output$pca_plotly <- NULL
+          stp <- TRUE
+        } else if(!(r$group %in% colnames(r$sample_pheno))){
+          output$error <- renderUI(p(paste0("A column of the name: '", r$group,"' was not found in the provided phenotype data. Please check that the column names match."), id = "error"))
+          output$pca_plotly <- NULL
+          stp <- TRUE
+        } else{
+          stp <- FALSE
+        }
       } else{
+        r$sample_pheno <- NULL
         stp <- FALSE
       }
-    } else{
-      r$sample_pheno <- NULL
-      stp <- FALSE
-    }
 
-    #
-    if(!stp){
-      print("hello")
-      # r$all_classes <- unique(r$scaf_pheno[,r$column])
-      # r$classes <- r$all_classes
+      #
+      if(!stp){
+        # r$all_classes <- unique(r$sample_pheno[,r$column])
+        # r$classes <- r$all_classes
+        # group <- r$group
 
-      r$sample_exprs_fin <- r$sample_exprs
-      r$sample_pheno_fin <- r$sample_pheno
-      # group <- r$group
+        # Identify space to use
+        # g <- reactive(
+        #   buildScaffold(r$scaf_exprs, r$scaf_pheno, r$column, r$classes)
+        # )
 
-      # Identify space to use
-      # g <- reactive(
-      #   buildScaffold(r$scaf_exprs, r$scaf_pheno, r$column, r$classes)
-      # )
-
-      pca_plot <- reactive(
-        projectSample(space = r$g(),
-                      counts_sample = r$sample_exprs_fin,
-                      pheno_sample = r$sample_pheno_fin,
-                      colname = r$group,
-                      # group_sample = r$group,
-                      title = r$title,
-                      # y = r$y,
-                      # x = r$x
-                      )
-      )
-    }
+        pca_plot <- reactive(
+          projectSample(space = r$g(),
+                        counts_sample = r$sample_exprs,
+                        pheno_sample = r$sample_pheno,
+                        colname = r$group,
+                        # classes = r$classes,
+                        # group_sample = r$group,
+                        title = r$title,
+                        # y = r$y,
+                        # x = r$x
+                        )
+        )
+      }
 
     } else if(r$space == "gtex"){
       # load(r$inputFile$datapath)
@@ -166,6 +177,7 @@ mod_rat_server <- function(input, output, session, r){
   output$pca_plotly <- renderPlotly(
 
     ggplotly(
+      height = 700,
       pca_plot() +
         # geom_encircle(aes(group=class, fill=class),alpha=0.4) +
         ggplot2::theme_bw() +
