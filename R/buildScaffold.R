@@ -88,7 +88,7 @@ buildScaffold <- function(counts_scaffold,
                 idx <- which(rowSums(counts_scaffold)<10)
                 if (length(idx)==dim(counts_scaffold)[1]) stop("Low quality data! All genes have total counts less than 10.")
                 if (length(idx)>0) counts_scaffold <- counts_scaffold[-idx,]
-                counts_scaffold <- log(counts_scafold+1)
+                counts_scaffold <- log(counts_scaffold+1)
                 eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname)
 
         }
