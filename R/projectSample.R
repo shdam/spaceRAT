@@ -55,7 +55,7 @@ projectSample <- function(space,
         counts_sample <- counts_sample[space@DEgene,]
 
         # rank and transform exprs_project and multiply with the percent of missing values, to retain comparable numeric range
-        ranked_sample<- apply(counts_sample,2,rank) 
+        ranked_sample<- apply(counts_sample,2,rank)*(1+(length(absent_genes)/length(space@DEgene)))  
 
         # PCA transform the sample data
         transformed_sample <- predict(space@pca,newdata=t(ranked_sample))
