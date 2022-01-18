@@ -31,7 +31,9 @@ createEset <- function(counts,pheno,colname = "cancer_type",to="ensembl_gene_id"
         }
 
         # convert gene names
-        counts <- convertGeneName(counts,to=to)
+        if (is.na(to)) {
+                warning("annotation has not been resolved. please make sure that projected samples uses same annotation as scaffold dataset")
+        } else {counts <- convertGeneName(counts,to=to)}
 
         #select the specified column of phenotype table as final phenotype table
         pheno <- pheno[,colname,drop=F]

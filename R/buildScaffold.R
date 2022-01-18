@@ -38,6 +38,9 @@
 #' @param title Title for the plot
 #' @param pca_scale A logical variable determining whether to normalize rows when plotting PCA
 #' @param auto_plot A logical variabe deterining whether to plot the resulting scaffold space when calling the function.
+#' @param annotation Annotation type to use for scaffold. counts_scaffold rownames using alternative identifyers will be attemped translated. 
+#' Currently ensembl_gene_id,entrezgene_id,hgnc_symbol, and refseq_mrna are supported. set to "NA", to avoid translation (both scaffold and projected sampels must be the same)
+#' 
 #' @export
 #' @return A scaffoldSpace object
 #' @examples
@@ -57,7 +60,8 @@ buildScaffold <- function(counts_scaffold,
                           lfc_cutoff=2,
                           title="Scaffold PCA Plot",
                           pca_scale=FALSE,
-                          auto_plot=TRUE){
+                          auto_plot=TRUE,
+                          annotation="ensembl_gene_id"){
         # prebuilt_DMAP
         if(is.character(counts_scaffold) && counts_scaffold=="prebuilt_DMAP"){
                 space<- DMAP_scaffold
@@ -79,7 +83,7 @@ buildScaffold <- function(counts_scaffold,
                 idx <- which(rowSums(exp(counts_scaffold))<10)
                 if (length(idx)==dim(counts_scaffold)[1]) stop("Low quality data! All genes have total counts less than 10.")
                 if (length(idx)>0) counts_scaffold <- counts_scaffold[-idx,]
-                eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname)
+                eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname, annotation)
         }
         if (data=="raw"){
                 # ensure no negative value
@@ -89,7 +93,7 @@ buildScaffold <- function(counts_scaffold,
                 if (length(idx)==dim(counts_scaffold)[1]) stop("Low quality data! All genes have total counts less than 10.")
                 if (length(idx)>0) counts_scaffold <- counts_scaffold[-idx,]
                 counts_scaffold <- log(counts_scaffold+1)
-                eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname)
+                eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname, annotation)
 
         }
 

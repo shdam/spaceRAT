@@ -38,5 +38,5 @@ convertGeneName <- function(counts,to="ensembl_gene_id"){
                         dplyr::summarise(dplyr::across(dplyr::everything(),sum)) %>%
                         tibble::column_to_rownames(var=to)
                 return (as.matrix(counts))
-        }
+        } else {stop("Could not guess gene identifyers from rownames. Set annotation = NA to avoid attempting to fix annoation")}
 }

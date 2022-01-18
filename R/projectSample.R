@@ -11,7 +11,9 @@
 #' @param colname A column name of \code{pheno_sample}. This column of values will be used to annotate projected samples.
 #' This argument should be set together with \code{pheno_sample}.
 #' If \code{pheno_sample} is not specified, this argument will be ignored, and the output plot will not show legends for new samples.
-#'
+#' @param annotation Annotation type to use for scaffold. counts_scaffold rownames using alternative identifyers will be attemped translated. 
+#' Currently ensembl_gene_id,entrezgene_id,hgnc_symbol, and refseq_mrna are supported. set to "NA", to avoid translation (both scaffold and projected sampels must be the same)
+
 #' @param title Title of the plot.
 #' @param verbose A logical vector indicating whether to report the number of genes imputed to make \code{counts_sample} compatible with \code{counts_scaffold}
 #' @export
@@ -26,11 +28,12 @@ projectSample <- function(space,
                           # classes = NULL,
                           colname="cancer_type",
                           title="Samples projected onto scaffold PCA",
-                          verbose=TRUE){
+                          verbose=TRUE,
+                          annotation="ensembl_gene_id"){
 
         # create eset
         if (!is.null(pheno_sample)){
-                eset_sample <- createEset(counts_sample,pheno_sample,colname)
+                eset_sample <- createEset(counts_sample,pheno_sample,colname, annotation)
                 counts_sample <- Biobase::exprs(eset_sample)
         }
 
@@ -51,8 +54,8 @@ projectSample <- function(space,
         #subset
         counts_sample <- counts_sample[space@DEgene,]
 
-        # rank and transform exprs_project
-        ranked_sample<- apply(counts_sample,2,rank)
+        # rank and transform exprs_project and multiply with the percent of missing values, to retain comparable numeric range
+        ranked_sample<- apply(counts_sample,2,rank) 
 
         # PCA transform the sample data
         transformed_sample <- predict(space@pca,newdata=t(ranked_sample))
