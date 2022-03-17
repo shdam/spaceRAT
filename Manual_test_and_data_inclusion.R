@@ -96,6 +96,7 @@ g3 <- buildScaffold(exprs_ilaria,pData_ilaria,"cancer_type",pcs=c(1,2))
 DMAP_scaffold <- buildScaffold(exprs_dmap,pData_dmap,"cell_types")
 # usethis::use_data(DMAP_scaffold)
 # test use of prebuilt
+
 g <- buildScaffold("prebuilt_DMAP")
 g <- buildScaffold("prebuilt_DMAP",plot_mode="tiny_label",pcs=c(3,4))
 
@@ -113,7 +114,7 @@ loadingPlot(g,num_genes = 1)
 # user interface
 # test projectSample()
 #---------------------------------------------------------
-projectSample(g1,exprs_ilaria,pData_ilaria,"cancer_type") # really nice alignment with AML
+projectSample(g,exprs_ilaria,pData_ilaria,"cancer_type") # really nice alignment with AML
 projectSample(g2,exprs_ilaria,pData_ilaria,"cancer_type")
 projectSample(g3,exprs_dmap,pData_dmap,"cell_types")
 
