@@ -9,3 +9,4 @@ renv/
 .Rprofile
 doc
 inst/doc
+.DS_Store

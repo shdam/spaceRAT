@@ -13,7 +13,7 @@ app_ui <- function(request) {
                         # theme = shinytheme("spacelab"),
                         headerPanel(
                                 div(class = "header",
-                                    h1(class = "header", "RAT")
+                                    h1(class = "header", "SpaceRAT")
                                     )
                                 ),
                         sidebarLayout(

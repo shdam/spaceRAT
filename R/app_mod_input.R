@@ -38,6 +38,11 @@ mod_input_ui <- function(id){
       label = "Choose a phenotype matrix:",
       multiple = FALSE
     ),
+    checkboxInput(
+      inputId = ns("loading"),
+      label = "Loading plot",
+      value = FALSE
+    ),
     selectInput(
       inputId = ns("plot_mode"),
       label = "Plot mode",
@@ -48,11 +53,11 @@ mod_input_ui <- function(id){
     uiOutput(ns("group")),
     # actionButton(inputId = ns("upSample"),
     #              label = "Process"),
+    uiOutput(ns("classes")),
     actionButton(
         inputId = ns("validate"),
         label = "Plot"
     ),
-    # uiOutput(ns("doneSample")),
     uiOutput(ns("noFiles")),
     # p("Currently, the program only works with the 'processed_data/testdata.Rdata'-file, please upload that file for testing.")%>%
       # tagAppendAttributes(class = "msg"),
@@ -78,6 +83,7 @@ mod_input_server <- function(input, output, session, r){
   # Upload Scaffold files ----
   observeEvent( input$space, {
     r$space <- input$space
+    # Add inputs related to building your own scaffold
     if (input$space == "Build scaffold"){
       r$column <- "cell_types"
       output$scaffold <- renderUI({
@@ -106,22 +112,58 @@ mod_input_server <- function(input, output, session, r){
         )
         })
     } else {output$scaffold <- NULL}
+
+    # Initiate values ----
+    if(input$space == "dmap"){
+      output$noFiles <- NULL
+      r$all_classes <- unique(pData_dmap$cell_types)
+      r$classes <- r$all_classes
+      r$scaf_exprs <- exprs_dmap
+      r$scaf_pheno <- pData_dmap
+    } else if(input$space == "gtex"){
+      # r$inputFile <- r$
+      output$noFiles <- renderUI({
+        p("Not yet implemented")
+      })
+    }else if(input$space == "other"){
+      # r$inputFile <- r$
+      output$noFiles <- renderUI({
+        p("Not yet implemented")
+      })}
+      #
+    output$classes <- renderUI(list(
+      selectInput(
+        inputId = ns("classes"),
+        label = "Select cell types to include",
+        choices = sort(r$all_classes),
+        multiple = TRUE,
+        selected = r$classes
+        ),
+      p("Mark and press the 'delete' button to remove classes.") %>%
+        tagAppendAttributes(class = 'msg')
+    ))
   })
-  # observeEvent( input$plot_mode, {
-  #   r$plot_mode <- input$plot_mode
-  # })
-  observeEvent( r$group, {
+
+
+  observeEvent( r$sample_pheno, {
     #   r$plot_mode <- input$plot_mode
     #
-    output$group <- renderUI({
-      textInput(
-        inputId = ns("group"),
-        label = "Column name in phenotype:",
-        width = "45%",
-        value = r$group
-      ) %>%
-        tagAppendAttributes(class = "dim")
-    })
+    if(!(r$column %in% colnames(r$sample_pheno))) r$column <- colnames(r$sample_pheno)
+    if(!is.null(r$sample_pheno)){
+      output$group <- renderUI({
+        selectInput(
+          inputId = ns("group"),
+          label = "Column name in phenotype:",
+          width = "45%",
+          choices = colnames(r$sample_pheno),
+          selected = colnames(r$sample_pheno)[-1]
+        ) %>%
+          tagAppendAttributes(class = "dim")
+      })
+    } else{
+      output$group <- NULL
+    }
+
   })
 
 
@@ -132,7 +174,7 @@ mod_input_server <- function(input, output, session, r){
     "gene2", 1300, 5, "..."
   )
   tooltip_pheno <- tibble::tribble(
-    ~` `, ~cancer_type,
+    ~` `, ~cell_types,
     "sample1", "type1",
     "sample2", "type2",
     "...", "..."
@@ -163,88 +205,49 @@ mod_input_server <- function(input, output, session, r){
   })
 
   # Uploaded sample files ----
-  observeEvent({input$sample_pheno; input$sample_exprs}, { #input$upSample
+  observeEvent(input$sample_exprs, {
     output$noFiles <- NULL
     output$edit <- NULL
     output$save <- NULL
     r$rmPlot <- TRUE
-    # output$doneSample <- renderUI({
-    #   list(
-    #     # p("Processed"),
-    #     actionButton(
-    #         inputId = ns("validate"),
-    #         label = "Plot"
-    #       )
-    #   )
-    # })
+    if(!is.null(input$sample_exprs)) r$exprs_datapath <- input$sample_exprs$datapath
+  })
+  observeEvent(input$sample_pheno, {
+    if(!is.null(input$sample_pheno)) r$pheno_datapath <- input$sample_pheno$datapath
   })
 
   # Plot button is pressed ----
   observeEvent( input$validate, {
-    r$validate <- input$validate
+    r$loading <- input$loading
     # Hide stuff
     output$fileCheck <- NULL
     output$doneScaf <- NULL
-    # output$doneSample <- NULL
 
-    # If no input
-    if(input$space != "Build scaffold" & (is.null(input$scaf_exprs) & is.null(input$scaf_pheno))){
-    if(!is.null(input$sample_exprs)){ # & !is.null(input$sample_pheno)
-
-    # Store scaffold files
-    if(input$space == "dmap") {
-      r$scaf_exprs <- exprs_dmap
-      r$scaf_pheno <- pData_dmap
-      r$column <- "cell_types"
-
-    } else if(input$space == "gtex"){
-      # r$inputFile <- r$
-      output$noFiles <- renderUI({
-        p("Not yet implemented")
-      })
-    } else if(input$space == "Build scaffold"){
+    if(input$space == "Build scaffold"){
       # Store scaffold files
       r$scaf_exprs <- input$scaf_exprs$datapath %>% read.csv()
       r$scaf_pheno <- input$scaf_pheno$datapath %>% read.csv()
 
-    } else {
-      output$noFiles <- renderUI({
-        p("Not yet implemented")
-      })
     }
+    # If no input
+    if(input$space != "Build scaffold" & (is.null(input$scaf_exprs) & is.null(input$scaf_pheno))){
+    if(!is.null(input$sample_exprs)){ # & !is.null(input$sample_pheno)
 
-    # Store sample
-    r$exprs_datapath <- input$sample_exprs$datapath
-    if(!is.null(input$sample_pheno)) r$pheno_datapath <- input$sample_pheno$datapath
-    else r$pheno_datapath <- NULL
-    r$group <- input$group
-    r$plot_mode <- input$plot_mode
+    if(is.null(input$sample_pheno)) r$sample_pheno <- NULL
 
     # Input values
+    r$column <- input$group
+    r$plot_mode <- input$plot_mode
     r$space <- input$space
     r$validate <- input$validate
+    r$classes <- input$classes
 
-
-    # Plot standard labels
-    r$title <- paste("Samples projected onto scaffold PCA")#, r$space)
-    r$x <- "PC1"
-    r$y <- "PC2"
-    r$subtitle <- ""
 
     # Dropdown edit button ----
     # Sys.sleep(3)
     output$edit <- renderUI({
       list(
         dropdown(
-          selectInput(
-            inputId = ns("classes"),
-            label = "Select classes to plot",
-            choices = sort(r$all_classes),
-            multiple = TRUE,
-            selected = r$classes
-          ),
-          p("Mark and press the 'delete' button to remove classes.") %>%
-            tagAppendAttributes(class = 'msg'),
           textInput(
             inputId = ns("title"),
             label = "Title",
@@ -343,12 +346,10 @@ mod_input_server <- function(input, output, session, r){
   # Apply changes ----
   observeEvent( input$applyBtn, {
     r$title <- input$title
-    r$x <- input$x
-    r$y <- input$y
-    r$classes <- input$classes
     r$subtitle <- input$subtitle
     output$plotname <- NULL
     r$plotname <- NULL
+    # r$validate <- input$applyBtn
     })
   # Press save ----
   observeEvent( input$savePlot, {

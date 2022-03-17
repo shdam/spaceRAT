@@ -17,15 +17,15 @@ buildScaffold(
   title = "Scaffold PCA Plot",
   pca_scale = FALSE,
   auto_plot = TRUE,
-  annotation = "ensembl_gene_id"
+  annotation = "ensembl_gene"
 )
 }
 \arguments{
 \item{counts_scaffold}{An expression matrix of class matrix, or a data frame that can be converted to matrix. Column names are sample names.
 Row names are gene names, which can be Ensembl Gene ID, HGNC Symbol, Entrez Gene ID Ensembl, Transcript ID or Refseq mRNA.
-All gene ID will be automatically converted to Ensembl Gene ID .
+All gene ID will be automatically converted to Ensembl Gene ID. If you want to retain your gene identifier that is not currently supported, please specify \code{annotation=NA}. See parameter \code{annotation} for more information.
 Counts of several transcript ID corresponding to same gene will be added and recorded as the counts of the gene.
-To use the prebuilt scaffold, simply set count_scaffold="prebuilt_DMAP", or "prebuilt_GTEX", and no need to specify any other parameter.}
+To use the pre-built scaffold, simply set count_scaffold="prebuilt_DMAP", or "prebuilt_GTEX", and no need to specify any other parameter.}
 
 \item{pheno_scaffold}{A phenotype table corresponding to the expression matrix.
 Row names are sample names, identical to column names of \code{counts_scaffold}.}
@@ -33,7 +33,7 @@ Row names are sample names, identical to column names of \code{counts_scaffold}.
 \item{colname}{A column name of \code{pheno_scaffold}. Cells will be grouped by this column of values.
 Thus, differential expression analysis will be performed using this column of phenotype as independent variables.}
 
-\item{data}{A character indicating whether the count matrix is log-tansformed or raw. By default \code{data="logged"}.
+\item{data}{A character indicating whether the count matrix is log-transformed or raw. By default \code{data="logged"}.
 If the count matrix is raw counts, please specify \code{data="raw"}}
 
 \item{pcs}{A numeric vector containing 2 numbers, indicating which two principle components to plot.}
@@ -51,10 +51,12 @@ Shorter names for phenotypes (e.g. cell types) is strongly recommended in "tiny_
 
 \item{pca_scale}{A logical variable determining whether to normalize rows when plotting PCA}
 
-\item{auto_plot}{A logical variabe deterining whether to plot the resulting scaffold space when calling the function.}
+\item{auto_plot}{A logical variable determining whether to plot the resulting scaffold space when calling the function.}
 
-\item{annotation}{Annotation type to use for scaffold. counts_scaffold rownames using alternative identifyers will be attemped translated.
-Currently ensembl_gene_id,entrezgene_id,hgnc_symbol, and refseq_mrna are supported. set to "NA", to avoid translation (both scaffold and projected sampels must be the same)}
+\item{annotation}{Type of gene identifier to use for scaffold. Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol", and "refseq_mrna" are supported.
+For example, set \code{annotation="hgnc_symbol"} will convert the row names (gene identifiers) of \code{counts_scaffold} to hgnc symbol, so will the \code{ExpressionSet} object and the resulting PCA scaffold.
+If this attempted translation fails, or your desired gene identifier is not supported (especially when you are analyzing non-human data), please set \code{annotation="hgnc_symbol"} to avoid translation.
+In this case, please manually make sure that the row names (gene identifiers) of \code{counts_scaffold} and \code{counts_sample} are the same.}
 }
 \value{
 A scaffoldSpace object
@@ -62,9 +64,11 @@ A scaffoldSpace object
 \description{
 This function returns a \code{\link{scaffoldSpace}} object that contains all parameters needed for plotting the PCA transformed sample space.
 To use prebuilt scaffold space, simply call: buildScaffold("prebuilt_NAME"), e.g.buildScaffold("prebuilt_DMAP").
-To build your own scaffold space, pass as arguments a count matrix, a phenotype table, an a column name of the phenotype table to the function.
 }
 \details{
+To build your own scaffold space, pass as arguments a count matrix, a phenotype table, an a column name of the phenotype table to the function.
+Missing values are allowed and automatically processed by the function. But please make sure that the all missing values are represented by NA, not "", " "(blank space), "-" or any other character.
+
 When building a user-defined scaffold space, this function first preprocesses count matrix by removing genes with total counts less than 10.
 Then it performs differential expression analysis to select differentially expressed genes (DE genes),
 subsets the scaffold dataset to contain only the DE genes, ranks the genes within each sample, finally performs principle component analysis (PCA) using ranks.
@@ -73,6 +77,5 @@ By default this function plots the resulting \code{\link{scaffoldSpace}} object 
 }
 \examples{
 buildScaffold("prebuilt_DMAP")
-buildScaffold(exprs_dmap,pData_dmap,"cell_types")
-buildScaffold(exprs_dmap,pData_dmap,"cell_types", pval_cutoff=0.01,pca_scale=T)
+buildScaffold(exprs_dmap,pData_dmap,"cell_types", pval_cutoff=0.01,pca_scale=TRUE)
 }

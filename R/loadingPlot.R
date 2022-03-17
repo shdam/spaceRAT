@@ -18,7 +18,7 @@
 #' space <- buildScaffold(exprs_dmap,pData_dmap"cell_types")
 #' loadingPlot(space)
 
-loadingPlot <- function(space,num_genes=3,gene_name="hgnc_symbol",angle=30){
+loadingPlot <- function(space,num_genes=3,gene_name="hgnc_symbol",angle=30, df_noly=FALSE){
         pca <- space@pca
         pcs <- space@pcs
 
@@ -47,6 +47,7 @@ loadingPlot <- function(space,num_genes=3,gene_name="hgnc_symbol",angle=30){
         ymax <- max(df[3])
 
         # ggplot
+        if(df_only) return(df)
         g <-ggplot2::ggplot(data=df)+
             ggplot2::geom_text(ggplot2::aes_string(colnames(df)[2], colnames(df)[3],label=colnames(df)[1],color=colnames(df)[4]),size = 3, angle=angle,show.legend = FALSE)+
             ggplot2::geom_segment(ggplot2::aes_string(x=0, y=0, xend=colnames(df)[2], yend=colnames(df)[3],color=colnames(df)[4]), arrow=ggplot2::arrow(length=ggplot2::unit(0.1,"cm")), alpha=0.75)+

@@ -4,7 +4,13 @@
 \alias{loadingPlot}
 \title{Generate a loading plot of scaffold PCA}
 \usage{
-loadingPlot(space, num_genes = 3, gene_name = "hgnc_symbol", angle = 30)
+loadingPlot(
+  space,
+  num_genes = 3,
+  gene_name = "hgnc_symbol",
+  angle = 30,
+  df_noly = FALSE
+)
 }
 \arguments{
 \item{space}{A scaffoldSpace object created by function \code{\link{buildScaffold}}.}
