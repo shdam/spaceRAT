@@ -38,7 +38,7 @@ usethis::use_data(gene_id_converter_hs)
 # internal
 # test createEset()
 #------------------------------------
-eset_dmap <- createEset(exprs_dmap,pData_dmap,"cell_types")
+eset_dmap <- createEset(exprs_dmap,pData_dmap,"cell_types",classes=c("HSC","MONO"))
 exprs_dmap[1,] <- NA
 exprs_dmap[5,10:15] <- NA
 pData_dmap[19:24,1] <-NA
@@ -104,7 +104,7 @@ g <- buildScaffold("prebuilt_DMAP",plot_mode="tiny_label",pcs=c(3,4))
 # user interface
 # test loadingPlot
 #--------------------------------------------------------
-loadingPlot(g1)
+loadingPlot(g)
 loadingPlot(g2)
 loadingPlot(g3)
 loadingPlot(g3,gene_name ="ensembl_gene_id")

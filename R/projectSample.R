@@ -11,8 +11,8 @@
 #' @param colname A column name of \code{pheno_sample}. This column of values will be used to annotate projected samples.
 #' This argument should be set together with \code{pheno_sample}.
 #' If \code{pheno_sample} is not specified, this argument will be ignored, and the output plot will not show legends for new samples.
-#' @param annotation Annotation type to use for scaffold. counts_scaffold rownames using alternative identifyers will be attemped translated.
-#' Currently ensembl_gene_id,entrezgene_id,hgnc_symbol, and refseq_mrna are supported. set to "NA", to avoid translation (both scaffold and projected sampels must be the same)
+#' @param annotation Annotation type to use for scaffold. counts_scaffold rownames using alternative identifiers will be translated.
+#' Currently ensembl_gene, entrez, hgnc_symbol, and refseq_mrna are supported. set to "NA", to avoid translation (both scaffold and projected samples must be the same)
 
 #' @param title Title of the plot.
 #' @param verbose A logical vector indicating whether to report the number of genes imputed to make \code{counts_sample} compatible with \code{counts_scaffold}
@@ -25,7 +25,6 @@
 projectSample <- function(space,
                           counts_sample,
                           pheno_sample=NULL,
-                          # classes = NULL,
                           colname="cancer_type",
                           title="Samples projected onto scaffold PCA",
                           verbose=TRUE,
@@ -33,14 +32,14 @@ projectSample <- function(space,
 
         # create eset
         if (!is.null(pheno_sample)){
-                eset_sample <- createEset(counts_sample,pheno_sample,colname, annotation)
+                eset_sample <- createEset(counts_sample,pheno_sample,colname,classes=NULL,to=annotation)
                 counts_sample <- Biobase::exprs(eset_sample)
         }
 
         # add absent genes then subset eset_sample so counts_scaffold and counts_project contain same genes
         absent_genes <- space@DEgene[! space@DEgene %in% rownames(counts_sample)]
         absent_exprs <- matrix(0,length(absent_genes),ncol(counts_sample), dimnames = list(absent_genes, colnames(counts_sample)))
-        # rownames(absent_exprs) <- absent_genes
+        rownames(absent_exprs) <- absent_genes
         counts_sample <- rbind(counts_sample,absent_exprs)
 
         if (verbose){
@@ -53,11 +52,13 @@ projectSample <- function(space,
 
         #subset
         counts_sample <- counts_sample[space@DEgene,]
+        print
 
         # rank and transform exprs_project and multiply with the percent of missing values, to retain comparable numeric range
         ranked_sample<- apply(counts_sample,2,rank)*(1+(length(absent_genes)/length(space@DEgene)))
 
         # PCA transform the sample data
+
         transformed_sample <- predict(space@pca,newdata=t(ranked_sample))
 
         # Prepare dataframe for ggplot
