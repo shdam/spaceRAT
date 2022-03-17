@@ -52,10 +52,10 @@ eset_dmap <- createEset(exprs_dmap,pData_dmap,"cell_types")
 dmap <- read.table("data_DMap.gct",skip=2,sep="\t",header=T,quote = "",colClasses = c("character","character",rep("numeric", 211)))
 library(dplyr)
 dmap <- dmap %>% group_by(NAME) %>% filter(row_number()==1) %>% tibble::column_to_rownames(var="NAME")
-counts <- convertGeneName(dmap,to="hgnc_symbol")
-counts <- convertGeneName(counts,to="entrezgene_id")
+counts <- convertGeneName(dmap[,2:212],to="hgnc_symbol")
+counts <- convertGeneName(counts,to="entrez")
 counts <- convertGeneName(counts,to="refseq_mrna")
-counts <- convertGeneName(dmap,to="ensembl_gene_id")
+counts <- convertGeneName(counts,to="ensembl_gene")
 
 #test convert transcript
 transcripts <- unique(gene_id_converter_hs$ensembl_transcript)[1:5000]

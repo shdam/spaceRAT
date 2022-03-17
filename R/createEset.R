@@ -13,7 +13,7 @@
 #' createEset(exprs_dmap[1:20,1:10],pData_dmap[1:10,,drop=FALSE])
 
 
-createEset <- function(counts,pheno,colname = "cancer_type",to="ensembl_gene"){
+createEset <- function(counts,pheno,colname = "cancer_type", classes=NULL, to="ensembl_gene"){
 
         # check class of counts, convert to matrix
         if (!is.matrix(counts)){
@@ -36,8 +36,7 @@ createEset <- function(counts,pheno,colname = "cancer_type",to="ensembl_gene"){
                 warning("Gene identifier has not been resolved. please manually make sure that projected samples uses same gene identifier as scaffold dataset")
         } else {counts <- convertGeneName(counts,to=to)}
 
-        print(class(counts))
-        print(class(pheno))
+
         #select the specified column of phenotype table as final phenotype table
         pheno <- pheno[,colname,drop=F]
 
@@ -74,8 +73,17 @@ createEset <- function(counts,pheno,colname = "cancer_type",to="ensembl_gene"){
                 message("Count matrix has ",sum_na, " missing values. Replace NA by 0.")
         }
 
-        # return ExpressionSet
-        return(Biobase::ExpressionSet(counts, phenoData=Biobase::AnnotatedDataFrame(pheno)))
+        # create ExpressionSet
+        eset <-Biobase::ExpressionSet(counts, phenoData=Biobase::AnnotatedDataFrame(pheno))
+
+        # subset ExpressionSet if classes!=NULL
+        if (!is.null(classes)){
+                idx <- which(pData(eset)[[colname]] %in% classes)
+                eset <- eset[,idx]
+        }
+
+        return(eset)
+
 
 
 }

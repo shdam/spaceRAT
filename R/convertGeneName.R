@@ -32,25 +32,13 @@ convertGeneName <- function(counts,to="ensembl_gene"){
                 return(as.matrix(counts))
         }
 
-        # case 3: conversion between gene id and gene id
-        if (from %in% c("ensembl_gene","entrez","hgnc_symbol")){
-                rownames(gene_mapper) <- gene_mapper[,1]
-                counts <- counts[rownames(gene_mapper),]
-                rownames(counts) <- gene_mapper[,2]
-                return(as.matrix(counts))
-        }
+        # case 3: conversion between gene id and gene id or transcript id. Add all matches
+        # add all matches
+        counts <- merge(gene_mapper,counts,by.x=from,by.y=0,all=F)
+        counts <- counts[,-1]
+        counts <- counts%>% dplyr::group_by_at(to) %>%
+                dplyr::summarise(dplyr::across(dplyr::everything(),sum)) %>%
+                tibble::column_to_rownames(var=to)
+        return (as.matrix(counts))
 
-        # case 4: conversion from transcripts to genes
-        if (from %in% c("ensembl_transcript","refseq_mrna")){ # add all matches
-                counts <- merge(gene_mapper,counts,by.x=from,by.y=0,all=F) %>%
-                        dplyr::select(-dplyr::one_of(from))%>%
-                        dplyr::group_by_at(to) %>%
-                        dplyr::summarise(dplyr::across(dplyr::everything(),sum)) %>%
-                        tibble::column_to_rownames(var=to)
-                return (as.matrix(counts))
-        }
-
-        # all unexpected cases
-        stop("Could not infer gene identifiers from row names of expression matrix.
-                    Please set annotation = NA to stop gene id conversion and make sure manually that new samples have same gene ids as scaffold dataset")
 }

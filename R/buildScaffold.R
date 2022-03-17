@@ -26,7 +26,7 @@
 #' @param colname A column name of \code{pheno_scaffold}. Cells will be grouped by this column of values.
 #' Thus, differential expression analysis will be performed using this column of phenotype as independent variables.
 #'
-#' @param data A character indicating whether the count matrix is log-tansformed or raw. By default \code{data="logged"}.
+#' @param data A character indicating whether the count matrix is log-transformed or raw. By default \code{data="logged"}.
 #' If the count matrix is raw counts, please specify \code{data="raw"}
 #'
 #' @param pcs A numeric vector containing 2 numbers, indicating which two principle components to plot.
@@ -40,7 +40,7 @@
 #' @param title Title for the plot
 #' @param pca_scale A logical variable determining whether to normalize rows when plotting PCA
 #' @param auto_plot A logical variable determining whether to plot the resulting scaffold space when calling the function.
-#' @param annotation Type of gene identifier to use for scaffold. Currently "ensembl_gene_id", "ensembl_transcript_id", "entrezgene_id", "hgnc_symbol", and "refseq_mrna" are supported.
+#' @param annotation Type of gene identifier to use for scaffold. Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol", and "refseq_mrna" are supported.
 #' For example, set \code{annotation="hgnc_symbol"} will convert the row names (gene identifiers) of \code{counts_scaffold} to hgnc symbol, so will the \code{ExpressionSet} object and the resulting PCA scaffold.
 #' If this attempted translation fails, or your desired gene identifier is not supported (especially when you are analyzing non-human data), please set \code{annotation="hgnc_symbol"} to avoid translation.
 #' In this case, please manually make sure that the row names (gene identifiers) of \code{counts_scaffold} and \code{counts_sample} are the same.
@@ -63,10 +63,22 @@ buildScaffold <- function(counts_scaffold,
                           title="Scaffold PCA Plot",
                           pca_scale=FALSE,
                           auto_plot=TRUE,
-                          annotation="ensembl_gene_id"){
-        # prebuilt_DMAP
-        if(is.character(counts_scaffold) && counts_scaffold=="prebuilt_DMAP"){
+                          annotation="ensembl_gene"){
+        # prebuilt_DMAP no samples removed
+        if(is.character(counts_scaffold) && counts_scaffold=="prebuilt_DMAP" && is.null(classes)){
                 space<- DMAP_scaffold
+                space@pcs <- pcs
+                space@plot_mode <- plot_mode
+                if (auto_plot){
+                        g <- plotScaffold(space,title,classes=classes)
+                        print(g)
+                }
+                return(space)
+        }
+
+        # prebuilt DMAP samples removed
+        if(is.character(counts_scaffold) && counts_scaffold=="prebuilt_DMAP" && !is.null(classes)){
+                space <- createEset(exprs_dmap, pData_dmap, "cell_types", classes=classes)
                 space@pcs <- pcs
                 space@plot_mode <- plot_mode
                 if (auto_plot){

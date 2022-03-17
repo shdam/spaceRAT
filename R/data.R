@@ -40,8 +40,8 @@
 #' @source downloaded from biomaRt
 #' @description This table contains ensembl_gene_id of all human gene, and corresponding ensembl_transcript_id, entrezgene_id ,hgnc_symbol, and refseq_mrna
 #' @docType data
-#' @usage gene_name_mapper_hs
+#' @usage gene_id_converter_hs
 #' @format a data frame
 #' @keywords datasets
-"gene_name_mapper_hs"
+"gene_id_converter_hs"
 

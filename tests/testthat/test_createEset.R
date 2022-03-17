@@ -25,7 +25,7 @@ test_that("createEset() handles NA in expression matrix or phenotype table",{
 })
 
 
-test_that("createEset() calculate intersection of columns of expression matrix and rows of phenotype table, then make them match.",{
+test_that("createEset() calculates intersection of columns of expression matrix and rows of phenotype table, then make them match.",{
   exprs_messy <- exprs_dmap[1:20,sample(1:15)]
   pData_messy <- pData_dmap[sample(1:10),,drop=FALSE]
   res <- evaluate_promise(createEset(exprs_messy,pData_messy,"cell_types"))
@@ -42,4 +42,10 @@ test_that("createEset() calculate intersection of columns of expression matrix a
 })
 
 
+test_that("createEset() properly subset",{
+  eset <- createEset(exprs_dmap,pData_dmap,"cell_types",c("HSC","CMP"))
+  expect_equal(unname(dim(eset)[2]),18)
 
+  eset <- createEset(exprs_dmap,pData_dmap,"cell_types",c("ERY","BASO","MONO"))
+  expect_equal(unname(dim(eset)[2]),48)
+})

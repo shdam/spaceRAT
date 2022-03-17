@@ -50,7 +50,7 @@ mapGene <- function(vec,to){
         df <- df[!duplicated(df),]
         df <- df[complete.cases(df),]
         df <- df %>% dplyr::group_by_at(from) %>%
-                dplyr::filter(row_number()==1)%>%    # select the first match, ensure 1-1 matching
+                dplyr::filter(row_number()==1)%>%
                 as.data.frame()
 
         return(df)
