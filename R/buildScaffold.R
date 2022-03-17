@@ -70,7 +70,7 @@ buildScaffold <- function(counts_scaffold,
                 space@pcs <- pcs
                 space@plot_mode <- plot_mode
                 if (auto_plot){
-                        g <- plotScaffold(space,title,classes=classes)
+                        g <- plotScaffold(space,title)
                         print(g)
                 }
                 return(space)

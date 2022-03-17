@@ -104,7 +104,7 @@ g <- buildScaffold("prebuilt_DMAP",plot_mode="tiny_label",pcs=c(3,4))
 # user interface
 # test loadingPlot
 #--------------------------------------------------------
-loadingPlot(g1)
+loadingPlot(g)
 loadingPlot(g2)
 loadingPlot(g3)
 loadingPlot(g3,gene_name ="ensembl_gene_id")
