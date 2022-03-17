@@ -4,15 +4,16 @@
 #' This function also performs data preprocessing: samples lacking either count data or phenotype annotation are removed. NAs are replaced by 0.
 #'
 #' @importFrom Biobase ExpressionSet AnnotatedDataFrame
-#' @param counts An expression matrix of class matrix, or data frame that can be converted to matrix.
-#' @param pheno A dataframe corresponding to the expression matrix.
-#' @param colname A column name of \code{pheno}. Differential analysis will be performed using this column of phenotype as independent variables.
+#' @param counts An expression matrix of class matrix, or data frame that can be converted to matrix. Each row corresponds to a gene. Each column corresponds to a sample.
+#' @param pheno A dataframe of sample annotation corresponding to the expression matrix. Each row corresponds to a sample. Each column corresponds to a sample feature.
+#' @param colname A column name of \code{pheno}. Differential expression analysis will be performed using this column of phenotype as independent variables.
 #' @return An ExpressionSet object
 #' @noRd
 #' @examples
-#' create_eset(exprs_dmap,pData_dmap)
+#' createEset(exprs_dmap[1:20,1:10],pData_dmap[1:10,,drop=FALSE])
 
-createEset <- function(counts,pheno,colname = "cancer_type",to="ensembl_gene_id"){
+
+createEset <- function(counts,pheno,colname = "cancer_type",to="ensembl_gene"){
 
         # check class of counts, convert to matrix
         if (!is.matrix(counts)){
@@ -32,9 +33,11 @@ createEset <- function(counts,pheno,colname = "cancer_type",to="ensembl_gene_id"
 
         # convert gene names
         if (is.na(to)) {
-                warning("annotation has not been resolved. please make sure that projected samples uses same annotation as scaffold dataset")
+                warning("Gene identifier has not been resolved. please manually make sure that projected samples uses same gene identifier as scaffold dataset")
         } else {counts <- convertGeneName(counts,to=to)}
 
+        print(class(counts))
+        print(class(pheno))
         #select the specified column of phenotype table as final phenotype table
         pheno <- pheno[,colname,drop=F]
 
@@ -43,7 +46,7 @@ createEset <- function(counts,pheno,colname = "cancer_type",to="ensembl_gene_id"
         na_rownum <- dim(pheno)[1]-length(complete_idx)
         if (na_rownum){
                 pheno <- pheno[complete_idx,,drop=F]
-                message(na_rownum, " row(s) in phenotype table have no data in the required column, thus removed.")
+                message(na_rownum, " row(s) in phenotype table contain NA in the required column, thus removed.")
         }
 
         # subset counts to only contain samples with annotation

@@ -2,32 +2,37 @@ Package: RAT
 Type: Package
 Title: Ranked Analysis for Transcriptomes (RAT)
 Version: 0.1.0
-Author: Frederik Otzen Bagger, Xuening He
-Maintainer: Frederik Otzen Bagger, Xuening He <hexuening922@gmail.com>
+Author: 123
+Maintainer: 123 <123@123.com>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: GPL
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    limma,
     Biobase,
-    ggplot2,
+    config,
     dplyr,
-    plotly,
-    magrittr,
-    shinythemes,
-    golem,
-    shinyWidgets,
-    shiny,
-    readr,
-    tibble,
     ggalt,
-    mclust
-RoxygenNote: 7.1.1
+    ggplot2,
+    golem,
+    limma,
+    magrittr,
+    mclust,
+    plotly,
+    RColorBrewer,
+    readr,
+    shiny,
+    shinythemes,
+    shinyWidgets,
+    stringr,
+    tibble,
+RoxygenNote: 7.1.2
 Depends: 
     R (>= 3.5.0)
 Suggests: 
     rmarkdown,
-    knitr
+    knitr,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
+Config/testthat/edition: 3

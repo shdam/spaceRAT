@@ -10,7 +10,8 @@ projectSample(
   pheno_sample = NULL,
   colname = "cancer_type",
   title = "Samples projected onto scaffold PCA",
-  verbose = TRUE
+  verbose = TRUE,
+  annotation = "ensembl_gene_id"
 )
 }
 \arguments{
@@ -27,6 +28,9 @@ If \code{pheno_sample} is not specified, this argument will be ignored, and the 
 \item{title}{Title of the plot.}
 
 \item{verbose}{A logical vector indicating whether to report the number of genes imputed to make \code{counts_sample} compatible with \code{counts_scaffold}}
+
+\item{annotation}{Annotation type to use for scaffold. counts_scaffold rownames using alternative identifyers will be attemped translated. 
+Currently ensembl_gene_id,entrezgene_id,hgnc_symbol, and refseq_mrna are supported. set to "NA", to avoid translation (both scaffold and projected sampels must be the same)}
 }
 \value{
 A ggplot object with new samples projected to existing scaffold PCA plot

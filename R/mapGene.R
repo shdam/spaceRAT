@@ -1,46 +1,55 @@
-#' Convert between Ensembl gene, Ensembl transcript, Entrez, RefSeq and Gene symbol for vector
+#' Convert between Ensembl gene, Ensembl transcript, Entrez, RefSeq and Gene symbol for character vector of gene identifiers
 #'
-#' This function takes in a charactor vector of gene names, determine which gene identifier it is, then converts the gene names to the specified type, finally returns data frame as gene mapper.
+#' This function takes in a character vector of gene names, determine which gene identifier it is, then converts the gene names to the specified type, finally returns data frame as gene mapper.
 #' @import magrittr
-#' @importFrom dplyr select group_by_at across everything summarise filter
-#' @param vec Charactor vector of gene names
-#' @param to A character specifying the gene id to convert to. Options are "ensembl_gene_id", "ensembl_transcript_id", "entrezgene_id", "hgnc_symbol" and "refseq_mrna".
-#' @return A data frame with orginal gene names as first column, converted gene names as second column.
+#' @importFrom dplyr select group_by_at across everything summarizes filter
+#' @param vec Character vector of gene identifier.
+#' @param to A character specifying the gene identifier to convert to. Options are "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol" and "refseq_mrna".
+#' @return A data frame with original gene identifier as first column, converted gene identifier as second column.
 #' @noRd
 
 mapGene <- function(vec,to){
 
+        vec <- as.character(vec)
         from <- NULL
+
         # determine which gene id is used
         if(all(startsWith(vec,"ENSG"))){
-                from <- "ensembl_gene_id"
+                from <- "ensembl_gene"
         }else if(all(startsWith(vec,"ENST"))){
-                from <- "ensembl_transcript_id"
+                from <- "ensembl_transcript"
         }else if(all(startsWith(vec,"NM_"))){
                 from <- "refseq_mrna"
         }else if(all(grepl("^[0-9]+$",vec))){
-                from <- "entrezgene_id"
+                from <- "entrez"
         }else{
-                idx <- which(gene_name_mapper_hs$hgnc_symbol %in% vec)
+                idx <- which(gene_id_converter_hs$hgnc_symbol %in% vec)
                 if (length(idx)>0) from <- "hgnc_symbol"
         }
 
-        if (from==to) {
+        # fail to determine gene id
+        if (is.null(from)) {
+                return(NULL)
+
+        }else if (from==to) {
                 df <- data.frame(from=vec,to=vec)
                 colnames(df) <- c(from,to)
                 return(df)
 
-        }else if (is.null(from)) {
-                stop("Gene names are not recognized. Please manually convert the gene names to ",to, ".")
         }else if(from!=to){
-                message("Convert gene names of count matrix from ",from," to ",to,".")
+                message("Convert gene indentifiers of count matrix from ",from," to ",to,".")
         }
 
-        # subset gene_name_mapper_hs
-        if(from!= "hgnc_symbol") idx <- which(gene_name_mapper_hs[[from]] %in% vec)
-        df <- gene_name_mapper_hs[idx,c(from,to),drop=F]
-        df <- df[complete.cases(df),]%>%
-                dplyr::group_by_at(from) %>%
+        # subset gene_id_converter_hs
+        # if from=="hgnc_symbol", then the idx has already be calculated. Avoid repetitive calculation.
+        if(from!= "hgnc_symbol") {
+                idx <- which(gene_id_converter_hs[[from]] %in% vec)
+        }
+
+        df <- gene_id_converter_hs[idx,c(from,to),drop=F]
+        df <- df[!duplicated(df),]
+        df <- df[complete.cases(df),]
+        df <- df %>% dplyr::group_by_at(from) %>%
                 dplyr::filter(row_number()==1)%>%    # select the first match, ensure 1-1 matching
                 as.data.frame()
 

@@ -11,7 +11,7 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 ## Install as package
 
-### 1\. Create virtual environment with renv
+### 1. Create virtual environment with renv
 
 Initialize a local R environment:
 
@@ -23,7 +23,7 @@ library(renv)
 renv::init()
 ```
 
-### 2\. Install package from github
+### 2. Install package from github
 
 ``` r
 # To ensure Rstudio looks up BioConductor packages run:
@@ -34,14 +34,14 @@ devtools::install_github("XueningHe/RAT_package")
 
 ## Install as cloned repository
 
-### 1\. Clone repository
+### 1. Clone repository
 
 ``` sh
 # In terminal at desired directory
 git clone git@github.com:XueningHe/RAT_package.git
 ```
 
-### 2\. Install dependecies
+### 2. Install dependecies
 
 ``` r
 # Open RAT.Rproj in Rstudio
@@ -55,7 +55,7 @@ library(renv)
 renv::restore()
 ```
 
-### 3\. Load package
+### 3. Load package
 
 ``` r
 install.packages("devtools")
@@ -187,20 +187,6 @@ loadingPlot(g)
 
 <img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
-    #>    hgnc_symbol          PC1          PC2               class
-    #> 7          NPL  0.007833693  0.088749767 Top 3 genes for PC2
-    #> 8        RBM38 -0.011073407  0.086074949 Top 3 genes for PC2
-    #> 9        EPB42 -0.032247860  0.085560895 Top 3 genes for PC2
-    #> 2       CHST15  0.084423068  0.014613938 Top 3 genes for PC1
-    #> 3        IFI30  0.081726360  0.005384923 Top 3 genes for PC1
-    #> 1         LY86  0.086668813 -0.005077950 Top 3 genes for PC1
-    #> 6        MLLT3 -0.073783950 -0.009267613 Top 3 genes for PC1
-    #> 5        HACD1 -0.071847724 -0.013786594 Top 3 genes for PC1
-    #> 4         MYCN -0.071340434 -0.049321903 Top 3 genes for PC1
-    #> 10       PROM1 -0.057783139 -0.082193237 Top 3 genes for PC2
-    #> 11     HLA-DRA  0.029497749 -0.083010708 Top 3 genes for PC2
-    #> 12      TARBP1 -0.042512424 -0.083242973 Top 3 genes for PC2
-
 **Project new samples** To project new samples onto the scaffold PCA
 plot, first prepare the count matrix of new samples. For example:
 
@@ -219,8 +205,6 @@ Then run:
 ``` r
 projectSample(g, exprs_ilaria)
 #> 6 genes are added to count matrix, with imputed expression level 0.
-#> Scale for 'colour' is already present. Adding another scale for 'colour',
-#> which will replace the existing scale.
 ```
 
 <img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />

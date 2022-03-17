@@ -2,7 +2,9 @@
 #'
 #' This function returns a \code{\link{scaffoldSpace}} object that contains all parameters needed for plotting the PCA transformed sample space.
 #' To use prebuilt scaffold space, simply call: buildScaffold("prebuilt_NAME"), e.g.buildScaffold("prebuilt_DMAP").
+#'
 #' To build your own scaffold space, pass as arguments a count matrix, a phenotype table, an a column name of the phenotype table to the function.
+#' Missing values are allowed and automatically processed by the function. But please make sure that the all missing values are represented by NA, not "", " "(blank space), "-" or any other character.
 #'
 #' When building a user-defined scaffold space, this function first preprocesses count matrix by removing genes with total counts less than 10.
 #' Then it performs differential expression analysis to select differentially expressed genes (DE genes),
@@ -14,9 +16,9 @@
 #'
 #' @param counts_scaffold An expression matrix of class matrix, or a data frame that can be converted to matrix. Column names are sample names.
 #' Row names are gene names, which can be Ensembl Gene ID, HGNC Symbol, Entrez Gene ID Ensembl, Transcript ID or Refseq mRNA.
-#' All gene ID will be automatically converted to Ensembl Gene ID .
+#' All gene ID will be automatically converted to Ensembl Gene ID. If you want to retain your gene identifier that is not currently supported, please specify \code{annotation=NA}. See parameter \code{annotation} for more information.
 #' Counts of several transcript ID corresponding to same gene will be added and recorded as the counts of the gene.
-#' To use the prebuilt scaffold, simply set count_scaffold="prebuilt_DMAP", or "prebuilt_GTEX", and no need to specify any other parameter.
+#' To use the pre-built scaffold, simply set count_scaffold="prebuilt_DMAP", or "prebuilt_GTEX", and no need to specify any other parameter.
 
 #' @param pheno_scaffold A phenotype table corresponding to the expression matrix.
 #' Row names are sample names, identical to column names of \code{counts_scaffold}.
@@ -37,17 +39,17 @@
 #' @param lfc_cutoff A cutoff value for logFC when selecting differentially expressed genes. By default \code{lfc_cutoff=2}.
 #' @param title Title for the plot
 #' @param pca_scale A logical variable determining whether to normalize rows when plotting PCA
-#' @param auto_plot A logical variabe deterining whether to plot the resulting scaffold space when calling the function.
-#' @param annotation Annotation type to use for scaffold. counts_scaffold rownames using alternative identifyers will be attemped translated. 
-#' Currently ensembl_gene_id,entrezgene_id,hgnc_symbol, and refseq_mrna are supported. set to "NA", to avoid translation (both scaffold and projected sampels must be the same)
-#' 
+#' @param auto_plot A logical variable determining whether to plot the resulting scaffold space when calling the function.
+#' @param annotation Type of gene identifier to use for scaffold. Currently "ensembl_gene_id", "ensembl_transcript_id", "entrezgene_id", "hgnc_symbol", and "refseq_mrna" are supported.
+#' For example, set \code{annotation="hgnc_symbol"} will convert the row names (gene identifiers) of \code{counts_scaffold} to hgnc symbol, so will the \code{ExpressionSet} object and the resulting PCA scaffold.
+#' If this attempted translation fails, or your desired gene identifier is not supported (especially when you are analyzing non-human data), please set \code{annotation="hgnc_symbol"} to avoid translation.
+#' In this case, please manually make sure that the row names (gene identifiers) of \code{counts_scaffold} and \code{counts_sample} are the same.
+#'
 #' @export
 #' @return A scaffoldSpace object
 #' @examples
 #' buildScaffold("prebuilt_DMAP")
-#' buildScaffold("prebuilt_GTEX")
-#' buildScaffold(exprs_dmap,pData_dmap"cell_types")
-#' buildScaffold(exprs_dmap,pData_dmap,"cell_types", pval_cutoff=0.01,pca_scale=T)
+#' buildScaffold(exprs_dmap,pData_dmap,"cell_types", pval_cutoff=0.01,pca_scale=TRUE)
 
 buildScaffold <- function(counts_scaffold,
                           pheno_scaffold,
@@ -116,6 +118,7 @@ buildScaffold <- function(counts_scaffold,
                      pca=pca,
                      pcs=pcs,
                      plot_mode=plot_mode)
+
         if (auto_plot){
                 g <- plotScaffold(space,title,classes=classes)
                 print(g)

@@ -16,7 +16,8 @@ buildScaffold(
   lfc_cutoff = 2,
   title = "Scaffold PCA Plot",
   pca_scale = FALSE,
-  auto_plot = TRUE
+  auto_plot = TRUE,
+  annotation = "ensembl_gene_id"
 )
 }
 \arguments{
@@ -51,6 +52,9 @@ Shorter names for phenotypes (e.g. cell types) is strongly recommended in "tiny_
 \item{pca_scale}{A logical variable determining whether to normalize rows when plotting PCA}
 
 \item{auto_plot}{A logical variabe deterining whether to plot the resulting scaffold space when calling the function.}
+
+\item{annotation}{Annotation type to use for scaffold. counts_scaffold rownames using alternative identifyers will be attemped translated.
+Currently ensembl_gene_id,entrezgene_id,hgnc_symbol, and refseq_mrna are supported. set to "NA", to avoid translation (both scaffold and projected sampels must be the same)}
 }
 \value{
 A scaffoldSpace object
@@ -69,7 +73,6 @@ By default this function plots the resulting \code{\link{scaffoldSpace}} object 
 }
 \examples{
 buildScaffold("prebuilt_DMAP")
-buildScaffold("prebuilt_GTEX")
-buildScaffold(exprs_dmap,pData_dmap"cell_types")
+buildScaffold(exprs_dmap,pData_dmap,"cell_types")
 buildScaffold(exprs_dmap,pData_dmap,"cell_types", pval_cutoff=0.01,pca_scale=T)
 }
