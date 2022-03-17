@@ -39,6 +39,7 @@ createEset <- function(counts,pheno,colname = "cancer_type", classes=NULL, to="e
 
         #select the specified column of phenotype table as final phenotype table
         pheno <- pheno[,colname,drop=F]
+        pheno[,1] <- as.factor(pheno[,1])
 
         # remove rows with NA in pheno and throw message
         complete_idx <- which(complete.cases(pheno))
