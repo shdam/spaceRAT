@@ -7,7 +7,7 @@
 #' @param space A scaffoldSpace object created by function \code{\link{buildScaffold}}.
 #' @param num_genes An optional parameter indicating number of genes to be shown.
 #' @param gene_name A character indicating which type of gene name to show by the side of arrows. By default HGNC symbol is shown.
-#  Other options are "ensembl_gene_id", "ensembl_transcript_id", "entrezgene_id" and "refseq_mrna".
+#  Other options are "ensembl_gene", "ensembl_transcript", "entrez" and "refseq_mrna".
 #' @param angle A number for the degree of rotation of labels on the plot.
 #'
 #' @export

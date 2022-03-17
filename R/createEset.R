@@ -78,8 +78,9 @@ createEset <- function(counts,pheno,colname = "cancer_type", classes=NULL, to="e
 
         # subset ExpressionSet if classes!=NULL
         if (!is.null(classes)){
-                idx <- which(pData(eset)[[colname]] %in% classes)
+                idx <- which(Biobase::pData(eset)[[colname]] %in% classes)
                 eset <- eset[,idx]
+                Biobase::pData(eset)[,1] <-droplevels(Biobase::pData(eset)[,1])
         }
 
         return(eset)

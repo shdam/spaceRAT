@@ -9,12 +9,11 @@
 #' @importFrom grDevices colorRampPalette
 #' @param space A scaffoldSpace object returned by buildScaffold function.
 #' @param title Title for the plot
-#' @param classes Classes not to show.
 #' @noRd
 #' @return NULL. This function doesn't return any value.
 
 
-plotScaffold <- function(space,title,classes=NULL){
+plotScaffold <- function(space,title){
         pca <- space@pca
         pcs <- space@pcs
 
@@ -31,10 +30,6 @@ plotScaffold <- function(space,title,classes=NULL){
         Scaffold_group <- space@label
         df <- data.frame(PC1,PC2,Scaffold_group)
 
-        if(!is.null(classes)) {
-                df <- df %>%
-                      dplyr::filter(class %in% classes)
-        }
 
         # calculate centroids
         centroids_df <- suppressMessages(df %>% dplyr::group_by(Scaffold_group)

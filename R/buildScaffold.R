@@ -78,28 +78,21 @@ buildScaffold <- function(counts_scaffold,
 
         # prebuilt DMAP samples removed
         if(is.character(counts_scaffold) && counts_scaffold=="prebuilt_DMAP" && !is.null(classes)){
-                space <- createEset(exprs_dmap, pData_dmap, "cell_types", classes=classes)
-                space@pcs <- pcs
-                space@plot_mode <- plot_mode
-                if (auto_plot){
-                        g <- plotScaffold(space,title,classes=classes)
-                        print(g)
-                }
-                return(space)
+                eset_scaffold <- createEset(exprs_dmap, pData_dmap, "cell_types", classes=classes, to=annotation)
         }
 
         # prebuilt_GTEX missing
 
 
         # data preprocessing and create eset
-        if (data=="logged"){
+        if (!is.character(counts_scaffold) && data=="logged"){
                 # remove genes with total count<10
                 idx <- which(rowSums(exp(counts_scaffold))<10)
                 if (length(idx)==dim(counts_scaffold)[1]) stop("Low quality data! All genes have total counts less than 10.")
                 if (length(idx)>0) counts_scaffold <- counts_scaffold[-idx,]
-                eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname, annotation)
+                eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname, classes=classes, to=annotation)
         }
-        if (data=="raw"){
+        if (!is.character(counts_scaffold) && data=="raw"){
                 # ensure no negative value
                 if (any(counts_scaffold)<0) stop("Negative values are not allowed in raw count matrix!")
                 # remove genes with total count<10
@@ -107,7 +100,7 @@ buildScaffold <- function(counts_scaffold,
                 if (length(idx)==dim(counts_scaffold)[1]) stop("Low quality data! All genes have total counts less than 10.")
                 if (length(idx)>0) counts_scaffold <- counts_scaffold[-idx,]
                 counts_scaffold <- log(counts_scaffold+1)
-                eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname, annotation)
+                eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname, classes=classes, to=annotation)
 
         }
 
@@ -126,13 +119,13 @@ buildScaffold <- function(counts_scaffold,
         # record standard data in scaffoldSpace class
         space <- new("scaffoldSpace",
                      DEgene=DEgenes,
-                     label=as.character(Biobase::pData(eset_scaffold)[[colname]]),
+                     label=as.character(Biobase::pData(eset_scaffold)[,1]),
                      pca=pca,
                      pcs=pcs,
                      plot_mode=plot_mode)
 
         if (auto_plot){
-                g <- plotScaffold(space,title,classes=classes)
+                g <- plotScaffold(space,title)
                 print(g)
         }
 
