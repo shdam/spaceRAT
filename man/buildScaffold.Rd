@@ -6,8 +6,8 @@
 \usage{
 buildScaffold(
   counts_scaffold,
-  pheno_scaffold,
-  colname,
+  pheno_scaffold = NULL,
+  colname = NULL,
   data = "logged",
   pcs = c(1, 2),
   plot_mode = "dot",
@@ -43,6 +43,11 @@ By default \code{plot_mode="dot"} and tiny labels will not be attached.
 If more than 12 cell types are to be displayed, setting \code{plot_mode="tiny_label"} may yield better visualization.
 Shorter names for phenotypes (e.g. cell types) is strongly recommended in "tiny_label" mode.}
 
+\item{classes}{Cell types to use in plot
+For example, set \code{annotation="hgnc_symbol"} will convert the row names (gene identifiers) of \code{counts_scaffold} to hgnc symbol, so will the \code{ExpressionSet} object and the resulting PCA scaffold.
+If this attempted translation fails, or your desired gene identifier is not supported (especially when you are analyzing non-human data), please set \code{annotation="hgnc_symbol"} to avoid translation.
+In this case, please manually make sure that the row names (gene identifiers) of \code{counts_scaffold} and \code{counts_sample} are the same.}
+
 \item{pval_cutoff}{A cutoff value for p value when selecting differentially expressed genes. By default \code{pval_cutoff=0.05}.}
 
 \item{lfc_cutoff}{A cutoff value for logFC when selecting differentially expressed genes. By default \code{lfc_cutoff=2}.}
@@ -53,10 +58,7 @@ Shorter names for phenotypes (e.g. cell types) is strongly recommended in "tiny_
 
 \item{auto_plot}{A logical variable determining whether to plot the resulting scaffold space when calling the function.}
 
-\item{annotation}{Type of gene identifier to use for scaffold. Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol", and "refseq_mrna" are supported.
-For example, set \code{annotation="hgnc_symbol"} will convert the row names (gene identifiers) of \code{counts_scaffold} to hgnc symbol, so will the \code{ExpressionSet} object and the resulting PCA scaffold.
-If this attempted translation fails, or your desired gene identifier is not supported (especially when you are analyzing non-human data), please set \code{annotation="hgnc_symbol"} to avoid translation.
-In this case, please manually make sure that the row names (gene identifiers) of \code{counts_scaffold} and \code{counts_sample} are the same.}
+\item{annotation}{Type of gene identifier to use for scaffold. Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol", and "refseq_mrna" are supported.}
 }
 \value{
 A scaffoldSpace object

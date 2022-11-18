@@ -9,7 +9,7 @@ loadingPlot(
   num_genes = 3,
   gene_name = "hgnc_symbol",
   angle = 30,
-  df_noly = FALSE
+  df_only = FALSE
 )
 }
 \arguments{
@@ -20,6 +20,8 @@ loadingPlot(
 \item{gene_name}{A character indicating which type of gene name to show by the side of arrows. By default HGNC symbol is shown.}
 
 \item{angle}{A number for the degree of rotation of labels on the plot.}
+
+\item{df_only}{The dataframe for the loading plot will be returned instead of the plot.}
 }
 \value{
 A data frame indicating the loading scores of the genes that contribute most to the selected principle components.
@@ -29,6 +31,6 @@ The loading plot is printed automatically, thus not returned.
 This function takes a \code{\link{scaffoldSpace}} object and generates a loading plot to visualize the genes that contribute most to the selected principle components.
 }
 \examples{
-space <- buildScaffold(exprs_dmap,pData_dmap"cell_types")
+space <- buildScaffold(exprs_dmap, pData_dmap, "cell_types")
 loadingPlot(space)
 }

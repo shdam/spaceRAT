@@ -2,8 +2,6 @@
 #'
 #' This function performs DE analysis using limma to find differentially expressed genes between cell X and non-X for all types of cells that has at least 2 samples in the count matrix.
 #'
-#' @importFrom Biobase pData
-#' @importFrom limma lmFit contrasts.fit eBayes topTable
 #' @param eset An \code{\link{ExpressionSet}} object
 #' @param pval_cutoff A cutoff value for p value when selecting differentially expressed genes. By default \code{pval_cutoff=0.05}
 #' @param lfc_cutoff A cutoff value for log fold change when selecting differentially expressed genes. By default \code{lfc_cutoff=2}
@@ -16,7 +14,7 @@ findDEGenes <- function(eset,pval_cutoff=0.05,lfc_cutoff=2){
         # remove cell types with less than 2 cells
         count_table <- data.frame(table(Biobase::pData(eset)[,1]))
         cell_types <- count_table[count_table$Freq>1,]$Var1
-        eset <- eset[,pData(eset)[,1] %in% cell_types]
+        eset <- eset[,Biobase::pData(eset)[,1] %in% cell_types]
 
         # create contrast matrix
         n <- length(cell_types)
@@ -27,7 +25,7 @@ findDEGenes <- function(eset,pval_cutoff=0.05,lfc_cutoff=2){
 
         # limma
         cell_types <- Biobase::pData(eset)[,1]
-        design <- model.matrix(~0+ cell_types)
+        design <- stats::model.matrix(~0+ cell_types)
         colnames(design) <- gsub("cell_types","",colnames(design))
         fit <- limma::lmFit(eset,design)
         fit <- limma::contrasts.fit(fit, contrast=cm)

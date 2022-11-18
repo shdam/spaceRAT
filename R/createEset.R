@@ -3,7 +3,6 @@
 #' This function creates ExpressionSet from an expression matrix and a phenotype data frame.
 #' This function also performs data preprocessing: samples lacking either count data or phenotype annotation are removed. NAs are replaced by 0.
 #'
-#' @importFrom Biobase ExpressionSet AnnotatedDataFrame
 #' @param counts An expression matrix of class matrix, or data frame that can be converted to matrix. Each row corresponds to a gene. Each column corresponds to a sample.
 #' @param pheno A dataframe of sample annotation corresponding to the expression matrix. Each row corresponds to a sample. Each column corresponds to a sample feature.
 #' @param colname A column name of \code{pheno}. Differential expression analysis will be performed using this column of phenotype as independent variables.
@@ -37,12 +36,14 @@ createEset <- function(counts,pheno,colname = "cancer_type", classes=NULL, to="e
         } else {counts <- convertGeneName(counts,to=to)}
 
 
+
         #select the specified column of phenotype table as final phenotype table
         pheno <- pheno[,colname,drop=F]
+        # pheno[[colname]] <- as.factor(pheno[[colname]])
         pheno[,1] <- as.factor(pheno[,1])
 
         # remove rows with NA in pheno and throw message
-        complete_idx <- which(complete.cases(pheno))
+        complete_idx <- which(stats::complete.cases(pheno))
         na_rownum <- dim(pheno)[1]-length(complete_idx)
         if (na_rownum){
                 pheno <- pheno[complete_idx,,drop=F]
@@ -68,7 +69,7 @@ createEset <- function(counts,pheno,colname = "cancer_type", classes=NULL, to="e
         pheno <- pheno[idx,,drop=F]
 
         # fill NA in count matrix with 0.
-        sum_na <-sum(is.na(counts))
+        sum_na <- sum(is.na(counts))
         if (sum_na>0){
                 counts[is.na(counts)] <- 0
                 message("Count matrix has ",sum_na, " missing values. Replace NA by 0.")

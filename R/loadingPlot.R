@@ -1,24 +1,23 @@
 #' Generate a loading plot of scaffold PCA
 #'
 #' This function takes a \code{\link{scaffoldSpace}} object and generates a loading plot to visualize the genes that contribute most to the selected principle components.
-#' @importFrom tibble rownames_to_column
-#' @import ggplot2
 #'
 #' @param space A scaffoldSpace object created by function \code{\link{buildScaffold}}.
 #' @param num_genes An optional parameter indicating number of genes to be shown.
 #' @param gene_name A character indicating which type of gene name to show by the side of arrows. By default HGNC symbol is shown.
 #  Other options are "ensembl_gene", "ensembl_transcript", "entrez" and "refseq_mrna".
 #' @param angle A number for the degree of rotation of labels on the plot.
+#' @param df_only The dataframe for the loading plot will be returned instead of the plot.
 #'
 #' @export
 #' @return A data frame indicating the loading scores of the genes that contribute most to the selected principle components.
 #' The loading plot is printed automatically, thus not returned.
 #'
 #' @examples
-#' space <- buildScaffold(exprs_dmap,pData_dmap"cell_types")
+#' space <- buildScaffold(exprs_dmap, pData_dmap, "cell_types")
 #' loadingPlot(space)
 
-loadingPlot <- function(space,num_genes=3,gene_name="hgnc_symbol",angle=30, df_noly=FALSE){
+loadingPlot <- function(space,num_genes=3,gene_name="hgnc_symbol",angle=30, df_only=FALSE){
         pca <- space@pca
         pcs <- space@pcs
 
@@ -35,10 +34,10 @@ loadingPlot <- function(space,num_genes=3,gene_name="hgnc_symbol",angle=30, df_n
 
         pc1_ordered <- datapc[order(datapc[,1], decreasing = T),]
         pc2_ordered <- datapc[order(datapc[,2], decreasing = T),]
-        pos1 <- data.frame(head(pc1_ordered,num_genes),class=rep(paste0("Top ",num_genes," genes for PC",as.character(pcs[1])),num_genes))
-        neg1 <- data.frame(tail(pc1_ordered,num_genes),class=rep(paste0("Top ",num_genes," genes for PC",as.character(pcs[1])),num_genes))
-        pos2 <- data.frame(head(pc2_ordered,num_genes),class=rep(paste0("Top ",num_genes," genes for PC",as.character(pcs[2])),num_genes))
-        neg2 <- data.frame(tail(pc2_ordered,num_genes),class=rep(paste0("Top ",num_genes," genes for PC",as.character(pcs[2])),num_genes))
+        pos1 <- data.frame(utils::head(pc1_ordered,num_genes),class=rep(paste0("Top ",num_genes," genes for PC",as.character(pcs[1])),num_genes))
+        neg1 <- data.frame(utils::tail(pc1_ordered,num_genes),class=rep(paste0("Top ",num_genes," genes for PC",as.character(pcs[1])),num_genes))
+        pos2 <- data.frame(utils::head(pc2_ordered,num_genes),class=rep(paste0("Top ",num_genes," genes for PC",as.character(pcs[2])),num_genes))
+        neg2 <- data.frame(utils::tail(pc2_ordered,num_genes),class=rep(paste0("Top ",num_genes," genes for PC",as.character(pcs[2])),num_genes))
         df <- rbind(pos1,neg1,pos2,neg2) %>% tibble::rownames_to_column(var=gene_name)
 
         xmin <- min(df[2])

@@ -1,16 +1,10 @@
 #' Plot a scaffoldSpace object
 #'
 #' This function plot a scafoldSpace object created by \code{buildScaffold} function.
-#' @import magrittr
-#' @import  ggplot2
-#' @importFrom dplyr filter group_by summarise
-#' @importFrom Biobase pData exprs
-#' @importFrom RColorBrewer brewer.pal
-#' @importFrom grDevices colorRampPalette
 #' @param space A scaffoldSpace object returned by buildScaffold function.
 #' @param title Title for the plot
 #' @noRd
-#' @return NULL. This function doesn't return any value.
+#' @return ggplot object.
 
 
 plotScaffold <- function(space,title){

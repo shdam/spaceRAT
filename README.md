@@ -9,73 +9,15 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-## Install as package
-
-### 1. Create virtual environment with renv
-
-Initialize a local R environment:
+## Install from GitHub
 
 ``` r
-# Open project in Rstudio
-# Install and initialize renv 
-install.packages("renv")
-library(renv)
-renv::init()
-```
-
-### 2. Install package from github
-
-``` r
-# To ensure Rstudio looks up BioConductor packages run:
-setRepositories(ind = c(1:6, 8))
-# Then install package with
+# Install using devtools package
+# install.packages("devtools")
 devtools::install_github("XueningHe/RAT_package")
 ```
 
-## Install as cloned repository
-
-### 1. Clone repository
-
-``` sh
-# In terminal at desired directory
-git clone git@github.com:XueningHe/RAT_package.git
-```
-
-### 2. Install dependecies
-
-``` r
-# Open RAT.Rproj in Rstudio
-
-# To ensure Rstudio looks up BioConductor packages run:
-setRepositories(ind = c(1:6, 8))
-# Install renv
-install.packages("renv")
-library(renv)
-# Restore from lock file
-renv::restore()
-```
-
-### 3. Load package
-
-``` r
-install.packages("devtools")
-library(devtools)
-devtools::load_all(getwd())
-```
-
 ## Usage
-
-### Load Shiny app
-
-``` r
-library(RAT)
-
-run_app()
-```
-
-*Some text about how the shiny app works.*
-
-### Running without Shiny
 
 It takes two steps to perform ranked analysis of transcriptome: build a
 scaffold PCA space, then project your new samples onto the PCA space.
@@ -91,19 +33,12 @@ To get the prebuilt DMAP space:
 
 ``` r
 library(RAT)
-#> Registered S3 methods overwritten by 'ggalt':
-#>   method                  from   
-#>   grid.draw.absoluteGrob  ggplot2
-#>   grobHeight.absoluteGrob ggplot2
-#>   grobWidth.absoluteGrob  ggplot2
-#>   grobX.absoluteGrob      ggplot2
-#>   grobY.absoluteGrob      ggplot2
 g <- buildScaffold("prebuilt_DMAP")
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
-You can also turn on the “tiny\_label” mode by specifying `plot_mode`.
+You can also turn on the “tiny_label” mode by specifying `plot_mode`.
 You can also visualize other principle components by specifying `pcs`.
 
 ``` r
@@ -112,7 +47,7 @@ g <- buildScaffold("prebuilt_DMAP",plot_mode = "tiny_label",pcs=c(3,4))
 #> plot_mode='tiny_label', shorter names for cell types in phenotype table yields better visualization.
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 Notice, please assign the returned value of `buildScaffold()` to a named
 variable, which will be used later.
@@ -157,7 +92,7 @@ Then call:
 g <- buildScaffold(exprs_dmap,pData_dmap,"cell_types")
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 Here `"cell_types"` is the name of a column of `pData_dmap`, according
 to which cells are grouped and labeled. Differential expression analysis
@@ -182,10 +117,10 @@ frame containing the loading scores as well.
 
 ``` r
 loadingPlot(g)
-#> Convert gene names of count matrix from ensembl_gene_id to hgnc_symbol.
+#> Convert gene indentifiers of count matrix from ensembl_gene to hgnc_symbol.
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
 **Project new samples** To project new samples onto the scaffold PCA
 plot, first prepare the count matrix of new samples. For example:
@@ -207,7 +142,7 @@ projectSample(g, exprs_ilaria)
 #> 6 genes are added to count matrix, with imputed expression level 0.
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
 By passing corresponding phenotype table and column name to
 `projectSample()`, the plot can show more information about new samples:
@@ -224,4 +159,4 @@ projectSample(g, exprs_ilaria,pData_ilaria,"cancer_type")
 #> 6 genes are added to count matrix, with imputed expression level 0.
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />

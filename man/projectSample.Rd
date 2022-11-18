@@ -41,5 +41,6 @@ ranks the subset within new sample(s),
 finally projects the new sample(s) onto the existing scaffold PCA plot.
 }
 \examples{
+space <- DMAP_scaffold # or create your own scaffoldSpace
 projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
 }

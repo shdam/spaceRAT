@@ -3,3 +3,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
+^tmp$
+^data-raw$
+^dev$

@@ -12,7 +12,6 @@
 #'
 #' By default this function plots the resulting \code{\link{scaffoldSpace}} object before returning it, but this autoplot mode can be turned off by specifying \code{auto_plot=FALSE}.
 #'
-#' @importFrom Biobase pData exprs
 #'
 #' @param counts_scaffold An expression matrix of class matrix, or a data frame that can be converted to matrix. Column names are sample names.
 #' Row names are gene names, which can be Ensembl Gene ID, HGNC Symbol, Entrez Gene ID Ensembl, Transcript ID or Refseq mRNA.
@@ -41,10 +40,12 @@
 #' @param pca_scale A logical variable determining whether to normalize rows when plotting PCA
 #' @param auto_plot A logical variable determining whether to plot the resulting scaffold space when calling the function.
 #' @param annotation Type of gene identifier to use for scaffold. Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol", and "refseq_mrna" are supported.
+#' @param classes Cell types to use in plot
 #' For example, set \code{annotation="hgnc_symbol"} will convert the row names (gene identifiers) of \code{counts_scaffold} to hgnc symbol, so will the \code{ExpressionSet} object and the resulting PCA scaffold.
 #' If this attempted translation fails, or your desired gene identifier is not supported (especially when you are analyzing non-human data), please set \code{annotation="hgnc_symbol"} to avoid translation.
 #' In this case, please manually make sure that the row names (gene identifiers) of \code{counts_scaffold} and \code{counts_sample} are the same.
 #'
+#' @importFrom methods is
 #' @export
 #' @return A scaffoldSpace object
 #' @examples
@@ -52,55 +53,59 @@
 #' buildScaffold(exprs_dmap,pData_dmap,"cell_types", pval_cutoff=0.01,pca_scale=TRUE)
 
 buildScaffold <- function(counts_scaffold,
-                          pheno_scaffold,
-                          colname,
-                          data="logged",
-                          pcs=c(1,2),
-                          plot_mode="dot",
+                          pheno_scaffold = NULL,
+                          colname = NULL,
+                          data = "logged",
+                          pcs = c(1,2),
+                          plot_mode = "dot",
                           classes = NULL,
-                          pval_cutoff=0.05,
-                          lfc_cutoff=2,
-                          title="Scaffold PCA Plot",
-                          pca_scale=FALSE,
-                          auto_plot=TRUE,
-                          annotation="ensembl_gene"){
+                          pval_cutoff = 0.05,
+                          lfc_cutoff = 2,
+                          title = "Scaffold PCA Plot",
+                          pca_scale = FALSE,
+                          auto_plot = TRUE,
+                          annotation = "ensembl_gene"){
         # prebuilt_DMAP no samples removed
-        if(is.character(counts_scaffold) && counts_scaffold=="prebuilt_DMAP" && is.null(classes)){
-                space<- DMAP_scaffold
-                space@pcs <- pcs
-                space@plot_mode <- plot_mode
-                if (auto_plot){
-                        g <- plotScaffold(space,title)
-                        print(g)
-                }
-                return(space)
+        if(is(counts_scaffold, "character") && counts_scaffold == "prebuilt_DMAP" && is(classes, "NULL")){
+          space <- DMAP_scaffold
+          space@pcs <- pcs
+          space@plot_mode <- plot_mode
+          if (auto_plot){
+            g <- plotScaffold(space,title)
+            print(g)
+            }
+          return(space)
+          # prebuilt DMAP samples removed
+        } else if(is(counts_scaffold, "character") && counts_scaffold == "prebuilt_DMAP" && !is(classes, "NULL")){
+            eset_scaffold <- createEset(exprs_dmap, pData_dmap, colname = "cell_types", classes = classes, to = annotation)
         }
 
-        # prebuilt DMAP samples removed
-        if(is.character(counts_scaffold) && counts_scaffold=="prebuilt_DMAP" && !is.null(classes)){
-                eset_scaffold <- createEset(exprs_dmap, pData_dmap, "cell_types", classes=classes, to=annotation)
-        }
 
         # prebuilt_GTEX missing
 
 
+        # Streamline input to SummarizedExperiment
+        # if(!is(counts_scaffold, "SummarizedExperiment")){
+        #   eset_scaffold <- createEset(counts_scaffold, pheno_scaffold, colname, classes=classes, to=annotation)
+        # }
+
         # data preprocessing and create eset
-        if (!is.character(counts_scaffold) && data=="logged"){
-                # remove genes with total count<10
-                idx <- which(rowSums(exp(counts_scaffold))<10)
-                if (length(idx)==dim(counts_scaffold)[1]) stop("Low quality data! All genes have total counts less than 10.")
-                if (length(idx)>0) counts_scaffold <- counts_scaffold[-idx,]
-                eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname, classes=classes, to=annotation)
+        if (!is(counts_scaffold, "character") && data == "logged"){
+          # remove genes with total count<10
+          idx <- which(rowSums(exp(counts_scaffold))<10)
+          if (length(idx)==dim(counts_scaffold)[1]) stop("Low quality data! All genes have total counts less than 10.")
+          if (length(idx)>0) counts_scaffold <- counts_scaffold[-idx,]
+          eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname, classes=classes, to=annotation)
         }
         if (!is.character(counts_scaffold) && data=="raw"){
-                # ensure no negative value
-                if (any(counts_scaffold)<0) stop("Negative values are not allowed in raw count matrix!")
-                # remove genes with total count<10
-                idx <- which(rowSums(counts_scaffold)<10)
-                if (length(idx)==dim(counts_scaffold)[1]) stop("Low quality data! All genes have total counts less than 10.")
-                if (length(idx)>0) counts_scaffold <- counts_scaffold[-idx,]
-                counts_scaffold <- log(counts_scaffold+1)
-                eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname, classes=classes, to=annotation)
+          # ensure no negative value
+          if (any(counts_scaffold)<0) stop("Negative values are not allowed in raw count matrix!")
+          # remove genes with total count<10
+          idx <- which(rowSums(counts_scaffold)<10)
+          if (length(idx)==dim(counts_scaffold)[1]) stop("Low quality data! All genes have total counts less than 10.")
+          if (length(idx)>0) counts_scaffold <- counts_scaffold[-idx,]
+          counts_scaffold <- log(counts_scaffold+1)
+          eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname, classes=classes, to=annotation)
 
         }
 
@@ -114,19 +119,19 @@ buildScaffold <- function(counts_scaffold,
         scaffold_rank<- apply(Biobase::exprs(eset_scaffold),2,rank)
 
         # PCA
-        pca <- prcomp(t(scaffold_rank),scale=pca_scale)
+        pca <- stats::prcomp(t(scaffold_rank),scale=pca_scale)
 
         # record standard data in scaffoldSpace class
-        space <- new("scaffoldSpace",
-                     DEgene=DEgenes,
-                     label=as.character(Biobase::pData(eset_scaffold)[,1]),
-                     pca=pca,
-                     pcs=pcs,
-                     plot_mode=plot_mode)
+        space <- methods::new("scaffoldSpace",
+                              DEgene=DEgenes,
+                              label=as.character(Biobase::pData(eset_scaffold)[,1]),
+                              pca=pca,
+                              pcs=pcs,
+                              plot_mode=plot_mode)
 
         if (auto_plot){
-                g <- plotScaffold(space,title)
-                print(g)
+          g <- plotScaffold(space,title)
+          print(g)
         }
 
         return(space)

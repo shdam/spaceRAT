@@ -1,9 +1,6 @@
 #' Convert between Ensembl gene, Ensembl transcript, Entrez, RefSeq and Gene symbol for count ?matrix
 #'
 #' This function takes in a count matrix, and converts its row names to Ensembl (by default), or any specified gene identifier.
-#' @import magrittr
-#' @importFrom dplyr select group_by_at across everything summarise filter one_of
-#' @importFrom tibble column_to_rownames
 #' @param counts An expression matrix of class matrix
 #' @param to A character specifying the gene id to convert to. Options are "ensembl_gene" (default), "ensembl_transcript", "entrez", "hgnc_symbol" and "refseq_mrna".
 #' @return A count matrix with transformed gene names as row names.
@@ -36,9 +33,9 @@ convertGeneName <- function(counts,to="ensembl_gene"){
         # add all matches
         counts <- merge(gene_mapper,counts,by.x=from,by.y=0,all=F)
         counts <- counts[,-1]
-        counts <- counts%>% dplyr::group_by_at(to) %>%
+        counts <- counts %>% dplyr::group_by(.data[[to]]) %>%
                 dplyr::summarise(dplyr::across(dplyr::everything(),sum)) %>%
-                tibble::column_to_rownames(var=to)
+                tibble::column_to_rownames(var = to)
         return (as.matrix(counts))
 
 }

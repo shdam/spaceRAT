@@ -2,32 +2,37 @@ Package: RAT
 Type: Package
 Title: Ranked Analysis for Transcriptomes (RAT)
 Version: 0.1.0
-Author: 123
-Maintainer: 123 <123@123.com>
+Authors@R: c(
+    person(given = "Søren Helweg",
+           family = "Dam",
+           role = c("aut", "cre"),
+           email = "sohdam@dtu.dk",
+           comment = c(ORCID = "0000-0003-0755-0016")),
+    person(given = "Xuening",
+           family = "He",
+           role = c("aut"),
+           email = ".."),
+    person(given = "Frederik Otzen",
+           family = "Bagger",
+           role = c("aut"),
+           email = ".."),
+    person(given = "Lars Rønn",
+           family = "Olsen",
+           role = c("aut"),
+           email = "lronn@dtu.dk")
+           )
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: GPL
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    Biobase,
-    config,
-    dplyr,
-    ggalt,
-    ggplot2,
-    golem,
-    limma,
-    magrittr,
-    mclust,
-    plotly,
-    RColorBrewer,
-    readr,
-    shiny,
-    shinythemes,
-    shinyWidgets,
-    stringr,
-    tibble,
-RoxygenNote: 7.1.2
+    utils, stats, methods,
+    Biobase, SummarizedExperiment,
+    dplyr, tibble, magrittr,
+    ggplot2, RColorBrewer,
+    limma
+RoxygenNote: 7.2.1
 Depends: 
     R (>= 3.5.0)
 Suggests: 

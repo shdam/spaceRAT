@@ -19,68 +19,15 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-## Install as package
-### 1. Create virtual environment with renv
-Initialize a local R environment:
-```{r, eval = FALSE}
-# Open project in Rstudio
-# Install and initialize renv 
-install.packages("renv")
-library(renv)
-renv::init()
-```
-
-### 2. Install package from github
+## Install from GitHub
 ``` {r, eval = FALSE}
-# To ensure Rstudio looks up BioConductor packages run:
-setRepositories(ind = c(1:6, 8))
-# Then install package with
+# Install using devtools package
+# install.packages("devtools")
 devtools::install_github("XueningHe/RAT_package")
 ```
 
 
-## Install as cloned repository
-
-### 1. Clone repository
-```{sh, eval = FALSE}
-# In terminal at desired directory
-git clone git@github.com:XueningHe/RAT_package.git
-```
-
-### 2. Install dependecies
-```{r, eval = FALSE}
-# Open RAT.Rproj in Rstudio
-
-# To ensure Rstudio looks up BioConductor packages run:
-setRepositories(ind = c(1:6, 8))
-# Install renv
-install.packages("renv")
-library(renv)
-# Restore from lock file
-renv::restore()
-```
-
-### 3. Load package
-```{r, eval = FALSE}
-install.packages("devtools")
-library(devtools)
-devtools::load_all(getwd())
-```
-
 ## Usage
-
-### Load Shiny app
-
-```{r, eval = FALSE}
-library(RAT)
-
-run_app()
-
-```
-*Some text about how the shiny app works.*
-
-
-### Running without Shiny
 
 It takes two steps to perform ranked analysis of transcriptome: build a scaffold PCA space, then project your new samples onto the PCA space. 
 

@@ -4,7 +4,6 @@
 #' ranks the subset within new sample(s),
 #' finally projects the new sample(s) onto the existing scaffold PCA plot.
 #'
-#' @importFrom Biobase exprs pData
 #' @param space A scaffoldSpace object, returned by function \code{\link{buildScaffold}}
 #' @param counts_sample Expression matrix of new sample, can be either logged or raw data without specification.
 #' @param pheno_sample Phenotype data corresponding to \code{counts_sample}. If not specified, the output plot will not show legends for new samples.
@@ -19,6 +18,7 @@
 #' @export
 #' @return A ggplot object with new samples projected to existing scaffold PCA plot
 #' @examples
+#' space <- DMAP_scaffold # or create your own scaffoldSpace
 #' projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
 
 
@@ -59,7 +59,7 @@ projectSample <- function(space,
 
         # PCA transform the sample data
 
-        transformed_sample <- predict(space@pca,newdata=t(ranked_sample))
+        transformed_sample <- stats::predict(space@pca,newdata=t(ranked_sample))
 
         # Prepare dataframe for ggplot
         PC1_sample <- transformed_sample[,space@pcs[1]]
