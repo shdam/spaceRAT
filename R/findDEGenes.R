@@ -10,29 +10,34 @@
 #' @examples
 #' find_de_genes(eset_dmap,"cell_types")
 
-findDEGenes <- function(eset,pval_cutoff=0.05,lfc_cutoff=2){
-        # remove cell types with less than 2 cells
-        count_table <- data.frame(table(Biobase::pData(eset)[,1]))
-        cell_types <- count_table[count_table$Freq>1,]$Var1
-        eset <- eset[,Biobase::pData(eset)[,1] %in% cell_types]
+findDEGenes <- function(counts, cell_types, pval_cutoff = 0.05, lfc_cutoff = 2){
 
-        # create contrast matrix
-        n <- length(cell_types)
-        cm <- matrix(-1/(n-1),n,n)
-        diag(cm) <- 1
-        rownames(cm) <- cell_types
-        colnames(cm) <- paste(cell_types,"others",sep="_")
+  message("Finding differentially expressed genes")
 
-        # limma
-        cell_types <- Biobase::pData(eset)[,1]
-        design <- stats::model.matrix(~0+ cell_types)
-        colnames(design) <- gsub("cell_types","",colnames(design))
-        fit <- limma::lmFit(eset,design)
-        fit <- limma::contrasts.fit(fit, contrast=cm)
-        fit <- limma::eBayes(fit)
-        de_genes <- sapply(colnames(cm), function(name){
-                rownames(limma::topTable(fit, coef=name, number = Inf, lfc =lfc_cutoff, p.value = pval_cutoff, adjust.method="fdr"))
-        })
-        unique(unlist(de_genes))
+  # remove cell types with less than 2 cells
+  count_table <- data.frame(table(cell_types))
+  keep_cell_types <- count_table[count_table$Freq>1, 1]
+  keep <- cell_types %in% keep_cell_types
+  counts <- counts[, keep]
+  cell_types <- cell_types[keep]
+
+  # create contrast matrix
+  n <- length(keep_cell_types)
+  cm <- matrix(-1/(n-1),n,n)
+  diag(cm) <- 1
+  rownames(cm) <- keep_cell_types
+  colnames(cm) <- paste(keep_cell_types,"others",sep="_")
+
+  # limma
+  design <- stats::model.matrix(~0+ cell_types)
+  colnames(design) <- gsub("cell_types","",colnames(design))
+  fit <- limma::lmFit(counts,design)
+  fit <- limma::contrasts.fit(fit, contrast=cm)
+  fit <- limma::eBayes(fit)
+  de_genes <- sapply(colnames(cm), function(name){
+          rownames(limma::topTable(fit, coef=name, number = Inf, lfc =lfc_cutoff, p.value = pval_cutoff, adjust.method="fdr"))
+  })
+
+  return(unique(unlist(de_genes)))
 
 }

@@ -6,8 +6,9 @@
 \usage{
 projectSample(
   space,
-  counts_sample,
-  pheno_sample = NULL,
+  object,
+  assay = "counts",
+  pheno = NULL,
   colname = "cancer_type",
   title = "Samples projected onto scaffold PCA",
   verbose = TRUE,
@@ -17,9 +18,13 @@ projectSample(
 \arguments{
 \item{space}{A scaffoldSpace object, returned by function \code{\link{buildScaffold}}}
 
-\item{counts_sample}{Expression matrix of new sample, can be either logged or raw data without specification.}
+\item{object}{An expression matrix of class SummarizedExperiment, SingleCellExperiment, matrix, or a data frame. Column names are sample names.
+Row names are gene names, which can be Ensembl Gene ID, HGNC Symbol, Entrez Gene ID Ensembl, Transcript ID or Refseq mRNA.
+All gene ID will be automatically converted to Ensembl Gene ID. If you want to retain your gene identifier that is not currently supported, please specify \code{annotation=NA}. See parameter \code{annotation} for more information.
+Counts of several transcript ID corresponding to same gene will be added and recorded as the counts of the gene.
+To use the pre-built scaffold, simply set object="prebuilt_DMAP", or "prebuilt_GTEX", and no need to specify any other parameter.}
 
-\item{pheno_sample}{Phenotype data corresponding to \code{counts_sample}. If not specified, the output plot will not show legends for new samples.}
+\item{assay}{(Default: "counts") The assay slot to use with your Bioconductor object.}
 
 \item{colname}{A column name of \code{pheno_sample}. This column of values will be used to annotate projected samples.
 This argument should be set together with \code{pheno_sample}.
@@ -31,6 +36,8 @@ If \code{pheno_sample} is not specified, this argument will be ignored, and the 
 
 \item{annotation}{Annotation type to use for scaffold. counts_scaffold rownames using alternative identifiers will be translated.
 Currently ensembl_gene, entrez, hgnc_symbol, and refseq_mrna are supported. set to "NA", to avoid translation (both scaffold and projected samples must be the same)}
+
+\item{pheno_sample}{Phenotype data corresponding to \code{counts_sample}. If not specified, the output plot will not show legends for new samples.}
 }
 \value{
 A ggplot object with new samples projected to existing scaffold PCA plot

@@ -6,23 +6,31 @@ pheno_scaffold <- readr::read_csv("~/Downloads/Archive/gtex_representativeSet_me
 
 colname <- "gtex.smts"
 
-counts_scaffold <- tibble::column_to_rownames(counts_scaffold, colnames(counts_scaffold)[1])
-pheno_scaffold <- tibble::column_to_rownames(pheno_scaffold, colnames(pheno_scaffold)[1])
+# counts_scaffold <- tibble::column_to_rownames(counts_scaffold, colnames(counts_scaffold)[1])
+# pheno_scaffold <- tibble::column_to_rownames(pheno_scaffold, colnames(pheno_scaffold)[1])
+# sce <- SingleCellExperiment::SingleCellExperiment(assays=list("counts"=counts_scaffold), colData = S4Vectors::DataFrame(pheno_scaffold))
 
-# remove genes with total count<10
-idx <- which(rowSums(2**(counts_scaffold))<10)
-counts_scaffold <- counts_scaffold[-idx,]
+GTEX_scaffold <- buildScaffold(
+  object = counts_scaffold,
+  pheno_scaffold = pheno_scaffold,
+  colname = colname,
+  data = "logged",
+  dims = c(1,2),
+  dim_reduction = "PCA",
+  plot_mode = "dot",
+  classes = NULL,
+  pval_cutoff = 0.05,
+  lfc_cutoff = 2,
+  title = "GTEX PCA scaffold",
+  pca_scale = FALSE,
+  auto_plot = FALSE,
+  annotation = "ensembl_gene"
+  )
 
-eset_scaffold <- createEset(counts_scaffold,pheno_scaffold,colname, to="ensembl_gene")
-
-pval_cutoff = 0.05
-lfc_cutoff = 2
-
-# find DE genes
-DEgenes <- findDEGenes(eset_scaffold,pval_cutoff,lfc_cutoff)
-
+plotScaffold(GTEX_scaffold,"GTEX PCA scaffold")
 
 usethis::use_data(GTEX_scaffold, overwrite = TRUE)
+
 
 
 # TCGA
@@ -32,35 +40,23 @@ tcga_pheno_scaffold <- readr::read_csv("~/Downloads/Archive/tcga_representativeS
 
 colname <- "study"#"tcga.gdc_cases.project.primary_site" # tcga.gdc_cases.project.name
 
-tcga_counts_scaffold <- tibble::column_to_rownames(tcga_counts_scaffold, colnames(tcga_counts_scaffold)[1])
-tcga_pheno_scaffold <- tibble::column_to_rownames(tcga_pheno_scaffold, colnames(tcga_pheno_scaffold)[1])
+TCGA_scaffold <- buildScaffold(
+  object = tcga_counts_scaffold,
+  pheno_scaffold = tcga_pheno_scaffold,
+  colname = colname,
+  data = "logged",
+  dims = c(1,2),
+  plot_mode = "dot",
+  classes = NULL,
+  pval_cutoff = 0.05,
+  lfc_cutoff = 2,
+  title = "TCGA PCA scaffold",
+  pca_scale = FALSE,
+  auto_plot = FALSE,
+  annotation = "ensembl_gene"
+)
 
-# remove genes with total count<10
-idx <- which(rowSums(2**(tcga_counts_scaffold))<10)
-tcga_counts_scaffold <- tcga_counts_scaffold[-idx,]
+usethis::use_data(TCGA_scaffold, overwrite = TRUE)
 
-tcga_eset_scaffold <- createEset(tcga_counts_scaffold,tcga_pheno_scaffold,colname, to="ensembl_gene")
 
-pval_cutoff = 0.05
-lfc_cutoff = 2
-
-# find DE genes
-tcga_DEgenes <- findDEGenes(tcga_eset_scaffold,pval_cutoff,lfc_cutoff)
-
-tcga_eset_scaffold <- tcga_eset_scaffold[tcga_DEgenes,]
-
-# rank
-tcga_scaffold_rank<- apply(Biobase::exprs(tcga_eset_scaffold),2,rank)
-
-# PCA
-tcga_pca <- stats::prcomp(t(tcga_scaffold_rank),scale=pca_scale)
-
-# record standard data in scaffoldSpace class
-tcga_space <- methods::new("scaffoldSpace",
-                      DEgene=tcga_DEgenes,
-                      label=as.character(Biobase::pData(tcga_eset_scaffold)[,1]),
-                      pca=tcga_pca,
-                      pcs=pcs,
-                      plot_mode=plot_mode)
-
-plotScaffold(tcga_space,title)
+plotScaffold(TCGA_scaffold,"TCGA PCA scaffold")

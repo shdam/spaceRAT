@@ -38,12 +38,21 @@
 
 #' @title  Gene name mapper for human
 #' @source downloaded from biomaRt
-#' @description This table contains ensembl_gene_id of all human gene, and corresponding ensembl_transcript_id, entrezgene_id ,hgnc_symbol, and refseq_mrna
+#' @description This table contains ensembl_gene_id of all human genes, and corresponding ensembl_transcript_id, entrezgene_id ,hgnc_symbol, and refseq_mrna
 #' @docType data
 #' @usage gene_id_converter_hs
 #' @format a data frame
 #' @keywords datasets
 "gene_id_converter_hs"
+
+#' @title  Gene name mapper for Mus musculus (mouse)
+#' @source downloaded from biomaRt
+#' @description This table contains ensembl_gene_id of all mouse genes, and corresponding ensembl_transcript_id, entrezgene_id, and mgi_symbol
+#' @docType data
+#' @usage gene_id_converter_mm
+#' @format a data frame
+#' @keywords datasets
+"gene_name_mapper_mm"
 
 #' @title  DMAP scaffold
 #' @source Created from exprs_dmap

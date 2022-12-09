@@ -8,34 +8,57 @@
 #' @examples
 #' convertGeneName(exprs_dmap[1:20,1:10],to="hgnc_symbol")
 
-convertGeneName <- function(counts,to="ensembl_gene"){
+convertGeneName <- function(counts, to = "ensembl_gene"){
+
         # remove version number
-        cur_genes <- gsub("\\.[0-9]+$","",rownames(counts))
+        cur_genes <- gsub("\\.[0-9]+$","", rownames(counts))
 
         # get gene mapper data frame
-        gene_mapper <- mapGene(cur_genes,to=to)
+        gene_mapper <- mapGene(cur_genes, to = to)
 
         # case1: mapGene fails to infer gene id
         if (is.null(gene_mapper)){
                 stop("Could not infer gene identifiers from row names of expression matrix.
-                     Please set annotation = NA to stop gene id conversion and make sure manually that new samples have same gene ids as scaffold dataset")
+                     Please set annotation = NULL to stop gene id conversion and make sure manually that new samples have same gene ids as scaffold dataset")
         }
 
         from <- colnames(gene_mapper)[1]
 
         # case 2: from==to. Only need to remove version number before return
-        if (from==to) {
+        if (from == to) {
                 rownames(counts) <- cur_genes
-                return(as.matrix(counts))
+                return(counts)
         }
 
         # case 3: conversion between gene id and gene id or transcript id. Add all matches
         # add all matches
-        counts <- merge(gene_mapper,counts,by.x=from,by.y=0,all=F)
-        counts <- counts[,-1]
-        counts <- counts %>% dplyr::group_by(.data[[to]]) %>%
-                dplyr::summarise(dplyr::across(dplyr::everything(),sum)) %>%
-                tibble::column_to_rownames(var = to)
-        return (as.matrix(counts))
+        matches <- match(cur_genes, gene_mapper[[from]], nomatch = 0)
+        cur_genes[which(matches != 0)] <- gene_mapper[[to]][matches]
 
+        if(any(matches == 0)){
+                counts <- counts[which(matches != 0), ]
+                cur_genes <- cur_genes[which(matches != 0)]
+        }
+
+        if(length(unique(cur_genes)) != length(cur_genes)){
+                # Sum genes with the same new id
+                extra_warning <- "\nOBS: Duplicate gene names were found after conversion. Expression values will be summed."
+
+                # Sum duplicates
+                counts <- aggregate(counts, by = list(cur_genes), FUN = sum) %>%
+                        tibble::column_to_rownames(var = "Group.1")
+
+        } else{
+                extra_warning <- ""
+                rownames(counts) <- cur_genes
+        }
+
+        if(any(matches == 0)) warning(paste0("Be aware only ", round(sum(matches > 0)/length(matches)*100, 2), "% of gene names were converted from ", from, " to ", to, ". The non-converted genes will be removed. Use 'annotation = NULL' to prevent conversion.", extra_warning))
+
+        # counts <- merge(gene_mapper, counts, by.x = from, by.y = 0, all = FALSE)
+        # counts <- counts[, -1]
+        # counts <- counts %>% dplyr::group_by(.data[[to]]) %>%
+        #         dplyr::summarise(dplyr::across(dplyr::everything(),sum)) %>%
+        #         tibble::column_to_rownames(var = to)
+        return (counts)
 }

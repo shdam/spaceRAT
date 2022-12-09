@@ -4,9 +4,9 @@
 \name{scaffoldSpace-class}
 \alias{scaffoldSpace-class}
 \alias{scaffoldSpace}
-\title{A S4 class to store all the information of scaffold PCA space}
+\title{An S4 class to store all the information of scaffold space}
 \description{
-A S4 class to store all the information of scaffold PCA space
+An S4 class to store all the information of scaffold space
 }
 \section{Slots}{
 
@@ -15,9 +15,9 @@ A S4 class to store all the information of scaffold PCA space
 
 \item{\code{label}}{a character vector containing labels of each data point}
 
-\item{\code{pca}}{a prcomp object returned by function \code{\link{prcomp}}}
+\item{\code{model}}{a model returned by dimension reduction algorithm. PCA algorithm should return an "prcomp" object. UMAP algorithm should return a "umap" object.}
 
-\item{\code{pcs}}{the two indices of principle components to be plot}
+\item{\code{dims}}{the two indices of reduced dimensions to be plot}
 
 \item{\code{plot_mode}}{a character indicating whether to add tiny label at each data point. Options are "dot" or "tiny_label"}
 }}

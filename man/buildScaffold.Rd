@@ -5,38 +5,44 @@
 \title{Returns either a prebuilt scaffoldSpace object, or a new one calculated from input expression matrix}
 \usage{
 buildScaffold(
-  counts_scaffold,
-  pheno_scaffold = NULL,
+  object,
   colname = NULL,
+  pheno_scaffold = NULL,
+  assay = "counts",
   data = "logged",
-  pcs = c(1, 2),
+  dim_reduction = "PCA",
+  dims = c(1, 2),
   plot_mode = "dot",
   classes = NULL,
   pval_cutoff = 0.05,
   lfc_cutoff = 2,
-  title = "Scaffold PCA Plot",
+  title = "Scaffold Plot",
   pca_scale = FALSE,
   auto_plot = TRUE,
   annotation = "ensembl_gene"
 )
 }
 \arguments{
-\item{counts_scaffold}{An expression matrix of class matrix, or a data frame that can be converted to matrix. Column names are sample names.
+\item{object}{An expression matrix of class SummarizedExperiment, SingleCellExperiment, matrix, or a data frame. Column names are sample names.
 Row names are gene names, which can be Ensembl Gene ID, HGNC Symbol, Entrez Gene ID Ensembl, Transcript ID or Refseq mRNA.
 All gene ID will be automatically converted to Ensembl Gene ID. If you want to retain your gene identifier that is not currently supported, please specify \code{annotation=NA}. See parameter \code{annotation} for more information.
 Counts of several transcript ID corresponding to same gene will be added and recorded as the counts of the gene.
-To use the pre-built scaffold, simply set count_scaffold="prebuilt_DMAP", or "prebuilt_GTEX", and no need to specify any other parameter.}
-
-\item{pheno_scaffold}{A phenotype table corresponding to the expression matrix.
-Row names are sample names, identical to column names of \code{counts_scaffold}.}
+To use the pre-built scaffold, simply set object="prebuilt_DMAP", or "prebuilt_GTEX", and no need to specify any other parameter.}
 
 \item{colname}{A column name of \code{pheno_scaffold}. Cells will be grouped by this column of values.
 Thus, differential expression analysis will be performed using this column of phenotype as independent variables.}
 
+\item{pheno_scaffold}{A phenotype table corresponding to the expression matrix.
+Row names are sample names, identical to column names of \code{object}.}
+
+\item{assay}{(Default: "counts") The assay slot to use with your Bioconductor object.}
+
 \item{data}{A character indicating whether the count matrix is log-transformed or raw. By default \code{data="logged"}.
 If the count matrix is raw counts, please specify \code{data="raw"}}
 
-\item{pcs}{A numeric vector containing 2 numbers, indicating which two principle components to plot.}
+\item{dim_reduction}{A character indicating the method for dimensionality reduction. Currently "PCA" and "UMAP" are supported.}
+
+\item{dims}{A numeric vector containing 2 numbers, indicating which two principle components to plot.}
 
 \item{plot_mode}{A character indicating whether to add tiny labels to each data point.
 By default \code{plot_mode="dot"} and tiny labels will not be attached.
@@ -44,7 +50,7 @@ If more than 12 cell types are to be displayed, setting \code{plot_mode="tiny_la
 Shorter names for phenotypes (e.g. cell types) is strongly recommended in "tiny_label" mode.}
 
 \item{classes}{Cell types to use in plot
-For example, set \code{annotation="hgnc_symbol"} will convert the row names (gene identifiers) of \code{counts_scaffold} to hgnc symbol, so will the \code{ExpressionSet} object and the resulting PCA scaffold.
+For example, set \code{annotation="hgnc_symbol"} will convert the row names (gene identifiers) of \code{counts_scaffold} to hgnc symbol, so will the expression data and the resulting PCA scaffold.
 If this attempted translation fails, or your desired gene identifier is not supported (especially when you are analyzing non-human data), please set \code{annotation="hgnc_symbol"} to avoid translation.
 In this case, please manually make sure that the row names (gene identifiers) of \code{counts_scaffold} and \code{counts_sample} are the same.}
 

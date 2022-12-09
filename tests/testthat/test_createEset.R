@@ -43,7 +43,7 @@ test_that("createEset() calculates intersection of columns of expression matrix 
 
 
 test_that("createEset() properly subset",{
-  eset <- createEset(exprs_dmap,pData_dmap,"cell_types",c("HSC","CMP"))
+  eset <- createEset(exprs_dmap,pData_dmap, "cell_types",classes =  c("HSC","CMP"))
   expect_equal(unname(dim(eset)[2]),18)
 
   eset <- createEset(exprs_dmap,pData_dmap,"cell_types",c("ERY","BASO","MONO"))

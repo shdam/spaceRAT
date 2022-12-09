@@ -14,6 +14,6 @@ downloaded from biomaRt
 gene_id_converter_hs
 }
 \description{
-This table contains ensembl_gene_id of all human gene, and corresponding ensembl_transcript_id, entrezgene_id ,hgnc_symbol, and refseq_mrna
+This table contains ensembl_gene_id of all human genes, and corresponding ensembl_transcript_id, entrezgene_id ,hgnc_symbol, and refseq_mrna
 }
 \keyword{datasets}
