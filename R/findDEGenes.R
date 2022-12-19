@@ -15,36 +15,37 @@
 #' utils::data("exprs_dmap", package = "spaceRAT")
 #' findDEGenes(exprs_dmap, "cell_types")
 
-findDEGenes <- function(counts, cell_types, pval_cutoff = 0.05, lfc_cutoff = 2){
+findDEGenes <- function(counts, cell_types, pval_cutoff = 0.05,
+                        lfc_cutoff = 2){
 
-  message("Finding differentially expressed genes")
+    message("Finding differentially expressed genes")
 
-  # remove cell types with less than 2 cells
-  count_table <- data.frame(table(cell_types))
-  keep_cell_types <- count_table[count_table$Freq>1, 1]
-  keep <- cell_types %in% keep_cell_types
-  counts <- counts[, keep]
-  cell_types <- cell_types[keep]
+    # remove cell types with less than 2 cells
+    count_table <- data.frame(table(cell_types))
+    keep_cell_types <- count_table[count_table$Freq>1, 1]
+    keep <- cell_types %in% keep_cell_types
+    counts <- counts[, keep]
+    cell_types <- cell_types[keep]
 
-  # create contrast matrix
-  n <- length(keep_cell_types)
-  cm <- matrix(-1/(n-1),n,n)
-  diag(cm) <- 1
-  rownames(cm) <- keep_cell_types
-  colnames(cm) <- paste(keep_cell_types,"others",sep="_")
+    # create contrast matrix
+    n <- length(keep_cell_types)
+    cm <- matrix(-1/(n-1),n,n)
+    diag(cm) <- 1
+    rownames(cm) <- keep_cell_types
+    colnames(cm) <- paste(keep_cell_types,"others",sep="_")
 
-  # limma
-  design <- stats::model.matrix(~0+ cell_types)
-  colnames(design) <- gsub("cell_types","",colnames(design))
-  fit <- limma::lmFit(counts,design)
-  fit <- limma::contrasts.fit(fit, contrast=cm)
-  fit <- limma::eBayes(fit)
-  de_genes <- lapply(colnames(cm), function(name){
-          rownames(limma::topTable(fit, coef = name, number = Inf,
-                                   lfc = lfc_cutoff, p.value = pval_cutoff,
-                                   adjust.method = "fdr"))
-  })
+    # limma
+    design <- stats::model.matrix(~0+ cell_types)
+    colnames(design) <- gsub("cell_types","",colnames(design))
+    fit <- limma::lmFit(counts,design)
+    fit <- limma::contrasts.fit(fit, contrast=cm)
+    fit <- limma::eBayes(fit)
+    de_genes <- lapply(colnames(cm), function(name){
+        rownames(limma::topTable(fit, coef = name, number = Inf,
+                                 lfc = lfc_cutoff, p.value = pval_cutoff,
+                                 adjust.method = "fdr"))
+    })
 
-  return(unique(unlist(de_genes)))
+    return(unique(unlist(de_genes)))
 
 }

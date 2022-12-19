@@ -24,7 +24,7 @@ preprocess <- function(object,
     # If colname not in pheno
     if(!is(colname, "NULL") && !is(pheno, "NULL") &&
        !(colname %in% colnames(pheno))) stop(
-           paste("Column", colname, "wasn't found in pheno data.")
+           "Column ", colname, " wasn't found in pheno data."
            )
 
     # Convert gene names

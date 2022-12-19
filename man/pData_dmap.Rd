@@ -14,6 +14,7 @@ Kindly offered by Fred
 data(pData_dmap)
 }
 \description{
-pData_map records phenotype information corresponding to exprs_dmap.
+pData_map records phenotype information
+corresponding to exprs_dmap.
 }
 \keyword{datasets}

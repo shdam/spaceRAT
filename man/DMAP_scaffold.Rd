@@ -14,6 +14,7 @@ Created from exprs_dmap
 data(DMAP_scaffold)
 }
 \description{
-This scaffold was build from the \code{\link{exprs_dmap}} object.
+This scaffold was build from the
+\code{\link{exprs_dmap}} object.
 }
 \keyword{datasets}

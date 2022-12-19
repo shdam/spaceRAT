@@ -21,7 +21,12 @@ Authors@R: c(
            role = c("aut"),
            email = "lronn@dtu.dk")
            )
-Description: Use Ranked analysis for Transcriptomes to project any sample into a space of interest.
+Description: Use Ranked analysis for Transcriptomes to project
+    any sample into a space of interest.
+    spaceRAT ranks the differentially expressed genes in your sample data
+    and uses that information to project it into a prebuilt or
+    user-built scaffold space. spaceRAT provides plotting functions that
+    allows the user to visually investigate their sample data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Imports: 
@@ -38,4 +43,8 @@ Suggests:
     knitr,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
+biocViews:
+    GeneExpression,
+    DifferentialExpression,
+    Software
 Config/testthat/edition: 3

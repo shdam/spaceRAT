@@ -13,22 +13,28 @@ loadingPlot(
 )
 }
 \arguments{
-\item{space}{A scaffoldSpace object created by function \code{\link{buildScaffold}}.}
+\item{space}{A scaffoldSpace object created by function
+\code{\link{buildScaffold}}.}
 
-\item{num_genes}{An optional parameter indicating number of genes to be shown.}
+\item{num_genes}{Optional parameter indicating number of genes to be shown.}
 
-\item{gene_name}{A character indicating which type of gene name to show by the side of arrows. By default HGNC symbol is shown.}
+\item{gene_name}{A character indicating which type of gene name to show by
+the side of arrows. By default HGNC symbol is shown.}
 
 \item{angle}{A number for the degree of rotation of labels on the plot.}
 
-\item{df_only}{The dataframe for the loading plot will be returned instead of the plot.}
+\item{df_only}{The dataframe for the loading plot will be returned
+instead of the plot.}
 }
 \value{
-A data frame indicating the loading scores of the genes that contribute most to the selected principle components.
+A data frame indicating the loading scores of the genes
+that contribute most to the selected principle components.
 The loading plot is printed automatically, thus not returned.
 }
 \description{
-This function takes a \code{\link{scaffoldSpace}} object and generates a loading plot to visualize the genes that contribute most to the selected principle components.
+This function takes a \code{\link{scaffoldSpace-class}} object
+and generates a loading plot to visualize the genes
+that contribute most to the selected principle components.
 }
 \examples{
 utils::data("exprs_dmap", "pData_dmap", package = "spaceRAT")

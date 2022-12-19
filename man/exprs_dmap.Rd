@@ -14,6 +14,7 @@ Kindly offered by Fred
 data(exprs_dmap)
 }
 \description{
-exprs_map records expression matrix of normal hematopoietic cells. The data is measured by microarray.
+exprs_map records expression matrix of normal
+hematopoietic cells. The data is measured by microarray.
 }
 \keyword{datasets}

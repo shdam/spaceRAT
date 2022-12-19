@@ -19,6 +19,6 @@ library(spaceRAT)
 ```
 
 
-```{r setup}
+```{r sessioninfo}
 sessionInfo()
 ```

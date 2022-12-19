@@ -33,8 +33,10 @@ To get the prebuilt DMAP space:
 
 ``` r
 library(spaceRAT)
-utils::data("exprs_dmap", "pData_dmap", "exprs_ilaria", "pData_ilaria", package = "spaceRAT")
+utils::data("exprs_dmap", "pData_dmap", "exprs_ilaria", "pData_ilaria",
+            package = "spaceRAT")
 g <- buildScaffold("prebuilt_DMAP")
+plotScaffold(g, "Scaffold Plot")
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
@@ -45,10 +47,7 @@ You can also visualize other principle components by specifying `dims`.
 ``` r
 # I plan to use "prebuilt_GTEX" when GTEX is done.
 g <- buildScaffold("prebuilt_DMAP",plot_mode = "tiny_label",dims=c(3,4))
-#> plot_mode='tiny_label', shorter names for cell types in phenotype table yields better visualization.
 ```
-
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 Notice, please assign the returned value of `buildScaffold()` to a named
 variable, which will be used later.
@@ -97,8 +96,6 @@ g <- buildScaffold(exprs_dmap,pData_dmap,"cell_types")
 #> Done.
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
-
 Here `"cell_types"` is the name of a column of `pData_dmap`, according
 to which cells are grouped and labeled. Differential expression analysis
 will also be performed using this column of phenotype as independent
@@ -145,7 +142,8 @@ Then run:
 ``` r
 projectSample(g, exprs_ilaria)
 #> Preprocessing complete.
-#> 6 genes are added to count matrix with imputed expression level 0.
+#> 6 genes are added to count matrix
+#>                        with imputed expression level 0.
 #> Scale for colour is already present.
 #> Adding another scale for colour, which will replace the existing scale.
 #> Coordinate system already present. Adding new coordinate system, which will
@@ -158,7 +156,7 @@ By passing corresponding phenotype table and column name to
 `projectSample()`, the plot can show more information about new samples:
 
 ``` r
-pData_ilaria[1:5,,drop=F]
+pData_ilaria[1:5,,drop = FALSE]
 #>                                  cancer_type
 #> SJAEL011865                          AML-MRC
 #> SJAEL011868                          AML-MRC
@@ -167,7 +165,8 @@ pData_ilaria[1:5,,drop=F]
 #> SJAEL011874                            t-AML
 projectSample(g, exprs_ilaria,pData_ilaria,"cancer_type")
 #> Preprocessing complete.
-#> 6 genes are added to count matrix with imputed expression level 0.
+#> 6 genes are added to count matrix
+#>                        with imputed expression level 0.
 #> Coordinate system already present. Adding new coordinate system, which will
 #> replace the existing one.
 ```
