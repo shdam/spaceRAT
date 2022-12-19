@@ -7,4 +7,4 @@
 ^data-raw$
 ^dev$
 ^LICENSE\.md$
-^.DS_Store$
+^\.DS_Store$

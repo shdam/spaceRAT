@@ -2,10 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-.gitignore
-.Rbuildignore
 .Rprofile
-doc
-inst/doc
 .DS_Store
-raw_data
