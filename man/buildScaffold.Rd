@@ -6,10 +6,11 @@
 \usage{
 buildScaffold(
   object,
-  colname = NULL,
   pheno_scaffold = NULL,
+  colname = NULL,
   assay = "counts",
   data = "logged",
+  threshold = 10,
   dim_reduction = "PCA",
   dims = c(1, 2),
   plot_mode = "dot",
@@ -26,19 +27,20 @@ buildScaffold(
 \item{object}{An expression matrix of class SummarizedExperiment, SingleCellExperiment, matrix, or a data frame. Column names are sample names.
 Row names are gene names, which can be Ensembl Gene ID, HGNC Symbol, Entrez Gene ID Ensembl, Transcript ID or Refseq mRNA.
 All gene ID will be automatically converted to Ensembl Gene ID. If you want to retain your gene identifier that is not currently supported, please specify \code{annotation=NA}. See parameter \code{annotation} for more information.
-Counts of several transcript ID corresponding to same gene will be added and recorded as the counts of the gene.
-To use the pre-built scaffold, simply set object="prebuilt_DMAP", or "prebuilt_GTEX", and no need to specify any other parameter.}
-
-\item{colname}{A column name of \code{pheno_scaffold}. Cells will be grouped by this column of values.
-Thus, differential expression analysis will be performed using this column of phenotype as independent variables.}
+Counts of several transcript ID corresponding to same gene will be added and recorded as the counts of the gene.}
 
 \item{pheno_scaffold}{A phenotype table corresponding to the expression matrix.
 Row names are sample names, identical to column names of \code{object}.}
+
+\item{colname}{A column name of \code{pheno_scaffold}. Cells will be grouped by this column of values.
+Thus, differential expression analysis will be performed using this column of phenotype as independent variables.}
 
 \item{assay}{(Default: "counts") The assay slot to use with your Bioconductor object.}
 
 \item{data}{A character indicating whether the count matrix is log-transformed or raw. By default \code{data="logged"}.
 If the count matrix is raw counts, please specify \code{data="raw"}}
+
+\item{threshold}{(Default: 10) Prefiltering threshold for count row sums.}
 
 \item{dim_reduction}{A character indicating the method for dimensionality reduction. Currently "PCA" and "UMAP" are supported.}
 
@@ -84,6 +86,10 @@ subsets the scaffold dataset to contain only the DE genes, ranks the genes withi
 By default this function plots the resulting \code{\link{scaffoldSpace}} object before returning it, but this autoplot mode can be turned off by specifying \code{auto_plot=FALSE}.
 }
 \examples{
-buildScaffold("prebuilt_DMAP")
-buildScaffold(exprs_dmap,pData_dmap,"cell_types", pval_cutoff=0.01,pca_scale=TRUE)
+utils::data("exprs_dmap", "pData_dmap", package = "spaceRAT")
+buildScaffold("prebuilt_DMAP", auto_plot = FALSE)
+buildScaffold(exprs_dmap,pData_dmap,"cell_types",
+pval_cutoff=0.01,pca_scale=TRUE, auto_plot = FALSE)
+# To use the pre-built scaffold, simply set object="prebuilt_DMAP",
+# or "prebuilt_GTEX", and no need to specify any other parameter.
 }

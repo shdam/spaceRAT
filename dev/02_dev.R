@@ -39,12 +39,12 @@ usethis::use_data_raw( name = "GTEX_scaffold", open = TRUE )
 
 ## Tests ----
 ## Add one line by test you want to create
-usethis::use_test( "app" )
+usethis::use_test( "createSE" )
 
 # Documentation
 
 ## Vignette ----
-usethis::use_vignette("RAT")
+usethis::use_vignette("spaceRAT")
 devtools::build_vignettes()
 
 ## Code coverage ----

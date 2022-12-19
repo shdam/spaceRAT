@@ -17,8 +17,7 @@
 #' Row names are gene names, which can be Ensembl Gene ID, HGNC Symbol, Entrez Gene ID Ensembl, Transcript ID or Refseq mRNA.
 #' All gene ID will be automatically converted to Ensembl Gene ID. If you want to retain your gene identifier that is not currently supported, please specify \code{annotation=NA}. See parameter \code{annotation} for more information.
 #' Counts of several transcript ID corresponding to same gene will be added and recorded as the counts of the gene.
-#' To use the pre-built scaffold, simply set object="prebuilt_DMAP", or "prebuilt_GTEX", and no need to specify any other parameter.
-
+#'
 #' @param pheno_scaffold A phenotype table corresponding to the expression matrix.
 #' Row names are sample names, identical to column names of \code{object}.
 #'
@@ -35,7 +34,7 @@
 #' If more than 12 cell types are to be displayed, setting \code{plot_mode="tiny_label"} may yield better visualization.
 #' Shorter names for phenotypes (e.g. cell types) is strongly recommended in "tiny_label" mode.
 #' @param dim_reduction A character indicating the method for dimensionality reduction. Currently "PCA" and "UMAP" are supported.
-#'
+#' @param threshold (Default: 10) Prefiltering threshold for count row sums.
 #' @param pval_cutoff A cutoff value for p value when selecting differentially expressed genes. By default \code{pval_cutoff=0.05}.
 #' @param lfc_cutoff A cutoff value for logFC when selecting differentially expressed genes. By default \code{lfc_cutoff=2}.
 #' @param title Title for the plot
@@ -51,16 +50,21 @@
 #' @export
 #' @return A scaffoldSpace object
 #' @examples
-#' buildScaffold("prebuilt_DMAP")
-#' buildScaffold(exprs_dmap,pData_dmap,"cell_types", pval_cutoff=0.01,pca_scale=TRUE)
+#' utils::data("exprs_dmap", "pData_dmap", package = "spaceRAT")
+#' buildScaffold("prebuilt_DMAP", auto_plot = FALSE)
+#' buildScaffold(exprs_dmap,pData_dmap,"cell_types",
+#' pval_cutoff=0.01,pca_scale=TRUE, auto_plot = FALSE)
+#' # To use the pre-built scaffold, simply set object="prebuilt_DMAP",
+#' # or "prebuilt_GTEX", and no need to specify any other parameter.
 
 buildScaffold <- function(object,
-                          colname = NULL,
                           pheno_scaffold = NULL,
+                          colname = NULL,
                           assay = "counts",
                           data = "logged",
-                          dim_reduction="PCA",
-                          dims=c(1,2),
+                          threshold = 10,
+                          dim_reduction = "PCA",
+                          dims = c(1,2),
                           plot_mode = "dot",
                           classes = NULL,
                           pval_cutoff = 0.05,
@@ -71,8 +75,9 @@ buildScaffold <- function(object,
                           annotation = "ensembl_gene"){
   # prebuilt_DMAP no samples removed
   if(is(object, "character") && object == "prebuilt_DMAP" && is(classes, "NULL")){
+    utils::data("DMAP_scaffold", package = "spaceRAT")
     space <- DMAP_scaffold
-    space@pcs <- pcs
+    space@dims <- dims
     space@plot_mode <- plot_mode
     if (auto_plot){
       g <- plotScaffold(space,title)
@@ -81,6 +86,7 @@ buildScaffold <- function(object,
     return(space)
     # prebuilt DMAP samples removed
   } else if(is(object, "character") && object == "prebuilt_DMAP" && !is(classes, "NULL")){
+    utils::data("exprs_dmap", "pData_dmap", package = "spaceRAT")
     object <- exprs_dmap
     pheno_scaffold <- pData_dmap
     colname <- "cell_types"
@@ -91,9 +97,9 @@ buildScaffold <- function(object,
 
   # Preprocessing ----
 
-  if(is(pheno, "NULL")) {
+  if(is(pheno_scaffold, "NULL")) {
     warning("No annotation data provided. Expression data colnames are used instead.")
-    pheno <- data.frame(colnames(counts), row.names = colnames(counts))
+    pheno <- data.frame(colnames(object), row.names = colnames(object))
     colname <- NULL
   }
 

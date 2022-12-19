@@ -2,11 +2,10 @@
 .Rhistory
 .RData
 .Ruserdata
-renv.lock
-renv/
 .gitignore
 .Rbuildignore
 .Rprofile
 doc
 inst/doc
 .DS_Store
+raw_data

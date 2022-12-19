@@ -31,6 +31,7 @@ The loading plot is printed automatically, thus not returned.
 This function takes a \code{\link{scaffoldSpace}} object and generates a loading plot to visualize the genes that contribute most to the selected principle components.
 }
 \examples{
+utils::data("exprs_dmap", "pData_dmap", package = "spaceRAT")
 space <- buildScaffold(exprs_dmap, pData_dmap, "cell_types")
 loadingPlot(space)
 }

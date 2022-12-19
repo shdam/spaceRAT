@@ -1,59 +1,59 @@
 test_that("mapGene() converts from Ensembl_gene to others",{
-  ensembl <- rownames(exprs_dmap)
-  df <- mapGene(ensembl,to="ensembl_transcript")
-  tx<- as.character(df[,2])
-  expect_match(tx,"^^ENST[0-9]+$")
-  expect_false(any(is.na(tx)))
-  expect_false("" %in% tx)
+    ensembl <- rownames(exprs_dmap)
+    df <- mapGene(ensembl,to="ensembl_transcript")
+    tx <- as.character(df[,2])
+    expect_match(tx,"^^ENST[0-9]+$")
+    expect_false(any(is.na(tx)))
+    expect_false("" %in% tx)
 
-  df <- mapGene(ensembl,to="entrez")
-  entrez <- as.character(df[,2])
-  expect_match(entrez,"^[0-9]+$")
-  expect_false(any(is.na(entrez)))
-  expect_false("" %in% entrez)
+    df <- mapGene(ensembl,to="entrez")
+    entrez <- as.character(df[,2])
+    expect_match(entrez,"^[0-9]+$")
+    expect_false(any(is.na(entrez)))
+    expect_false("" %in% entrez)
 
-  df <- mapGene(ensembl,to="hgnc_symbol")
-  hgnc <- as.character(df[,2])
-  expect_true(all(hgnc %in% gene_id_converter_hs$hgnc_symbol))
-  expect_false(any(is.na(hgnc)))
-  expect_false("" %in% hgnc)
+    df <- mapGene(ensembl,to="hgnc_symbol")
+    hgnc <- as.character(df[,2])
+    expect_true(all(hgnc %in% gene_id_converter_hs$hgnc_symbol))
+    expect_false(any(is.na(hgnc)))
+    expect_false("" %in% hgnc)
 
-  df <- mapGene(ensembl,to="refseq_mrna")
-  refseq <- as.character(df[,2])
-  expect_match(refseq,"^NM_")
-  expect_false(any(is.na(refseq)))
-  expect_false("" %in% refseq)
+    df <- mapGene(ensembl,to="refseq_mrna")
+    refseq <- as.character(df[,2])
+    expect_match(refseq,"^NM_")
+    expect_false(any(is.na(refseq)))
+    expect_false("" %in% refseq)
 })
 
 
 test_that("mapGene() converts from Ensembl_transcript to others",{
-  ensembl <- rownames(exprs_dmap)
-  df <- mapGene(ensembl,to="ensembl_transcript")
-  tx<- df[,2]
+    ensembl <- rownames(exprs_dmap)
+    df <- mapGene(ensembl,to="ensembl_transcript")
+    tx<- df[,2]
 
-  df <- mapGene(tx,to="ensembl_gene")
-  ensembl <- df[,2]
-  expect_match(ensembl,"^ENSG[0-9]+$")
-  expect_false(any(is.na(ensembl)))
-  expect_false("" %in% ensembl)
+    df <- mapGene(tx,to="ensembl_gene")
+    ensembl <- df[,2]
+    expect_match(ensembl,"^ENSG[0-9]+$")
+    expect_false(any(is.na(ensembl)))
+    expect_false("" %in% ensembl)
 
-  df <- mapGene(tx,to="entrez")
-  entrez <- as.character(df[,2])
-  expect_match(entrez,"^[0-9]+$")
-  expect_false(any(is.na(entrez)))
-  expect_false("" %in% entrez)
+    df <- mapGene(tx,to="entrez")
+    entrez <- as.character(df[,2])
+    expect_match(entrez,"^[0-9]+$")
+    expect_false(any(is.na(entrez)))
+    expect_false("" %in% entrez)
 
-  df <- mapGene(tx,to="hgnc_symbol")
-  hgnc <- as.character(df[,2])
-  expect_true(all(hgnc %in% gene_id_converter_hs$hgnc_symbol))
-  expect_false(any(is.na(hgnc)))
-  expect_false("" %in% hgnc)
+    df <- mapGene(tx,to="hgnc_symbol")
+    hgnc <- as.character(df[,2])
+    expect_true(all(hgnc %in% gene_id_converter_hs$hgnc_symbol))
+    expect_false(any(is.na(hgnc)))
+    expect_false("" %in% hgnc)
 
-  df <- mapGene(tx,to="refseq_mrna")
-  refseq <- as.character(df[,2])
-  expect_match(refseq,"^NM_")
-  expect_false(any(is.na(refseq)))
-  expect_false("" %in% refseq)
+    df <- mapGene(tx,to="refseq_mrna")
+    refseq <- as.character(df[,2])
+    expect_match(refseq,"^NM_")
+    expect_false(any(is.na(refseq)))
+    expect_false("" %in% refseq)
 })
 
 
@@ -159,5 +159,5 @@ test_that("mapGene() doesn't convert if the target gene id is same as current ge
 
 
 test_that("mapGene() returns NULL if gene ids are not recognized",{
-  expect_true(is.null(mapGene(c("123","ABC","EMM123"))))
+  expect_null(mapGene(c("123","ABC","EMM123")))
 })

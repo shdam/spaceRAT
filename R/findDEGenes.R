@@ -1,14 +1,19 @@
 #' Find Differentially Expressed Genes
 #'
-#' This function performs DE analysis using limma to find differentially expressed genes between cell X and non-X for all types of cells that has at least 2 samples in the count matrix.
+#' This function performs DE analysis using limma to find
+#'   differentially expressed genes between cell X and non-X for all
+#'   types of cells that has at least 2 samples in the count matrix.
 #'
 #' @param eset An \code{\link{ExpressionSet}} object
-#' @param pval_cutoff A cutoff value for p value when selecting differentially expressed genes. By default \code{pval_cutoff=0.05}
-#' @param lfc_cutoff A cutoff value for log fold change when selecting differentially expressed genes. By default \code{lfc_cutoff=2}
+#' @param pval_cutoff A cutoff value for p value when selecting
+#' differentially expressed genes. By default \code{pval_cutoff=0.05}
+#' @param lfc_cutoff A cutoff value for log fold change when selecting
+#' differentially expressed genes. By default \code{lfc_cutoff=2}
 #' @return A vector of names of differentially expressed genes
 #' @noRd
 #' @examples
-#' find_de_genes(eset_dmap,"cell_types")
+#' utils::data("exprs_dmap", package = "spaceRAT")
+#' findDEGenes(exprs_dmap, "cell_types")
 
 findDEGenes <- function(counts, cell_types, pval_cutoff = 0.05, lfc_cutoff = 2){
 
@@ -34,8 +39,10 @@ findDEGenes <- function(counts, cell_types, pval_cutoff = 0.05, lfc_cutoff = 2){
   fit <- limma::lmFit(counts,design)
   fit <- limma::contrasts.fit(fit, contrast=cm)
   fit <- limma::eBayes(fit)
-  de_genes <- sapply(colnames(cm), function(name){
-          rownames(limma::topTable(fit, coef=name, number = Inf, lfc =lfc_cutoff, p.value = pval_cutoff, adjust.method="fdr"))
+  de_genes <- lapply(colnames(cm), function(name){
+          rownames(limma::topTable(fit, coef = name, number = Inf,
+                                   lfc = lfc_cutoff, p.value = pval_cutoff,
+                                   adjust.method = "fdr"))
   })
 
   return(unique(unlist(de_genes)))

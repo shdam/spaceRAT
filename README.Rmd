@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# RAT
+# spaceRAT
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
@@ -37,14 +37,15 @@ There are two ways to get a scaffold PCA space. You can either obtain the prebui
   
 To get the prebuilt DMAP space:
 ```{r} 
-library(RAT)
+library(spaceRAT)
+utils::data("exprs_dmap", "pData_dmap", "exprs_ilaria", "pData_ilaria", package = "spaceRAT")
 g <- buildScaffold("prebuilt_DMAP")
 ```
 
-You can also turn on the "tiny_label" mode by specifying `plot_mode`. You can also visualize other principle components by specifying `pcs`.  
+You can also turn on the "tiny_label" mode by specifying `plot_mode`. You can also visualize other principle components by specifying `dims`.  
 ```{r}
 # I plan to use "prebuilt_GTEX" when GTEX is done.
-g <- buildScaffold("prebuilt_DMAP",plot_mode = "tiny_label",pcs=c(3,4))
+g <- buildScaffold("prebuilt_DMAP",plot_mode = "tiny_label",dims=c(3,4))
 ```
 
 Notice, please assign the returned value of `buildScaffold()` to a named variable, which will be used later.  

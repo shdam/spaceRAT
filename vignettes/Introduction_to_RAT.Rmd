@@ -1,8 +1,8 @@
 ---
-title: "Introduction to RAT"
+title: "Introduction to spaceRAT"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to RAT}
+  %\VignetteIndexEntry{Introduction to spaceRAT}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,5 +15,5 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(RAT)
+library(spaceRAT)
 ```

@@ -1,4 +1,6 @@
 library(testthat)
-library(RAT)
+library(spaceRAT)
 
-test_check("RAT")
+utils::data("exprs_dmap", "pData_dmap", "gene_id_converter_hs", "exprs_ilaria", "pData_ilaria", package = "spaceRAT")
+
+test_check("spaceRAT")

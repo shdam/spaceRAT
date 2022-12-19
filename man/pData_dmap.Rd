@@ -11,7 +11,7 @@ a data frame
 Kindly offered by Fred
 }
 \usage{
-pData_dmap
+data(pData_dmap)
 }
 \description{
 pData_map records phenotype information corresponding to exprs_dmap.

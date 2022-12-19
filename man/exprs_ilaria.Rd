@@ -11,7 +11,7 @@ a data frame
 Kindly offered by Fred
 }
 \usage{
-exprs_ilaria
+data(exprs_ilaria)
 }
 \description{
 exprs_ilaria contains expression matrix of Acute Myeloid Leukemia of erythroid subtype.

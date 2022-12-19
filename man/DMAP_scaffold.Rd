@@ -11,7 +11,7 @@ a scaffoldSpace
 Created from exprs_dmap
 }
 \usage{
-DMAP_scaffold
+data(DMAP_scaffold)
 }
 \description{
 This scaffold was build from the \code{\link{exprs_dmap}} object.

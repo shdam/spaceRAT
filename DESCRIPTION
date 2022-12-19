@@ -1,6 +1,6 @@
-Package: RAT
+Package: spaceRAT
 Type: Package
-Title: Ranked Analysis for Transcriptomes (RAT)
+Title: Ranked Analysis for Transcriptomes (spaceRAT)
 Version: 0.1.0
 Authors@R: c(
     person(given = "Søren Helweg",
@@ -21,19 +21,18 @@ Authors@R: c(
            role = c("aut"),
            email = "lronn@dtu.dk")
            )
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: GPL
+Description: Use Ranked analysis for Transcriptomes to project any sample into a space of interest.
+License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 Imports: 
     utils, stats, methods,
     dplyr, tibble, magrittr,
-    ggplot2, RColorBrewer,
-    limma
-RoxygenNote: 7.2.1
+    ggplot2, RColorBrewer, grDevices,
+    limma,
+    uwot
+RoxygenNote: 7.2.3
 Depends: 
-    R (>= 3.5.0)
+    R (>= 4.2.0)
 Suggests: 
     rmarkdown,
     knitr,

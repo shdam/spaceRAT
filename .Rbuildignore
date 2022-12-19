@@ -6,3 +6,5 @@
 ^tmp$
 ^data-raw$
 ^dev$
+^LICENSE\.md$
+^.DS_Store$

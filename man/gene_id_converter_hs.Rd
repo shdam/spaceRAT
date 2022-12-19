@@ -11,7 +11,7 @@ a data frame
 downloaded from biomaRt
 }
 \usage{
-gene_id_converter_hs
+data(gene_id_converter_hs)
 }
 \description{
 This table contains ensembl_gene_id of all human genes, and corresponding ensembl_transcript_id, entrezgene_id ,hgnc_symbol, and refseq_mrna

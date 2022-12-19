@@ -11,7 +11,7 @@ a data frame
 Kindly offered by Fred
 }
 \usage{
-pData_ilaria
+data(pData_ilaria)
 }
 \description{
 pData_ilaria contains phenotype data corresponding to exprs_ilaria

@@ -1,16 +1,17 @@
 #' Format pheno data
 #'
-#'
+#' @inheritParams buildScaffold
+#' @noRd
 formatPheno <- function(pheno, colname = NULL, classes = NULL){
 
   pheno <- as.data.frame(pheno, row.names = rownames(pheno))
   # If no rownames in pheno data
-  if(all(rownames(pheno)[1:6] == paste(1:6))){
+  if(all(rownames(pheno)[seq_len(6)] == paste(seq_len(6)))){
     pheno <- as.data.frame(pheno, row.names = pheno[[colnames(pheno)[1]]])
   }
   # If colname not in pheno
-  if(is(colname, "NULL")) colname <- colnames(pheno_scaffold)[1]
-  if(!(colname %in% colnames(pheno))) stop(paste("Column", colname, "was not found in annotation data."))
+  if(is(colname, "NULL")) colname <- colnames(pheno)[1]
+  if(!(colname %in% colnames(pheno))) stop("Column ", colname, " was not found in annotation data.")
 
   # Remove everything but the colname
   pheno <- pheno[, colname, drop = FALSE]
@@ -35,7 +36,9 @@ formatPheno <- function(pheno, colname = NULL, classes = NULL){
   return(pheno)
 }
 
-
+#' Remove missing annotations
+#' @inheritParams buildScaffold
+#' @noRd
 missingAnnotation <- function(counts, pheno){
   # subset counts to only contain samples with annotation
   idx <- which(!(colnames(counts) %in% rownames(pheno)))
@@ -47,6 +50,9 @@ missingAnnotation <- function(counts, pheno){
 
 }
 
+#' Remove annotations with missing annotations
+#' @inheritParams buildScaffold
+#' @noRd
 missingExpression <- function(pheno, counts){
   # subset counts to only contain samples with annotation
   idx <- which(!(rownames(pheno) %in% colnames(counts)))
@@ -57,7 +63,9 @@ missingExpression <- function(pheno, counts){
   return(pheno)
 }
 
-
+#' Match annotation to expression data
+#' @inheritParams buildScaffold
+#' @noRd
 matchToExpression <- function(pheno, counts){
   # Match row/col names
   idx <- match(colnames(counts), rownames(pheno), nomatch = 0)
@@ -66,7 +74,9 @@ matchToExpression <- function(pheno, counts){
   return(pheno)
 }
 
-
+#' Remove NAs from expression data
+#' @inheritParams buildScaffold
+#' @noRd
 removeNAs <- function(counts){
 
   # fill NA in count matrix with 0.

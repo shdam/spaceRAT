@@ -1,11 +1,11 @@
 ## code to prepare `DMAP_scaffold` dataset goes here
 
-library(RAT)
+library(spaceRAT)
 
-counts <- readr::read_csv("data-raw/exprs_dmap.csv")
-pdata <- readr::read_csv("data-raw/pData_dmap.csv")
-scaffold <- buildScaffold(
-  counts_scaffold = counts,
+counts <- readr::read_csv("tmp/exprs_dmap.csv", show_col_types = FALSE)
+pdata <- readr::read_csv("tmp/pData_dmap.csv", show_col_types = FALSE)
+DMAP_scaffold <- buildScaffold(
+  object = counts,
   pheno_scaffold = pdata,
   colname = "cell_types"
 )

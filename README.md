@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# RAT
+# spaceRAT
 
 <!-- badges: start -->
 
@@ -32,18 +32,19 @@ name of the phenotype table to function `buildScaffold()`.
 To get the prebuilt DMAP space:
 
 ``` r
-library(RAT)
+library(spaceRAT)
+utils::data("exprs_dmap", "pData_dmap", "exprs_ilaria", "pData_ilaria", package = "spaceRAT")
 g <- buildScaffold("prebuilt_DMAP")
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
 You can also turn on the “tiny_label” mode by specifying `plot_mode`.
-You can also visualize other principle components by specifying `pcs`.
+You can also visualize other principle components by specifying `dims`.
 
 ``` r
 # I plan to use "prebuilt_GTEX" when GTEX is done.
-g <- buildScaffold("prebuilt_DMAP",plot_mode = "tiny_label",pcs=c(3,4))
+g <- buildScaffold("prebuilt_DMAP",plot_mode = "tiny_label",dims=c(3,4))
 #> plot_mode='tiny_label', shorter names for cell types in phenotype table yields better visualization.
 ```
 
@@ -90,6 +91,10 @@ Then call:
 
 ``` r
 g <- buildScaffold(exprs_dmap,pData_dmap,"cell_types")
+#> Preprocessing complete.
+#> Finding differentially expressed genes
+#> Reducing dimensions.
+#> Done.
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
@@ -139,7 +144,12 @@ Then run:
 
 ``` r
 projectSample(g, exprs_ilaria)
-#> 6 genes are added to count matrix, with imputed expression level 0.
+#> Preprocessing complete.
+#> 6 genes are added to count matrix with imputed expression level 0.
+#> Scale for colour is already present.
+#> Adding another scale for colour, which will replace the existing scale.
+#> Coordinate system already present. Adding new coordinate system, which will
+#> replace the existing one.
 ```
 
 <img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
@@ -156,7 +166,10 @@ pData_ilaria[1:5,,drop=F]
 #> SJAEL011873 AML, NOS (non erythroid subtype)
 #> SJAEL011874                            t-AML
 projectSample(g, exprs_ilaria,pData_ilaria,"cancer_type")
-#> 6 genes are added to count matrix, with imputed expression level 0.
+#> Preprocessing complete.
+#> 6 genes are added to count matrix with imputed expression level 0.
+#> Coordinate system already present. Adding new coordinate system, which will
+#> replace the existing one.
 ```
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
