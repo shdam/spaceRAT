@@ -28,7 +28,7 @@ test_that("convertGeneName() converts between Ensembl_gene and hgnc_symbol",{
 
 
 test_that("convertGeneName() converts from Ensembl_transcript to Ensembl_gene",{
-    transcripts <- unique(gene_id_converter_hs$ensembl_transcript_id[!is.na(gene_id_converter_hs$ensembl_transcript_id)])[1:5000]
+    transcripts <- unique(gene_id_converter_hs$ensembl_transcript_id[!is.na(gene_id_converter_hs$ensembl_transcript_id)])[seq_len(5000)]
     dat <- matrix(1,nrow=5000,ncol=3)
     rownames(dat) <- transcripts
     df <- convertGeneName(dat)
@@ -39,7 +39,7 @@ test_that("convertGeneName() converts from Ensembl_transcript to Ensembl_gene",{
 
 
 test_that("convertGeneName() converts from refseq_mrna to Ensembl_gene",{
-    transcripts <- unique(gene_id_converter_hs$refseq_mrna[!is.na(gene_id_converter_hs$refseq_mrna)])[1:5000]
+    transcripts <- unique(gene_id_converter_hs$refseq_mrna[!is.na(gene_id_converter_hs$refseq_mrna)])[seq_len(5000)]
     dat <- matrix(1,nrow=5000,ncol=3)
     rownames(dat) <- transcripts
     df <- convertGeneName(dat)

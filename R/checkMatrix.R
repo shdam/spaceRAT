@@ -15,7 +15,7 @@ checkMatrix <- function(mat){
 
     # No rowname information
     stopifnot("The expression matrix does not contain rownames" =
-                (sum(!numerics) == 1 || !empty_rownames))
+                  (sum(!numerics) == 1 || !empty_rownames))
 
     # Check counts rownames
     if(sum(!numerics) == 1){
@@ -23,18 +23,18 @@ checkMatrix <- function(mat){
             if(is(mat, "data.frame")){
                 mat <- tibble::column_to_rownames(
                     mat, colnames(mat)[which(!numerics)])
-      } else if(is(mat, "matrix")){
-            rownames(mat) <- mat[which(!numerics)]
-            mat <- mat[which(numerics)]
-      }
-    } else if(!empty_rownames){ # Rownames and additional column
-          warning("column: ", colnames(mat)[which(!numerics)],
-                  " is removed from expression matrix.
-                  If that column was intended to be the matrix' rownames,
-                  please manually set the rownames.")
-          mat <- mat[which(numerics)]
-    }
-    } # Else the matrix is fine
-
+                } else if(is(mat, "matrix")){
+                    rownames(mat) <- mat[which(!numerics)]
+                    mat <- mat[which(numerics)]
+                    }
+            } else if(!empty_rownames){ # Rownames and additional column
+                warning(
+                    "column: ", colnames(mat)[which(!numerics)],
+                    " is removed from expression matrix.
+                    If that column was intended to be the matrix' rownames,
+                    please manually set the rownames.")
+                mat <- mat[which(numerics)]
+          }
+        } # Else the matrix is fine
     return(as.matrix(mat))
 }
