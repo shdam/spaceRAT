@@ -89,7 +89,25 @@
 #' In this case, please manually make sure that the row names
 #' (gene identifiers) of \code{counts_scaffold} and
 #' \code{counts_sample} are the same.
-#'
+#' @usage
+#' buildScaffold(
+#'     object,
+#'     pheno_scaffold = NULL,
+#'     colname = NULL,
+#'     assay = "counts",
+#'     data = "logged",
+#'     threshold = 10,
+#'     dim_reduction = "PCA",
+#'     dims = c(1, 2),
+#'     plot_mode = "dot",
+#'     classes = NULL,
+#'     pval_cutoff = 0.05,
+#'     lfc_cutoff = 2,
+#'     title = "Scaffold Plot",
+#'     pca_scale = FALSE,
+#'     auto_plot = TRUE,
+#'     annotation = "ensembl_gene"
+#'     )
 #' @importFrom methods is
 #' @export
 #' @return A scaffoldSpace object
@@ -97,35 +115,40 @@
 #' utils::data("exprs_dmap", "pData_dmap", package = "spaceRAT")
 #' buildScaffold(exprs_dmap,pData_dmap,"cell_types",
 #' pval_cutoff=0.01,pca_scale=TRUE, auto_plot = FALSE)
-buildScaffold <- function(object,
-                          pheno_scaffold = NULL,
-                          colname = NULL,
-                          assay = "counts",
-                          data = "logged",
-                          threshold = 10,
-                          dim_reduction = "PCA",
-                          dims = c(1,2),
-                          plot_mode = "dot",
-                          classes = NULL,
-                          pval_cutoff = 0.05,
-                          lfc_cutoff = 2,
-                          title = "Scaffold Plot",
-                          pca_scale = FALSE,
-                          auto_plot = TRUE,
-                          annotation = "ensembl_gene"){
+buildScaffold <- function(
+        object,
+        pheno_scaffold = NULL,
+        colname = NULL,
+        assay = "counts",
+        data = "logged",
+        threshold = 10,
+        dim_reduction = "PCA",
+        dims = c(1,2),
+        plot_mode = "dot",
+        classes = NULL,
+        pval_cutoff = 0.05,
+        lfc_cutoff = 2,
+        title = "Scaffold Plot",
+        pca_scale = FALSE,
+        auto_plot = TRUE,
+        annotation = "ensembl_gene"){
     # prebuilt_DMAP no samples removed
-    if(is(object, "character") &&
-       object == "prebuilt_DMAP" &&
-       is(classes, "NULL")){
+    if(
+        is(object, "character") &&
+        object == "prebuilt_DMAP" &&
+        is(classes, "NULL")
+        ){
         utils::data("DMAP_scaffold", package = "spaceRAT")
         space <- DMAP_scaffold
         space@dims <- dims
         space@plot_mode <- plot_mode
         return(space)
         # prebuilt DMAP samples removed
-    } else if(is(object, "character") &&
-              object == "prebuilt_DMAP" &&
-              !is(classes, "NULL")){
+    } else if(
+        is(object, "character") &&
+        object == "prebuilt_DMAP" &&
+        !is(classes, "NULL")
+        ){
         utils::data("exprs_dmap", "pData_dmap", package = "spaceRAT")
         object <- exprs_dmap
         pheno_scaffold <- pData_dmap
@@ -133,8 +156,9 @@ buildScaffold <- function(object,
         # eset_scaffold <- createEset(exprs_dmap, pData_dmap,
         # colname = "cell_types", classes = classes, annotation = annotation)
     } else if(is(object, "character")){
-        stop("Incorrectly named prebuilt scaffold.
-             The available are: prebuilt_DMAP")
+        stop(
+        "Incorrectly named prebuilt scaffold. The available are: prebuilt_DMAP"
+        )
     }
 
     # Preprocessing ----
@@ -161,8 +185,8 @@ buildScaffold <- function(object,
     rm(object)
 
     # Find DE genes
-    DEgenes <- findDEGenes(counts_scaffold, cell_types, pval_cutoff,
-                           lfc_cutoff)
+    DEgenes <- findDEGenes(
+        counts_scaffold, cell_types, pval_cutoff, lfc_cutoff)
 
     # subset
     counts_scaffold <- counts_scaffold[DEgenes, ]
@@ -172,10 +196,9 @@ buildScaffold <- function(object,
 
     # dimension reduction
     message("Reducing dimensions.")
-    if (dim_reduction=="PCA"){
-        reduced_dims <- stats::prcomp(t(scaffold_rank),
-                                      scale = pca_scale)
-    } else if (dim_reduction=="UMAP"){
+    if (dim_reduction == "PCA"){
+        reduced_dims <- stats::prcomp(t(scaffold_rank), scale = pca_scale)
+    } else if (dim_reduction == "UMAP"){
         reduced_dims <- uwot::umap(t(scaffold_rank))
     }
 

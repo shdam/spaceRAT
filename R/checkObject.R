@@ -7,8 +7,10 @@ checkObject <- function(object, assay = "counts"){
     # Convert Bioconductor objects to matrix
         if(is(object, "SummarizedExperiment")){
             pheno <- as.data.frame(object@colData)
-            if(is(assay, "NULL") ||
-               !(assay %in% names(object@assays)) )
+            if(
+                is(assay, "NULL") ||
+                !(assay %in% names(object@assays))
+                )
                 assay <- names(object@assays)[1]
             object <- object@assays@data[[assay]]
 
@@ -17,8 +19,7 @@ checkObject <- function(object, assay = "counts"){
                     or SingleCellExperiment).\n If you'd like us to
                     support a new format, please raise an issue on GitHub.")}
         return(list(object, pheno))
-    } else{
-      return(object)
+        } else{
+            return(object)
+        }
     }
-
-}

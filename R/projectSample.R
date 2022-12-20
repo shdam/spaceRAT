@@ -24,6 +24,17 @@
 #' @param verbose A logical vector indicating whether to report the number of
 #' genes imputed to make \code{sample} compatible with
 #' \code{scaffold}
+#' @usage
+#' projectSample(
+#'     space,
+#'     object,
+#'     pheno = NULL,
+#'     colname = "cancer_type",
+#'     assay = "counts",
+#'     title = "Samples projected onto scaffold PCA",
+#'     verbose = TRUE,
+#'     annotation = "ensembl_gene"
+#'     )
 #' @export
 #' @return ggplot object with new samples projected to existing scaffold plot
 #' @examples
@@ -33,16 +44,13 @@
 #' projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
 
 
-projectSample <- function(space,
-                          object,
-                          pheno = NULL,
-                          colname = "cancer_type",
-                          assay = "counts",
-                          title = "Samples projected onto scaffold PCA",
-                          verbose = TRUE,
-                          annotation = "ensembl_gene"){
-
-
+projectSample <- function(
+        space, object,
+        pheno = NULL, colname = "cancer_type",
+        assay = "counts",
+        title = "Samples projected onto scaffold PCA",
+        verbose = TRUE,
+        annotation = "ensembl_gene"){
     # Preprocess data
     object <- preprocess(
         object,
@@ -61,14 +69,16 @@ projectSample <- function(space,
     # add absent genes then subset eset_sample so counts_scaffold
     # and counts_project contain same genes
     absent_genes <- space@DEgene[!(space@DEgene %in% rownames(counts))]
-    absent_exprs <- matrix(0,length(absent_genes), ncol(counts),
-                           dimnames = list(absent_genes, colnames(counts)))
+    absent_exprs <- matrix(
+        0,length(absent_genes), ncol(counts),
+        dimnames = list(absent_genes, colnames(counts)))
     rownames(absent_exprs) <- absent_genes
     counts_sample <- rbind(counts,absent_exprs)
 
     if (verbose){
-        message(paste0(length(absent_genes)," genes are added to count matrix
-                       with imputed expression level 0."))
+        message(
+        length(absent_genes)," genes are added to count matrix
+        with imputed expression level 0.")
     }
 
     if (length(absent_genes)/length(space@DEgene)>1/4){
@@ -87,8 +97,8 @@ projectSample <- function(space,
 
     # PCA transform the sample data
 
-    transformed_sample <- stats::predict(space@model,
-                                         newdata = t(ranked_sample))
+    transformed_sample <- stats::predict(
+        space@model, newdata = t(ranked_sample))
 
     # Prepare dataframe for ggplot
     PC1_sample <- transformed_sample[, space@dims[1]]
@@ -122,9 +132,10 @@ projectSample <- function(space,
     # project points
     g <- graph +
         ggplot2::geom_point(data = df_sample,
-                            mapping = ggplot2::aes(PC1_sample,
-                                                   PC2_sample,
-                                                   shape = New_samples),
+                            mapping = ggplot2::aes(
+                                PC1_sample,
+                                PC2_sample,
+                                shape = New_samples),
                             color = "black") +
         ggplot2::scale_shape_manual(values = seq_along(unique(New_samples))) +
         ggplot2::ggtitle(title) +

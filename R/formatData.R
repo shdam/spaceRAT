@@ -6,7 +6,7 @@ formatPheno <- function(pheno, colname = NULL, classes = NULL){
 
     pheno <- as.data.frame(pheno, row.names = rownames(pheno))
     # If no rownames in pheno data
-    if(all(rownames(pheno)[seq_len(6)] == as.character(seq_len(6)))){
+    if(all( as.character(seq_len(6) %in% rownames(pheno)[seq_len(6)]))){
         pheno <- as.data.frame(pheno, row.names = pheno[[colnames(pheno)[1]]])
     }
     # If colname not in pheno

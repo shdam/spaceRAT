@@ -16,10 +16,12 @@ plotScaffold <- function(space,title = "Scaffold plot"){
         var_sum <- sum(space@model$sdev^2)
         var1 <- round(space@model$sdev[space@dims[1]]^2/var_sum*100,2)
         var2 <- round(space@model$sdev[space@dims[2]]^2/var_sum*100,2)
-        xlabel <- paste0( "PC",as.character(space@dims[1]),
-                          " (",as.character(var1), "%", ")" )
-        ylabel <- paste0( "PC",as.character(space@dims[2]),
-                          " (",as.character(var2), "%", ")" )
+        xlabel <- paste0(
+            "PC",as.character(space@dims[1]),
+            " (",as.character(var1), "%", ")" )
+        ylabel <- paste0(
+            "PC",as.character(space@dims[2]),
+            " (",as.character(var2), "%", ")" )
 
         # Prepare a dataframe for ggplot2
         Dim1 <- space@model$x[,space@dims[1]]
@@ -40,8 +42,9 @@ plotScaffold <- function(space,title = "Scaffold plot"){
     # calculate centroids
     centroids_df <- df %>%
         dplyr::group_by(Scaffold_group) %>%
-        dplyr::summarise(mean_Dim1=mean(Dim1),
-                         mean_Dim2=mean(Dim2))
+        dplyr::summarise(
+            mean_Dim1=mean(Dim1),
+            mean_Dim2=mean(Dim2))
 
     # define color scheme
     total_types <- length(unique(Scaffold_group))
@@ -50,8 +53,8 @@ plotScaffold <- function(space,title = "Scaffold plot"){
         pal <- grDevices::colorRampPalette(my_col)
         my_col <- pal(total_types)
         if (space@plot_mode=="dot"){
-          message("More than 12 cell types are to be displayed. Setting
-                  'plot_mode='tiny_label' may yield better visualization.")
+            message("More than 12 cell types are to be displayed. Setting
+                    'plot_mode='tiny_label' may yield better visualization.")
         }
     } else{
         my_col <- RColorBrewer::brewer.pal(total_types,"Paired")
@@ -60,8 +63,8 @@ plotScaffold <- function(space,title = "Scaffold plot"){
     # ggplot2 for dot mode
     if (space@plot_mode=="dot"){
         g <- ggplot2::ggplot(data=df) +
-            ggplot2::geom_point(mapping=ggplot2::aes(Dim1,Dim2,
-                                                     color=Scaffold_group)) +
+            ggplot2::geom_point(
+                mapping=ggplot2::aes(Dim1,Dim2, color=Scaffold_group)) +
             ggplot2::scale_color_manual(name="Scaffold_group",values=my_col) +
             ggplot2::geom_label(data=centroids_df,ggplot2::aes(
                 mean_Dim1,

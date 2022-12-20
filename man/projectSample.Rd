@@ -5,15 +5,15 @@
 \title{Project new sample(s) onto existing scaffold PCA plot}
 \usage{
 projectSample(
-  space,
-  object,
-  pheno = NULL,
-  colname = "cancer_type",
-  assay = "counts",
-  title = "Samples projected onto scaffold PCA",
-  verbose = TRUE,
-  annotation = "ensembl_gene"
-)
+    space,
+    object,
+    pheno = NULL,
+    colname = "cancer_type",
+    assay = "counts",
+    title = "Samples projected onto scaffold PCA",
+    verbose = TRUE,
+    annotation = "ensembl_gene"
+    )
 }
 \arguments{
 \item{space}{A scaffoldSpace object, returned by function

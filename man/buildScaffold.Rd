@@ -6,23 +6,23 @@
 or a new one calculated from input expression matrix}
 \usage{
 buildScaffold(
-  object,
-  pheno_scaffold = NULL,
-  colname = NULL,
-  assay = "counts",
-  data = "logged",
-  threshold = 10,
-  dim_reduction = "PCA",
-  dims = c(1, 2),
-  plot_mode = "dot",
-  classes = NULL,
-  pval_cutoff = 0.05,
-  lfc_cutoff = 2,
-  title = "Scaffold Plot",
-  pca_scale = FALSE,
-  auto_plot = TRUE,
-  annotation = "ensembl_gene"
-)
+    object,
+    pheno_scaffold = NULL,
+    colname = NULL,
+    assay = "counts",
+    data = "logged",
+    threshold = 10,
+    dim_reduction = "PCA",
+    dims = c(1, 2),
+    plot_mode = "dot",
+    classes = NULL,
+    pval_cutoff = 0.05,
+    lfc_cutoff = 2,
+    title = "Scaffold Plot",
+    pca_scale = FALSE,
+    auto_plot = TRUE,
+    annotation = "ensembl_gene"
+    )
 }
 \arguments{
 \item{object}{An expression matrix of class SummarizedExperiment,

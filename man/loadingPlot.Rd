@@ -5,12 +5,12 @@
 \title{Generate a loading plot of scaffold PCA}
 \usage{
 loadingPlot(
-  space,
-  num_genes = 3,
-  gene_name = "hgnc_symbol",
-  angle = 30,
-  df_only = FALSE
-)
+    space,
+    num_genes = 3,
+    gene_name = "hgnc_symbol",
+    angle = 30,
+    df_only = FALSE
+    )
 }
 \arguments{
 \item{space}{A scaffoldSpace object created by function
@@ -18,7 +18,7 @@ loadingPlot(
 
 \item{num_genes}{Optional parameter indicating number of genes to be shown.}
 
-\item{gene_name}{A character indicating which type of gene name to show by
+\item{gene_name}{Character indicating which type of gene name to show by
 the side of arrows. By default HGNC symbol is shown.}
 
 \item{angle}{A number for the degree of rotation of labels on the plot.}

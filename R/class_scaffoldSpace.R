@@ -21,10 +21,13 @@ methods::setClassUnion("model", c("prcomp", "matrix"))
 #'     model = methods::slot(DMAP_scaffold, "model"),
 #'     dims = methods::slot(DMAP_scaffold, "dims"),
 #'     plot_mode =  methods::slot(DMAP_scaffold, "plot_mode"))
-methods::setClass("scaffoldSpace",
-                  slots = list(DEgene="character",
-                  label = "character",
-                  model = "model",
-                  dims = "numeric",
-                  plot_mode = "character")
+methods::setClass(
+    "scaffoldSpace",
+    slots = list(
+        DEgene="character",
+        label = "character",
+        model = "model",
+        dims = "numeric",
+        plot_mode = "character"
+        )
 )

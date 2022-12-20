@@ -7,7 +7,7 @@
 #' @param space A scaffoldSpace object created by function
 #' \code{\link{buildScaffold}}.
 #' @param num_genes Optional parameter indicating number of genes to be shown.
-#' @param gene_name A character indicating which type of gene name to show by
+#' @param gene_name Character indicating which type of gene name to show by
 #' the side of arrows. By default HGNC symbol is shown.
 #  Other options are "ensembl_gene", "ensembl_transcript", "entrez",
 #  and "refseq_mrna".
@@ -19,57 +19,65 @@
 #' @return A data frame indicating the loading scores of the genes
 #' that contribute most to the selected principle components.
 #' The loading plot is printed automatically, thus not returned.
-#'
+#' @usage
+#' loadingPlot(
+#'     space,
+#'     num_genes = 3,
+#'     gene_name = "hgnc_symbol",
+#'     angle = 30,
+#'     df_only = FALSE
+#'     )
 #' @examples
 #' utils::data("exprs_dmap", "pData_dmap", package = "spaceRAT")
 #' space <- buildScaffold(exprs_dmap, pData_dmap, "cell_types")
 #' loadingPlot(space)
-
 loadingPlot <- function(space, num_genes = 3, gene_name = "hgnc_symbol",
                         angle = 30, df_only = FALSE){
-    stopifnot("Please only use loading plot with PCA scaffolds" =
-                  is(space@model, "prcomp"))
-    pca <- space@model
-    pcs <- space@dims
+    stopifnot(
+        "Please only use loading plot with PCA scaffolds" =
+            is(space@model, "prcomp"))
+    pca <- space@model; pcs <- space@dims
 
     # calculate variance explained and add percentage to axis labels
     var_sum <- sum(pca$sdev^2)
     var1 <- round(pca$sdev[pcs[1]]^2/var_sum*100,2)
     var2 <- round(pca$sdev[pcs[2]]^2/var_sum*100,2)
-    xlabel <- paste0( "PC",as.character(pcs[1]),
-                      " (",as.character(var1), "%", ")" )
-    ylabel <- paste0( "PC",as.character(pcs[2]),
-                      " (",as.character(var2), "%", ")" )
+    xlabel <- paste0(
+        "PC", as.character(pcs[1]), " (", as.character(var1), "%", ")" )
+    ylabel <- paste0(
+        "PC", as.character(pcs[2]), " (", as.character(var2), "%", ")" )
 
     # determine most important PCs
     datapc <- as.data.frame(pca$rotation[,pcs])
     datapc <- convertGeneName(datapc,to=gene_name)
 
-    pc1_ordered <- datapc[order(datapc[,1], decreasing = T),]
-    pc2_ordered <- datapc[order(datapc[,2], decreasing = T),]
-    pos1 <- data.frame(utils::head(pc1_ordered,num_genes),
-                       class=rep(paste0("Top ",num_genes," genes for PC",
-                                        as.character(pcs[1])),num_genes))
-    neg1 <- data.frame(utils::tail(pc1_ordered,num_genes),
-                       class=rep(paste0("Top ",num_genes," genes for PC",
-                                        as.character(pcs[1])),num_genes))
-    pos2 <- data.frame(utils::head(pc2_ordered,num_genes),
-                       class=rep(paste0("Top ",num_genes," genes for PC",
-                                        as.character(pcs[2])),num_genes))
-    neg2 <- data.frame(utils::tail(pc2_ordered,num_genes),
-                       class=rep(paste0("Top ",num_genes," genes for PC",
-                                        as.character(pcs[2])),num_genes))
+    pc1_ordered <- datapc[order(datapc[,1], decreasing = TRUE),]
+    pc2_ordered <- datapc[order(datapc[,2], decreasing = TRUE),]
+    pos1 <- data.frame(
+        utils::head(pc1_ordered,num_genes),
+        class=rep(paste0(
+            "Top ",num_genes," genes for PC", as.character(pcs[1])),num_genes))
+    neg1 <- data.frame(
+        utils::tail(pc1_ordered,num_genes),
+        class=rep(paste0(
+            "Top ",num_genes," genes for PC", as.character(pcs[1])),num_genes))
+    pos2 <- data.frame(
+        utils::head(pc2_ordered,num_genes),
+        class=rep(paste0(
+            "Top ",num_genes," genes for PC", as.character(pcs[2])),num_genes))
+    neg2 <- data.frame(
+        utils::tail(pc2_ordered,num_genes),
+        class=rep(paste0(
+            "Top ",num_genes," genes for PC", as.character(pcs[2])),num_genes))
     df <- rbind(pos1,neg1,pos2,neg2) %>%
         tibble::rownames_to_column(var=gene_name)
 
-    xmin <- min(df[2])
-    xmax <- max(df[2])
-    ymin <- min(df[3])
-    ymax <- max(df[3])
+    xmin <- min(df[2]); xmax <- max(df[2])
+    ymin <- min(df[3]); ymax <- max(df[3])
 
 # ggplot
     if(df_only) return(df)
-    g <-ggplot2::ggplot(data=df)+
+    g <- ggplot2::ggplot(data=df)+
         ggplot2::geom_text(ggplot2::aes_string(
             colnames(df)[2], colnames(df)[3],label=colnames(df)[1],
             color=colnames(df)[4]),size = 3, angle=angle,show.legend = FALSE
@@ -87,8 +95,6 @@ loadingPlot <- function(space, num_genes = 3, gene_name = "hgnc_symbol",
         ggplot2::coord_fixed()+
         ggplot2::ggtitle("Loading plot") +
         ggplot2::labs(color = "Class")
-
-
     return(g)#df = df[order(df[,3],decreasing=T),])
 }
 
