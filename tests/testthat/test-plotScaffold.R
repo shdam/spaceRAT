@@ -1,5 +1,5 @@
 test_that("plotScaffold works", {
-    scaffold <- buildScaffold("prebuilt_DMAP")
+    scaffold <- buildScaffold("DMAP_scaffold")
     plt <- plotScaffold(scaffold, "Scaffold plot title")
     expect_s3_class(plt, "ggplot")
 

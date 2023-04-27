@@ -12,7 +12,7 @@
 #' @import ggplot2
 #' @return ggplot object.
 #' @examples
-#' scaffold <- buildScaffold("prebuilt_DMAP")
+#' scaffold <- buildScaffold("DMAP_scaffold")
 #' plotScaffold(scaffold, "Scaffold plot title")
 plotScaffold <- function(space, title = "Scaffold plot"){
 

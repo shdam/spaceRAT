@@ -57,7 +57,7 @@ finally projects the new sample(s) onto the existing scaffold PCA plot.
 }
 \examples{
 utils::data("DMAP_scaffold", "exprs_ilaria", "pData_ilaria",
-package = "spaceRAT")
+package = "spaceRATScaffolds")
 space <- DMAP_scaffold # or create your own scaffoldSpace
 projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
 }

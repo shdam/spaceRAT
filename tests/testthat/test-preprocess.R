@@ -1,5 +1,5 @@
-data("exprs_dmap")
-data("pData_dmap")
+# data("exprs_dmap")
+# data("pData_dmap")
 
 se <- SummarizedExperiment::SummarizedExperiment(assays = S4Vectors::SimpleList("exprs" = exprs_dmap), colData = pData_dmap)
 test_that("preprocess works", {

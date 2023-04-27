@@ -43,11 +43,9 @@
 #' @return ggplot object with new samples projected to existing scaffold plot
 #' @examples
 #' utils::data("DMAP_scaffold", "exprs_ilaria", "pData_ilaria",
-#' package = "spaceRAT")
+#' package = "spaceRATScaffolds")
 #' space <- DMAP_scaffold # or create your own scaffoldSpace
 #' projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
-
-
 projectSample <- function(
         space, sample,
         pheno = NULL, colname = "cancer_type",

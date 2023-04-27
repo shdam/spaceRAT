@@ -5,8 +5,8 @@
 #' object that contains all parameters needed for plotting
 #' the PCA transformed sample space.
 #' To use prebuilt scaffold space, simply call:
-#' \code{buildScaffold("prebuilt_NAME")}, e.g.,
-#' \code{buildScaffold("prebuilt_DMAP")}.
+#' \code{buildScaffold("scaffold_name")}. Get a list of scaffolds with:
+#' \code{\link[spaceRATScaffolds:listScaffolds]{listScaffolds()}}
 #'
 #' To build your own scaffold space, pass as arguments a count matrix,
 #' a phenotype table, an a column name of the phenotype table to the function.
@@ -29,8 +29,11 @@
 #' \code{auto_plot=FALSE}.
 #'
 #'
-#' @param object An expression matrix of class SummarizedExperiment,
-#' SingleCellExperiment, matrix, or a data frame.
+#' @param object An expression matrix of class
+#' \code{\link[SummarizedExperiment:SummarizedExperiment]{SummarizedExperiment}}
+#' ,
+#' \code{\link[SingleCellExperiment:SingleCellExperiment]{SingleCellExperiment}}
+#' , \code{matrix}, or a \code{data.frame}.
 #' Column names are sample names.
 #' Row names are gene names, which can be Ensembl Gene ID, HGNC Symbol,
 #' Entrez Gene ID Ensembl, Transcript ID or Refseq mRNA.
@@ -112,10 +115,11 @@
 #' @importFrom methods is
 #' @importFrom stats prcomp
 #' @importFrom uwot umap
+#' @importFrom spaceRATScaffolds listScaffolds
 #' @export
 #' @return A scaffoldSpace object
 #' @examples
-#' utils::data("exprs_dmap", "pData_dmap", package = "spaceRAT")
+#' utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
 #' buildScaffold(exprs_dmap,pData_dmap,"cell_types",
 #' pval_cutoff=0.01,pca_scale=TRUE, auto_plot = FALSE)
 buildScaffold <- function(
@@ -140,29 +144,26 @@ buildScaffold <- function(
     # prebuilt_DMAP no samples removed
     if(
         is(object, "character") &&
-        object == "prebuilt_DMAP" &&
+        object %in% listScaffolds() &&
         is(classes, "NULL")
         ){
-        # utils::data("DMAP_scaffold", package = "spaceRAT")
-        space <- loadData("DMAP_scaffold")
-        # space <- DMAP_scaffold
+        space <- loadData(object)
         space@dims <- dims
         space@plot_mode <- plot_mode
         return(space)
         # prebuilt DMAP samples removed
     } else if(
         is(object, "character") &&
-        object == "prebuilt_DMAP" &&
+        object == "DMAP_scaffold" &&
         !is(classes, "NULL")
         ){
         object <- loadData("exprs_dmap")
         pheno_scaffold <- loadData("pData_dmap")
         colname <- "cell_types"
-        # eset_scaffold <- createEset(exprs_dmap, pData_dmap,
-        # colname = "cell_types", classes = classes, annotation = annotation)
     } else if(is(object, "character")){
         stop(
-        "Incorrectly named prebuilt scaffold. The available are: prebuilt_DMAP"
+        "Incorrectly named prebuilt scaffold. The available are: ",
+        listScaffolds()
         )
     }
 

@@ -10,9 +10,6 @@
 #' @return A count matrix with transformed gene names as row names.
 #' @importFrom stats aggregate
 #' @noRd
-#' @examples
-#' utils::data("exprs_dmap")
-#' convertGeneName(exprs_dmap[seq_len(20),seq_len(10)],to="hgnc_symbol")
 convertGeneName <- function(counts, to = "ensembl_gene"){
     # remove version number
     cur_genes <- gsub("\\.[0-9]+$","", rownames(counts))

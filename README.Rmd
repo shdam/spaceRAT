@@ -12,14 +12,12 @@ knitr::opts_chunk$set(
     out.width = "100%"
 )
 ```
-
-# spaceRAT
+# spaceRAT <img src="inst/spaceRAT.png" width="200" align="right" />
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-# spaceRAT <img src="inst/spaceRAT.png" width="200" align="right" />
 
 ## Install from GitHub
 ``` {r, eval = FALSE}
@@ -52,24 +50,32 @@ scaffold space of your own, by passing as arguments a count matrix,
 a phenotype table, an a column name of the phenotype table
 to function `buildScaffold()`.  
   
-To get the prebuilt DMAP space:
+Build as space with example data:
 ```{r} 
 library(spaceRAT)
-
-scaffold <- buildScaffold("prebuilt_DMAP")
+data("exprs_dmap", "pData_dmap", package="spaceRATScaffolds")
+scaffold <- buildScaffold(exprs_dmap, pheno_scaffold = pData_dmap, colname = "cell_types")
 plotScaffold(scaffold, "Scaffold Plot")
 ```
 
 
 ### Project new samples
 
+Get a list of available prebuilt scaffolds with:
+
+```{r list_scaffolds} 
+library(spaceRATScaffolds)
+listScaffolds()
+```
+
+Project a sample of interest into a custom built or prebuilt scaffold:
 
 ```{r}
 # Load count data
-data("exprs_ilaria", package="spaceRAT")
+data("exprs_ilaria", package="spaceRATScaffolds")
 
 # Load custom or prebuilt scaffold
-scaffold <- buildScaffold("prebuilt_DMAP")
+scaffold <- buildScaffold("DMAP_scaffold")
 
 # Project sample
 projectSample(

@@ -1,18 +1,17 @@
 test_that("buildScaffold() returns an scaffoldSpace object",{
 
-    data("exprs_dmap")
-    data("pData_dmap")
+    scaffold <- "DMAP_scaffold"
     # test prebuilt scaffold
-    space1 <- buildScaffold("prebuilt_DMAP")
+    space1 <- buildScaffold(scaffold)
     expect_s4_class(space1,"scaffoldSpace")
 
-    space2 <- buildScaffold("prebuilt_DMAP",classes=c("HSC","MONO","ERY"))
+    space2 <- buildScaffold(scaffold,classes=c("HSC","MONO","ERY"))
     expect_s4_class(space2,"scaffoldSpace")
 
-    space3 <- buildScaffold("prebuilt_DMAP",classes=c("BASO","EOS","GRAN"))
+    space3 <- buildScaffold(scaffold,classes=c("BASO","EOS","GRAN"))
     expect_s4_class(space3,"scaffoldSpace")
 
-    space4 <- buildScaffold("prebuilt_DMAP",classes=c("MEGA","ERY","MEP","HSC"))
+    space4 <- buildScaffold(scaffold,classes=c("MEGA","ERY","MEP","HSC"))
     expect_s4_class(space4,"scaffoldSpace")
 
     # test newly-built scaffold

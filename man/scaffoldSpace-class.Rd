@@ -26,7 +26,7 @@ each data point. Options are "dot" or "tiny_label"}
 }}
 
 \examples{
-utils::data("DMAP_scaffold", package = "spaceRAT")
+utils::data("DMAP_scaffold", package = "spaceRATscaffolds")
 space <- methods::new("scaffoldSpace",
     DEgene = methods::slot(DMAP_scaffold, "DEgene"),
     label = methods::slot(DMAP_scaffold, "label"),

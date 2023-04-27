@@ -12,7 +12,7 @@ buildScaffold(
     assay = "counts",
     data = "logged",
     threshold = 10,
-    dim_reduction = "PCA",
+    dim_reduction = c("PCA", "UMAP"),
     dims = c(1, 2),
     plot_mode = "dot",
     classes = NULL,
@@ -25,8 +25,11 @@ buildScaffold(
     )
 }
 \arguments{
-\item{object}{An expression matrix of class SummarizedExperiment,
-SingleCellExperiment, matrix, or a data frame.
+\item{object}{An expression matrix of class
+\code{\link[SummarizedExperiment:SummarizedExperiment]{SummarizedExperiment}}
+,
+\code{\link[SingleCellExperiment:SingleCellExperiment]{SingleCellExperiment}}
+, \code{matrix}, or a \code{data.frame}.
 Column names are sample names.
 Row names are gene names, which can be Ensembl Gene ID, HGNC Symbol,
 Entrez Gene ID Ensembl, Transcript ID or Refseq mRNA.
@@ -106,8 +109,8 @@ This function returns a \code{\link{scaffoldSpace-class}}
 object that contains all parameters needed for plotting
 the PCA transformed sample space.
 To use prebuilt scaffold space, simply call:
-\code{buildScaffold("prebuilt_NAME")}, e.g.,
-\code{buildScaffold("prebuilt_DMAP")}.
+\code{buildScaffold("scaffold_name")}. Get a list of scaffolds with:
+\code{\link[spaceRATScaffolds:listScaffolds]{listScaffolds()}}
 }
 \details{
 To build your own scaffold space, pass as arguments a count matrix,
@@ -131,7 +134,7 @@ but this autoplot mode can be turned off by specifying
 \code{auto_plot=FALSE}.
 }
 \examples{
-utils::data("exprs_dmap", "pData_dmap", package = "spaceRAT")
+utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
 buildScaffold(exprs_dmap,pData_dmap,"cell_types",
 pval_cutoff=0.01,pca_scale=TRUE, auto_plot = FALSE)
 }

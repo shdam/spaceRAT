@@ -20,6 +20,6 @@ This function plot a \code{scaffoldSpace} object created by
 \code{\link{buildScaffold}} function.
 }
 \examples{
-scaffold <- buildScaffold("prebuilt_DMAP")
+scaffold <- buildScaffold("DMAP_scaffold")
 plotScaffold(scaffold, "Scaffold plot title")
 }

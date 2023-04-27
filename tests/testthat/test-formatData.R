@@ -1,6 +1,6 @@
 test_that("formatData works", {
 
-    data("pData_dmap")
+    # data("pData_dmap")
 
     expect_equal(formatPheno(pData_dmap), pData_dmap)
 

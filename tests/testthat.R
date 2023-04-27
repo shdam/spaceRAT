@@ -1,6 +1,7 @@
 library(testthat)
 library(spaceRAT)
+library(spaceRATScaffolds)
 
-utils::data("exprs_dmap", "pData_dmap", "gene_id_converter_hs", "exprs_ilaria", "pData_ilaria", package = "spaceRAT")
+utils::data(list = c("exprs_dmap", "pData_dmap", "gene_id_converter_hs", "exprs_ilaria", "pData_ilaria"), package = "spaceRATScaffolds")
 
 test_check("spaceRAT")

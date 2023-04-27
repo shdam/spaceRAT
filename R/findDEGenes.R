@@ -13,10 +13,6 @@
 #' @importFrom stats model.matrix
 #' @importFrom limma lmFit contrasts.fit eBayes topTable
 #' @noRd
-#' @examples
-#' utils::data("exprs_dmap", package = "spaceRAT")
-#' findDEGenes(exprs_dmap, "cell_types")
-
 findDEGenes <- function(counts, cell_types, pval_cutoff = 0.05,
                         lfc_cutoff = 2){
 
