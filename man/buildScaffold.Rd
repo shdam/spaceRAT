@@ -106,7 +106,8 @@ This function returns a \code{\link{scaffoldSpace-class}}
 object that contains all parameters needed for plotting
 the PCA transformed sample space.
 To use prebuilt scaffold space, simply call:
-buildScaffold("prebuilt_NAME"), e.g.buildScaffold("prebuilt_DMAP").
+\code{buildScaffold("prebuilt_NAME")}, e.g.,
+\code{buildScaffold("prebuilt_DMAP")}.
 }
 \details{
 To build your own scaffold space, pass as arguments a count matrix,

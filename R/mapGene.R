@@ -14,7 +14,7 @@
 
 mapGene <- function(vec,to){
 
-    utils::data("gene_id_converter_hs", package = "spaceRAT")
+    gene_id_converter_hs <- loadData("gene_id_converter_hs")
     vec <- as.character(vec)
     from <- NULL
 
@@ -35,12 +35,10 @@ mapGene <- function(vec,to){
     # fail to determine gene id
     if (is.null(from)) {
         return(NULL)
-
-    }else if (from==to) {
+    }else if (from == to) {
         df <- data.frame(from=vec,to=vec)
         colnames(df) <- c(from,to)
         return(df)
-
     }else if(from!=to){
         message("Convert gene indentifiers of count matrix from ",from,
                 " to ",to,".")
@@ -49,16 +47,14 @@ mapGene <- function(vec,to){
     # subset gene_id_converter_hs
     # if from=="hgnc_symbol", then the idx has already be calculated.
     # Avoid repetitive calculation.
-    if(from!= "hgnc_symbol") {
+    if(from != "hgnc_symbol") {
         idx <- which(gene_id_converter_hs[[from]] %in% vec)
     }
 
     df <- gene_id_converter_hs[idx,c(from,to),drop=FALSE]
-    df <- df[!duplicated(df),]
     df <- df[stats::complete.cases(df),]
-    df <- df %>% dplyr::group_by_at(from) %>%
-    dplyr::filter(dplyr::row_number() == 1)%>%
-    as.data.frame()
+    df <- df[order(df[[from]]), ]
+    df <- df[!duplicated(df[[from]]), ]
 
     return(df)
 }

@@ -11,7 +11,10 @@ a data frame
 Kindly offered by Fred
 }
 \usage{
-data(pData_ilaria)
+data("pData_ilaria")
+}
+\value{
+a data.frame
 }
 \description{
 pData_ilaria contains phenotype

@@ -6,7 +6,7 @@
 \usage{
 projectSample(
     space,
-    object,
+    sample,
     pheno = NULL,
     colname = "cancer_type",
     assay = "counts",
@@ -19,19 +19,10 @@ projectSample(
 \item{space}{A scaffoldSpace object, returned by function
 \code{\link{buildScaffold}}}
 
-\item{object}{An expression matrix of class SummarizedExperiment,
-SingleCellExperiment, matrix, or a data frame.
-Column names are sample names.
-Row names are gene names, which can be Ensembl Gene ID, HGNC Symbol,
-Entrez Gene ID Ensembl, Transcript ID or Refseq mRNA.
-All gene ID will be automatically converted to Ensembl Gene ID.
-If you want to retain your gene identifier that is not currently supported,
-please specify \code{annotation=NA}. See parameter
-\code{annotation} for more information.
-Counts of several transcript ID corresponding to same gene will
-be added and recorded as the counts of the gene.}
+\item{sample}{sample data to project. A `matrix`, `data.frame`, or
+`SummarizedExperiment`}
 
-\item{pheno}{Phenotype data corresponding to \code{object}.
+\item{pheno}{Phenotype data corresponding to \code{sample}.
 If not specified, the output plot will not show legends for new samples.}
 
 \item{colname}{A column name of \code{pheno}.

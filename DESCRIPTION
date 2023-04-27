@@ -1,7 +1,7 @@
 Package: spaceRAT
 Type: Package
 Title: Ranked Analysis for Transcriptomes (spaceRAT)
-Version: 0.1.0
+Version: 0.99.0
 Authors@R: c(
     person(given = "Søren Helweg",
            family = "Dam",
@@ -10,18 +10,16 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-0755-0016")),
     person(given = "Xuening",
            family = "He",
-           role = c("aut"),
-           email = ".."),
+           role = c("aut")),
     person(given = "Frederik Otzen",
            family = "Bagger",
-           role = c("aut"),
-           email = ".."),
+           role = c("aut")),
     person(given = "Lars Rønn",
            family = "Olsen",
            role = c("aut"),
            email = "lronn@dtu.dk")
            )
-Description: Use Ranked analysis for Transcriptomes to project
+Description: Use Ranked Analysis for Transcriptomes to project
     any sample into a space of interest.
     spaceRAT ranks the differentially expressed genes in your sample data
     and uses that information to project it into a prebuilt or
@@ -31,7 +29,6 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Imports: 
     utils, stats, methods,
-    dplyr, tibble, magrittr,
     ggplot2, RColorBrewer, grDevices,
     limma,
     uwot
@@ -39,6 +36,9 @@ RoxygenNote: 7.2.3
 Depends: 
     R (>= 4.2.0)
 Suggests: 
+    tibble,
+    S4Vectors,
+    SummarizedExperiment,
     rmarkdown,
     knitr,
     testthat (>= 3.0.0)
@@ -46,5 +46,8 @@ VignetteBuilder: knitr
 biocViews:
     GeneExpression,
     DifferentialExpression,
+    ImmunoOncology,
+    Transcriptomics,
+    RNASeq,
     Software
 Config/testthat/edition: 3

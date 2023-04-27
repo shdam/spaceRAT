@@ -10,6 +10,8 @@
 #' @param lfc_cutoff A cutoff value for log fold change when selecting
 #' differentially expressed genes. By default \code{lfc_cutoff=2}
 #' @return A vector of names of differentially expressed genes
+#' @importFrom stats model.matrix
+#' @importFrom limma lmFit contrasts.fit eBayes topTable
 #' @noRd
 #' @examples
 #' utils::data("exprs_dmap", package = "spaceRAT")

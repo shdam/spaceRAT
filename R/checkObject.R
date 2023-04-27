@@ -22,4 +22,5 @@ checkObject <- function(object, assay = "counts"){
         } else{
             return(object)
         }
-    }
+}
+

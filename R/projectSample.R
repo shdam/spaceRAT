@@ -8,7 +8,9 @@
 #' @inheritParams buildScaffold
 #' @param space A scaffoldSpace object, returned by function
 #' \code{\link{buildScaffold}}
-#' @param pheno Phenotype data corresponding to \code{object}.
+#' @param sample sample data to project. A `matrix`, `data.frame`, or
+#' `SummarizedExperiment`
+#' @param pheno Phenotype data corresponding to \code{sample}.
 #' If not specified, the output plot will not show legends for new samples.
 #' @param colname A column name of \code{pheno}.
 #' This column of values will be used to annotate projected samples.
@@ -27,7 +29,7 @@
 #' @usage
 #' projectSample(
 #'     space,
-#'     object,
+#'     sample,
 #'     pheno = NULL,
 #'     colname = "cancer_type",
 #'     assay = "counts",
@@ -36,6 +38,8 @@
 #'     annotation = "ensembl_gene"
 #'     )
 #' @export
+#' @importFrom stats predict
+#' @import ggplot2
 #' @return ggplot object with new samples projected to existing scaffold plot
 #' @examples
 #' utils::data("DMAP_scaffold", "exprs_ilaria", "pData_ilaria",
@@ -45,15 +49,15 @@
 
 
 projectSample <- function(
-        space, object,
+        space, sample,
         pheno = NULL, colname = "cancer_type",
         assay = "counts",
         title = "Samples projected onto scaffold PCA",
         verbose = TRUE,
         annotation = "ensembl_gene"){
     # Preprocess data
-    object <- preprocess(
-        object,
+    sample <- preprocess(
+        sample,
         colname = colname,
         pheno = pheno,
         assay = assay,
@@ -61,9 +65,9 @@ projectSample <- function(
         threshold = NULL
         )
 
-    counts <- object[[1]]
-    cell_types <- object[[2]]
-    rm(object)
+    counts <- sample[[1]]
+    cell_types <- sample[[2]]
+    rm(sample)
 
 
     # add absent genes then subset eset_sample so counts_scaffold
@@ -117,8 +121,8 @@ projectSample <- function(
         g <- graph +
             ggplot2::geom_point(data = df_sample,
                                 mapping = ggplot2::aes(
-                                    PC1_sample,
-                                    PC2_sample,
+                                    .data$PC1_sample,
+                                    .data$PC2_sample,
                                     color = "New_samples")) +
             ggplot2::scale_color_manual(values = cols) +
             ggplot2::ggtitle(title) +
@@ -133,9 +137,9 @@ projectSample <- function(
     g <- graph +
         ggplot2::geom_point(data = df_sample,
                             mapping = ggplot2::aes(
-                                PC1_sample,
-                                PC2_sample,
-                                shape = New_samples),
+                                .data$PC1_sample,
+                                .data$PC2_sample,
+                                shape = .data$New_samples),
                             color = "black") +
         ggplot2::scale_shape_manual(values = seq_along(unique(New_samples))) +
         ggplot2::ggtitle(title) +

@@ -11,7 +11,10 @@ a scaffoldSpace
 Created from exprs_dmap
 }
 \usage{
-data(DMAP_scaffold)
+data("DMAP_scaffold")
+}
+\value{
+a scaffoldSpace
 }
 \description{
 This scaffold was build from the

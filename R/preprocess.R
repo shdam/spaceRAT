@@ -3,7 +3,7 @@
 #' @noRd
 preprocess <- function(
         object, colname = NULL, pheno = NULL,
-        assay = "counts",
+        assay = NULL,
         data = "logged", threshold = 10,
         annotation = "ensembl_gene", classes = NULL){
     if(!is(object, "matrix") && !is(object, "data.frame")){
@@ -29,12 +29,12 @@ preprocess <- function(
     } else { counts <- convertGeneName(counts, to = annotation)}
 
     # Prefiltering ----
-    if(is.numeric(threshold)) counts <- pre_filter(counts, data, threshold)
+    if(is.numeric(threshold)) counts <- preFilter(counts, data, threshold)
 
     # Match counts and pheno ----
     if(!is(pheno, "NULL")){
         if(is(colname, "NULL")) colname <- colnames(pheno)[1]
-        pheno <- formatPheno(pheno, colname)
+        pheno <- formatPheno(pheno, colname, classes = classes)
 
         # Remove missing information
         counts <- missingAnnotation(counts, pheno)
@@ -45,7 +45,6 @@ preprocess <- function(
     } else{
         cell_types <- NULL
     }
-
     # Remove NAs ----
     counts <- removeNAs(counts)
     message("Preprocessing complete.")

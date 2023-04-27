@@ -19,22 +19,34 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
+# spaceRAT <img src="inst/spaceRAT.png" width="200" align="right" />
+
 ## Install from GitHub
 ``` {r, eval = FALSE}
-# Install using devtools package
+# Install using devtools
 # install.packages("devtools")
-devtools::install_github("XueningHe/RAT_package")
+devtools::install_github("XueningHe/spaceRAT", build_vignettes = TRUE)
 ```
 
+## View vignettes
+
+``` {r vignettes, eval = FALSE}
+browseVignettes(package = "spaceRAT")
+```
 
 ## Usage
 
 It takes two steps to perform ranked analysis of transcriptome:
-build a scaffold PCA space, then project your new samples onto the PCA space. 
 
-**Build a scaffold PCA space**
+1. build a scaffold space
+2. project your new samples onto the scaffold. 
 
-There are two ways to get a scaffold PCA space.
+Example code will be provided here to illustrate each.
+Additional information can be found in the vignettes.
+
+### Build a scaffold space
+
+There are two ways to get a scaffold space.
 You can either obtain the prebuilt DMAP or GTEX space, or build a
 scaffold space of your own, by passing as arguments a count matrix,
 a phenotype table, an a column name of the phenotype table
@@ -43,91 +55,26 @@ to function `buildScaffold()`.
 To get the prebuilt DMAP space:
 ```{r} 
 library(spaceRAT)
-utils::data("exprs_dmap", "pData_dmap", "exprs_ilaria", "pData_ilaria",
-            package = "spaceRAT")
-g <- buildScaffold("prebuilt_DMAP")
-plotScaffold(g, "Scaffold Plot")
-```
 
-You can also turn on the "tiny_label" mode by specifying `plot_mode`.
-You can also visualize other principle components by specifying `dims`.  
-```{r}
-# I plan to use "prebuilt_GTEX" when GTEX is done.
-g <- buildScaffold("prebuilt_DMAP",plot_mode = "tiny_label",dims=c(3,4))
-```
-
-Notice, please assign the returned value of `buildScaffold()`
-to a named variable, which will be used later.  
-  
-To build your own space, first prepare count matrix and phenotype table.
-Count matrix should have class `matrix`, or a data frame that can be
-converted to `matrix`. Column names are sample names. Row names are gene names,
-which can be Ensembl Gene ID, HGNC Symbol, Entrez Gene ID Ensembl,
-Transcript ID or Refseq mRNA. All gene ID will be automatically converted to
-Ensembl Gene ID. Counts of several transcript ID corresponding to same gene
-will be added and recorded as the counts of the gene.
-Below is a valid (logged) count matrix:
-
-```{r}
-exprs_dmap[1:5,1:5]
-```
-
-Phenotype table should have row names as sample names identical to count matrix,
-as well as at least one column for cell types, or any sample feature
-suitable for grouping cells and perform differential expression analysis.
-For example:
-```{r}
-pData_dmap[1:5,,drop=FALSE]
-```
-
-Then call:
-```{r}
-g <- buildScaffold(exprs_dmap,pData_dmap,"cell_types")
-```
-
-Here `"cell_types"` is the name of a column of `pData_dmap`,
-according to which cells are grouped and labeled.
-Differential expression analysis will also be performed using this
-column of phenotype as independent variables.  
-  
-When building a user-defined scaffold space, `buildScaffold()`
-first preprocesses count matrix. It removes genes with total counts
-less than 10 and replaces `NA` by 0. Then it performs differential
-expression analysis to select differentially expressed genes (DE genes),
-subsets the scaffold dataset to contain only the DE genes,
-ranks the genes within each sample, finally performs
-principle component analysis (PCA) using ranks.
-
-By default `buildScaffold()` takes in logged count matrix.
-It can also handle raw count data if `data="raw"` is specified. 
-
-**Make sense of scaffold space**
-Function `loadingPlot()` visualizes the genes that contribute most to the
-selected principle components, thus facilitating the understanding of
-scaffold space. It returns a data frame containing the loading scores as well.
-```{r}
-loadingPlot(g)
+scaffold <- buildScaffold("prebuilt_DMAP")
+plotScaffold(scaffold, "Scaffold Plot")
 ```
 
 
-**Project new samples**
-To project new samples onto the scaffold PCA plot,
-first prepare the count matrix of new samples. For example:
-```{r}
-exprs_ilaria[1:5,1:5]
-```
+### Project new samples
 
-
-Then run:
-```{r}
-projectSample(g, exprs_ilaria)
-```
-
-By passing corresponding phenotype table and column name to `projectSample()`,
-the plot can show more information about new samples:
 
 ```{r}
-pData_ilaria[1:5,,drop = FALSE]
-projectSample(g, exprs_ilaria,pData_ilaria,"cancer_type")
+# Load count data
+data("exprs_ilaria", package="spaceRAT")
+
+# Load custom or prebuilt scaffold
+scaffold <- buildScaffold("prebuilt_DMAP")
+
+# Project sample
+projectSample(
+    space = scaffold,
+    sample = exprs_ilaria,
+    title = "Samples projected into DMAP scaffold")
 ```
 

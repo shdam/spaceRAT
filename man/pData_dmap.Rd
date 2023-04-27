@@ -11,7 +11,10 @@ a data frame
 Kindly offered by Fred
 }
 \usage{
-data(pData_dmap)
+data("pData_dmap")
+}
+\value{
+a data.frame
 }
 \description{
 pData_map records phenotype information

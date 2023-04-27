@@ -5,7 +5,8 @@
 #' object that contains all parameters needed for plotting
 #' the PCA transformed sample space.
 #' To use prebuilt scaffold space, simply call:
-#' buildScaffold("prebuilt_NAME"), e.g.buildScaffold("prebuilt_DMAP").
+#' \code{buildScaffold("prebuilt_NAME")}, e.g.,
+#' \code{buildScaffold("prebuilt_DMAP")}.
 #'
 #' To build your own scaffold space, pass as arguments a count matrix,
 #' a phenotype table, an a column name of the phenotype table to the function.
@@ -97,7 +98,7 @@
 #'     assay = "counts",
 #'     data = "logged",
 #'     threshold = 10,
-#'     dim_reduction = "PCA",
+#'     dim_reduction = c("PCA", "UMAP"),
 #'     dims = c(1, 2),
 #'     plot_mode = "dot",
 #'     classes = NULL,
@@ -109,6 +110,8 @@
 #'     annotation = "ensembl_gene"
 #'     )
 #' @importFrom methods is
+#' @importFrom stats prcomp
+#' @importFrom uwot umap
 #' @export
 #' @return A scaffoldSpace object
 #' @examples
@@ -122,7 +125,7 @@ buildScaffold <- function(
         assay = "counts",
         data = "logged",
         threshold = 10,
-        dim_reduction = "PCA",
+        dim_reduction = c("PCA", "UMAP"),
         dims = c(1,2),
         plot_mode = "dot",
         classes = NULL,
@@ -132,14 +135,17 @@ buildScaffold <- function(
         pca_scale = FALSE,
         auto_plot = TRUE,
         annotation = "ensembl_gene"){
+
+    dim_reduction <- match.arg(dim_reduction)
     # prebuilt_DMAP no samples removed
     if(
         is(object, "character") &&
         object == "prebuilt_DMAP" &&
         is(classes, "NULL")
         ){
-        utils::data("DMAP_scaffold", package = "spaceRAT")
-        space <- DMAP_scaffold
+        # utils::data("DMAP_scaffold", package = "spaceRAT")
+        space <- loadData("DMAP_scaffold")
+        # space <- DMAP_scaffold
         space@dims <- dims
         space@plot_mode <- plot_mode
         return(space)
@@ -149,9 +155,8 @@ buildScaffold <- function(
         object == "prebuilt_DMAP" &&
         !is(classes, "NULL")
         ){
-        utils::data("exprs_dmap", "pData_dmap", package = "spaceRAT")
-        object <- exprs_dmap
-        pheno_scaffold <- pData_dmap
+        object <- loadData("exprs_dmap")
+        pheno_scaffold <- loadData("pData_dmap")
         colname <- "cell_types"
         # eset_scaffold <- createEset(exprs_dmap, pData_dmap,
         # colname = "cell_types", classes = classes, annotation = annotation)
@@ -166,7 +171,7 @@ buildScaffold <- function(
     if(is(pheno_scaffold, "NULL")) {
         warning("No annotation data provided.
                 Expression data colnames are used instead.")
-        pheno <- data.frame(colnames(object), row.names = colnames(object))
+        pheno_scaffold <- data.frame(colnames(object))
         colname <- NULL
     }
 
@@ -176,7 +181,6 @@ buildScaffold <- function(
         pheno = pheno_scaffold,
         assay = assay,
         data = data,
-        classes = classes,
         annotation = annotation
         )
 
@@ -216,3 +220,5 @@ buildScaffold <- function(
 
     return(space)
 }
+
+

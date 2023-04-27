@@ -1,3 +1,4 @@
+data("gene_id_converter_hs")
 test_that("convertGeneName() converts between Ensembl_gene and Entrez",{
     exprs_entrez <- suppressWarnings(spaceRAT:::convertGeneName(exprs_dmap,to="entrez"))
     expect_true(all(rownames(exprs_entrez) %in% gene_id_converter_hs$entrez))
@@ -46,4 +47,13 @@ test_that("convertGeneName() converts from refseq_mrna to Ensembl_gene",{
     expect_true(ncol(df)==ncol(dat))
     expect_true(nrow(df)<=nrow(dat))
     expect_true(all(rownames(df) %in% gene_id_converter_hs$ensembl_gene))
+})
+
+
+test_that("gene_mapper is NULL", {
+    transcripts <- unique(gene_id_converter_hs$refseq_mrna[!is.na(gene_id_converter_hs$refseq_mrna)])[seq_len(5000)]
+    transcripts <- gsub("NM", "Wrong", transcripts)
+    dat <- matrix(1,nrow=5000,ncol=3)
+    rownames(dat) <- transcripts
+    expect_error(convertGeneName(dat), "Could not infer gene identifiers from row names of expression matrix.*")
 })

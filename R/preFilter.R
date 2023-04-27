@@ -2,7 +2,7 @@
 #'
 #' @inheritParams buildScaffold
 #' @noRd
-pre_filter <- function(counts, data = "logged", threshold = 10){
+preFilter <- function(counts, data = "logged", threshold = 10){
     # data preprocessing and create eset
     if (data == "logged"){
         # remove genes with total count<10

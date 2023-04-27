@@ -1,11 +1,20 @@
-test_that("findDEGenes() returns a vector of gene names",{
-    object <- spaceRAT:::preprocess(exprs_dmap,
-                                  colname = "cell_types",
-                                  pheno = pData_dmap)
+object <- spaceRAT:::preprocess(exprs_dmap,
+                                colname = "cell_types",
+                                pheno = pData_dmap)
 
-    counts_scaffold <- object[[1]]
-    cell_types <- object[[2]]
-    rm(object)
+counts_scaffold <- object[[1]]
+cell_types <- object[[2]]
+rm(object)
+
+test_that("findDEGenes() returns a vector of gene names",{
+
     DEgenes <- spaceRAT:::findDEGenes(counts_scaffold, cell_types, 0.05,2)
     expect_type(DEgenes,"character")
+    expect_true(all(DEgenes %in% rownames(counts_scaffold)))
+})
+
+# Test that the function returns an empty vector when no genes pass the thresholds
+test_that("findDEGenes returns empty vector when no genes pass thresholds", {
+    DEgenes <- spaceRAT:::findDEGenes(counts_scaffold, cell_types, pval_cutoff = 1, lfc_cutoff = 100)
+    expect_equal(length(DEgenes), 0)
 })

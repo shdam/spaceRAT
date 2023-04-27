@@ -1,12 +1,13 @@
 #' Format pheno data
 #'
 #' @inheritParams buildScaffold
+#' @importFrom stats complete.cases
 #' @noRd
 formatPheno <- function(pheno, colname = NULL, classes = NULL){
 
     pheno <- as.data.frame(pheno, row.names = rownames(pheno))
     # If no rownames in pheno data
-    if(all( as.character(seq_len(6) %in% rownames(pheno)[seq_len(6)]))){
+    if(all( as.character(seq_len(6)) %in% rownames(pheno)[seq_len(6)])){
         pheno <- as.data.frame(pheno, row.names = pheno[[colnames(pheno)[1]]])
     }
     # If colname not in pheno
@@ -20,7 +21,7 @@ formatPheno <- function(pheno, colname = NULL, classes = NULL){
     # subset data if classes != NULL
     if (!is(classes, "NULL")){
         idx <- which(pheno[[colname]] %in% classes)
-        pheno[[colname]] <- pheno[idx,,drop = FALSE]
+        pheno <- pheno[idx,,drop = FALSE]
     }
 
     # remove rows with NA in pheno and throw message
@@ -64,6 +65,10 @@ missingExpression <- function(pheno, counts){
         message(length(idx),
                 " annotation(s) have no expression data, therefore removed.")
     }
+    stopifnot(
+        "None of the samples in the annotation data was found in the
+        counts matrix. Please ensure the rownames and column names match"
+        = nrow(pheno) > 0)
     return(pheno)
 }
 

@@ -11,7 +11,10 @@ a matrix
 Kindly offered by Fred
 }
 \usage{
-data(exprs_dmap)
+data("exprs_dmap")
+}
+\value{
+a matrix
 }
 \description{
 exprs_map records expression matrix of normal

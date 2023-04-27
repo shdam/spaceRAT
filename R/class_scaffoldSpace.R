@@ -11,7 +11,7 @@ methods::setClassUnion("model", c("prcomp", "matrix"))
 #' @slot dims the two indices of reduced dimensions to be plot
 #' @slot plot_mode a character indicating whether to add tiny label at
 #' each data point. Options are "dot" or "tiny_label"
-#' @importFrom methods new
+#' @importFrom methods new setClass
 #' @export
 #' @examples
 #' utils::data("DMAP_scaffold", package = "spaceRAT")

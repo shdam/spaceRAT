@@ -13,7 +13,7 @@ loadingPlot(
     )
 }
 \arguments{
-\item{space}{A scaffoldSpace object created by function
+\item{space}{A \code{scaffoldSpace} object created by function
 \code{\link{buildScaffold}}.}
 
 \item{num_genes}{Optional parameter indicating number of genes to be shown.}
@@ -23,7 +23,7 @@ the side of arrows. By default HGNC symbol is shown.}
 
 \item{angle}{A number for the degree of rotation of labels on the plot.}
 
-\item{df_only}{The dataframe for the loading plot will be returned
+\item{df_only}{The data.frame for the loading plot will be returned
 instead of the plot.}
 }
 \value{

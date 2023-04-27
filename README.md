@@ -9,25 +9,29 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
+# spaceRAT <img src="inst/spaceRAT.png" width="200" align="right" />
+
 ## Install from GitHub
 
 ``` r
-# Install using devtools package
+# Install using devtools
 # install.packages("devtools")
-devtools::install_github("XueningHe/RAT_package")
+devtools::install_github("XueningHe/spaceRAT")
 ```
 
 ## Usage
 
-It takes two steps to perform ranked analysis of transcriptome: build a
-scaffold PCA space, then project your new samples onto the PCA space.
+It takes two steps to perform ranked analysis of transcriptome:
 
-**Build a scaffold PCA space**
+1.  build a scaffold space
+2.  project your new samples onto the scaffold.
 
-There are two ways to get a scaffold PCA space. You can either obtain
-the prebuilt DMAP or GTEX space, or build a scaffold space of your own,
-by passing as arguments a count matrix, a phenotype table, an a column
-name of the phenotype table to function `buildScaffold()`.
+**Build a scaffold space**
+
+There are two ways to get a scaffold space. You can either obtain the
+prebuilt DMAP or GTEX space, or build a scaffold space of your own, by
+passing as arguments a count matrix, a phenotype table, an a column name
+of the phenotype table to function `buildScaffold()`.
 
 To get the prebuilt DMAP space:
 
@@ -45,9 +49,13 @@ You can also turn on the “tiny_label” mode by specifying `plot_mode`.
 You can also visualize other principle components by specifying `dims`.
 
 ``` r
-# I plan to use "prebuilt_GTEX" when GTEX is done.
 g <- buildScaffold("prebuilt_DMAP",plot_mode = "tiny_label",dims=c(3,4))
+plotScaffold(g, "Scaffold Plot")
+#> plot_mode='tiny_label', shorter names for cell types in
+#>                 phenotype table yields better visualization.
 ```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 Notice, please assign the returned value of `buildScaffold()` to a named
 variable, which will be used later.
@@ -90,11 +98,16 @@ Then call:
 
 ``` r
 g <- buildScaffold(exprs_dmap,pData_dmap,"cell_types")
+#> Warning in all(as.character(seq_len(6) %in% rownames(pheno)[seq_len(6)])):
+#> coercing argument of type 'character' to logical
 #> Preprocessing complete.
 #> Finding differentially expressed genes
 #> Reducing dimensions.
 #> Done.
+plotScaffold(g, "Scaffold Plot")
 ```
+
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 Here `"cell_types"` is the name of a column of `pData_dmap`, according
 to which cells are grouped and labeled. Differential expression analysis
@@ -143,7 +156,7 @@ Then run:
 projectSample(g, exprs_ilaria)
 #> Preprocessing complete.
 #> 6 genes are added to count matrix
-#>                        with imputed expression level 0.
+#>         with imputed expression level 0.
 #> Scale for colour is already present.
 #> Adding another scale for colour, which will replace the existing scale.
 #> Coordinate system already present. Adding new coordinate system, which will
@@ -164,9 +177,11 @@ pData_ilaria[1:5,,drop = FALSE]
 #> SJAEL011873 AML, NOS (non erythroid subtype)
 #> SJAEL011874                            t-AML
 projectSample(g, exprs_ilaria,pData_ilaria,"cancer_type")
+#> Warning in all(as.character(seq_len(6) %in% rownames(pheno)[seq_len(6)])):
+#> coercing argument of type 'character' to logical
 #> Preprocessing complete.
 #> 6 genes are added to count matrix
-#>                        with imputed expression level 0.
+#>         with imputed expression level 0.
 #> Coordinate system already present. Adding new coordinate system, which will
 #> replace the existing one.
 ```

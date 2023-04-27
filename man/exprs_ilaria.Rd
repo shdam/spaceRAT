@@ -11,7 +11,10 @@ a data frame
 Kindly offered by Fred
 }
 \usage{
-data(exprs_ilaria)
+data("exprs_ilaria")
+}
+\value{
+a data.frame
 }
 \description{
 exprs_ilaria contains expression matrix of

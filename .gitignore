@@ -3,4 +3,8 @@
 .RData
 .Ruserdata
 .Rprofile
-.DS_Store
+*.DS_Store
+spaceRAT.Rproj
+inst/doc
+/doc/
+/Meta/

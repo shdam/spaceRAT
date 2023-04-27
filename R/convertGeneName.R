@@ -8,6 +8,7 @@
 #' Options are "ensembl_gene" (default), "ensembl_transcript", "entrez",
 #' "hgnc_symbol", and "refseq_mrna".
 #' @return A count matrix with transformed gene names as row names.
+#' @importFrom stats aggregate
 #' @noRd
 #' @examples
 #' utils::data("exprs_dmap")
@@ -31,7 +32,6 @@ convertGeneName <- function(counts, to = "ensembl_gene"){
         rownames(counts) <- cur_genes
         return(counts)
     }
-
     # case 3: conversion between gene id and gene id or transcript id.
     # Add all matches
     matches <- match(cur_genes, gene_mapper[[from]], nomatch = 0)
@@ -45,10 +45,10 @@ convertGeneName <- function(counts, to = "ensembl_gene"){
         # Sum genes with the same new id
         extra_warning <- "\nOBS: Duplicate gene names were found after
         conversion. Expression values will be summed."
-
         # Sum duplicates
-        counts <- stats::aggregate(counts, by = list(cur_genes), FUN = sum) %>%
-            tibble::column_to_rownames(var = "Group.1")
+        counts <- stats::aggregate(counts, by = list(cur_genes), FUN = sum)
+        rownames(counts) <- counts$Group.1
+        counts$Group.1 <- NULL
     } else{
         extra_warning <- ""
         rownames(counts) <- cur_genes

@@ -1,0 +1,89 @@
+---
+title: "Introduction to spaceRAT"
+output: 
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
+    highlight: pygments
+author: "Søren Helweg Dam"
+date: "Last updated: `r format(Sys.Date(), '%Y.%m.%d')`"
+vignette: >
+  %\VignetteIndexEntry{Introduction to spaceRAT}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+# Introduction
+
+`spaceRAT` uses Ranked Analysis for Transcriptomes to project
+any sample into a space of interest.
+`spaceRAT` ranks the differentially expressed genes in your sample data
+and uses that information to project it into a prebuilt or
+user-built scaffold space. `spaceRAT` provides plotting functions that
+allows the user to visually investigate their sample data.
+
+In the following, a brief overview of the `spaceRAT` is illustrated. 
+See the respective vignettes for additional information.
+
+
+# Build scaffold
+
+See `Build Scaffold` vignette for additional information. 
+Here is a quick overview:
+
+```{r tldr_scaffold}
+library(spaceRAT)
+
+# Load expression data
+data("exprs_dmap", package="spaceRAT")
+# Load phenotype data
+data("pData_dmap", package="spaceRAT")
+# Specify colname with phenotype information
+colname <- "cell_types"
+
+# Build scaffold
+scaffold <- buildScaffold(
+    exprs_dmap, 
+    pheno_scaffold = pData_dmap,
+    colname = colname,
+    title = "DMAP Scaffold"
+)
+
+# Plot scaffold
+plotScaffold(scaffold, title = "Scaffold plot")
+```
+
+
+# Project sample
+
+See `Project Sample` vignette for additional information.
+Here is a quick overview:
+
+```{r tldr}
+library(spaceRAT)
+
+# Load count data
+data("exprs_ilaria", package="spaceRAT")
+
+# Load custom or prebuilt scaffold
+scaffold <- buildScaffold("prebuilt_DMAP")
+
+# Project sample
+projectSample(
+    space = scaffold,
+    sample = exprs_ilaria,
+    title = "Samples projected into DMAP scaffold")
+```
+
+# Session Info
+
+```{r session info}
+sessionInfo()
+```

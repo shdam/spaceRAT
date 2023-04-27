@@ -7,7 +7,8 @@
 plotScaffold(space, title = "Scaffold plot")
 }
 \arguments{
-\item{space}{A scaffoldSpace object returned by buildScaffold function.}
+\item{space}{A \code{scaffoldSpace} object returned by
+\code{\link{buildScaffold}} function.}
 
 \item{title}{Title for the plot}
 }
@@ -15,8 +16,8 @@ plotScaffold(space, title = "Scaffold plot")
 ggplot object.
 }
 \description{
-This function plot a scaffoldSpace object created by \code{buildScaffold}
-function.
+This function plot a \code{scaffoldSpace} object created by
+\code{\link{buildScaffold}} function.
 }
 \examples{
 scaffold <- buildScaffold("prebuilt_DMAP")

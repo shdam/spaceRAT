@@ -11,7 +11,10 @@ a data frame
 downloaded from biomaRt
 }
 \usage{
-data(gene_id_converter_hs)
+data("gene_id_converter_hs")
+}
+\value{
+a data.frame
 }
 \description{
 This table contains ensembl_gene_id of all human genes,

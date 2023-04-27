@@ -1,8 +1,8 @@
 ## code to prepare `GTEX_scaffold` dataset goes here
 
 
-counts_scaffold <- readr::read_csv("~/Downloads/Archive/gtex_representativeSetLog2cpm.csv")
-pheno_scaffold <- readr::read_csv("~/Downloads/Archive/gtex_representativeSet_metadata.csv")
+counts_scaffold <- readr::read_csv("../spaceRAT_data/gtex_representativeSetLog2cpm.csv")
+pheno_scaffold <- readr::read_csv("../spaceRAT_data/gtex_representativeSet_metadata.csv")
 
 colname <- "gtex.smts"
 

@@ -3,8 +3,9 @@
 #' @description  exprs_map records expression matrix of normal
 #' hematopoietic cells. The data is measured by microarray.
 #' @docType data
-#' @usage data(exprs_dmap)
+#' @usage data("exprs_dmap")
 #' @format a matrix
+#' @return a matrix
 #' @keywords datasets
 "exprs_dmap"
 
@@ -13,8 +14,9 @@
 #' @description  pData_map records phenotype information
 #' corresponding to exprs_dmap.
 #' @docType data
-#' @usage data(pData_dmap)
+#' @usage data("pData_dmap")
 #' @format a data frame
+#' @return a data.frame
 #' @keywords datasets
 "pData_dmap"
 
@@ -24,8 +26,9 @@
 #' @description exprs_ilaria contains expression matrix of
 #' Acute Myeloid Leukemia of erythroid subtype.
 #' @docType data
-#' @usage data(exprs_ilaria)
+#' @usage data("exprs_ilaria")
 #' @format a data frame
+#' @return a data.frame
 #' @keywords datasets
 "exprs_ilaria"
 
@@ -35,8 +38,9 @@
 #' @description pData_ilaria contains phenotype
 #' data corresponding to exprs_ilaria
 #' @docType data
-#' @usage data(pData_ilaria)
+#' @usage data("pData_ilaria")
 #' @format a data frame
+#' @return a data.frame
 #' @keywords datasets
 "pData_ilaria"
 
@@ -46,8 +50,9 @@
 #' and corresponding ensembl_transcript_id, entrezgene_id ,hgnc_symbol,
 #' and refseq_mrna
 #' @docType data
-#' @usage data(gene_id_converter_hs)
+#' @usage data("gene_id_converter_hs")
 #' @format a data frame
+#' @return a data.frame
 #' @keywords datasets
 "gene_id_converter_hs"
 
@@ -56,8 +61,9 @@
 #' @description This scaffold was build from the
 #' \code{\link{exprs_dmap}} object.
 #' @docType data
-#' @usage data(DMAP_scaffold)
+#' @usage data("DMAP_scaffold")
 #' @format a scaffoldSpace
+#' @return a scaffoldSpace
 #' @keywords datasets
 "DMAP_scaffold"
 
