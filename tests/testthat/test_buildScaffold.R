@@ -1,3 +1,6 @@
+data("exprs_dmap", package = "spaceRATScaffolds")
+data("pData_dmap", package = "spaceRATScaffolds")
+
 test_that("buildScaffold() returns an scaffoldSpace object",{
 
     scaffold <- "DMAP_scaffold"

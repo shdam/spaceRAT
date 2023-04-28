@@ -9,5 +9,5 @@
 ^LICENSE\.md$
 ^\.DS_Store$
 ^\.git$
-^doc$
+^doc.*
 ^Meta$

@@ -28,10 +28,10 @@ knitr::opts_chunk$set(
 library(spaceRAT)
 
 # Load count data
-data("exprs_ilaria", package="spaceRAT")
+data("exprs_ilaria", package="spaceRATScaffolds")
 
 # Load custom or prebuilt scaffold
-scaffold <- buildScaffold("prebuilt_DMAP")
+scaffold <- buildScaffold("DMAP_scaffold")
 
 # Project sample
 projectSample(
@@ -63,7 +63,7 @@ Getting a prebuilt scaffold:
 ```{r setup}
 library(spaceRAT)
 
-scaffold <- buildScaffold("prebuilt_DMAP")
+scaffold <- buildScaffold("DMAP_scaffold")
 ```
 
 
@@ -76,7 +76,7 @@ It should have samples as columns and features as rows. Here is an example:
 
 ```{r ilexprs}
 utils::data("exprs_ilaria", "pData_ilaria",
-            package = "spaceRAT")
+            package = "spaceRATScaffolds")
 exprs_ilaria[1:5,1:5]
 ```
 

@@ -28,7 +28,7 @@
 #'     df_only = FALSE
 #'     )
 #' @examples
-#' utils::data("exprs_dmap", "pData_dmap", package = "spaceRATscaffolds")
+#' utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
 #' space <- buildScaffold(exprs_dmap, pData_dmap, "cell_types")
 #' loadingPlot(space)
 loadingPlot <- function(space, num_genes = 3, gene_name = "hgnc_symbol",

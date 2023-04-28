@@ -70,10 +70,10 @@ Here is a quick overview:
 library(spaceRAT)
 
 # Load count data
-data("exprs_ilaria", package="spaceRAT")
+data("exprs_ilaria", package="spaceRATScaffolds")
 
 # Load custom or prebuilt scaffold
-scaffold <- buildScaffold("prebuilt_DMAP")
+scaffold <- buildScaffold("DMAP_scaffold")
 
 # Project sample
 projectSample(
