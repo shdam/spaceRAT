@@ -5,6 +5,15 @@
 #' @param space A \code{scaffoldSpace} object returned by
 #' \code{\link{buildScaffold}} function.
 #' @param title Title for the plot
+#' @param plot_mode A character indicating whether to add tiny
+#' labels to each data point.
+#' By default \code{plot_mode="dot"} and tiny labels will not be attached.
+#' If more than 12 cell types are to be displayed, setting
+#' \code{plot_mode="tiny_label"} may yield better visualization.
+#' Shorter names for phenotypes (e.g. cell types) is strongly recommended
+#' in "tiny_label" mode.
+#' @param dims A numeric vector containing 2 numbers, indicating
+#' which two principle components to plot.
 #' @export
 #' @importFrom stats aggregate
 #' @importFrom RColorBrewer brewer.pal
@@ -14,34 +23,43 @@
 #' @examples
 #' scaffold <- buildScaffold("DMAP_scaffold")
 #' plotScaffold(scaffold, "Scaffold plot title")
-plotScaffold <- function(space, title = "Scaffold plot"){
+plotScaffold <- function(
+        space,
+        dim_reduction = c("PCA", "UMAP"),
+        title = "Scaffold plot",
+        plot_mode = c("dot", "tiny_label"),
+        dims = c(1, 2)){
 
-    if(is(space@model, "prcomp")){
+    plot_mode <- match.arg(plot_mode)
+    dim_reduction <- match.arg(dim_reduction)
+
+    if(dim_reduction == "PCA"){
+        stopifnot("No PCA space in scaffold" = !is(space$pca, "NULL"))
         # calculate variance explained and add percentage to axis labels
-        var_sum <- sum(space@model$sdev^2)
-        var1 <- round(space@model$sdev[space@dims[1]]^2/var_sum*100,2)
-        var2 <- round(space@model$sdev[space@dims[2]]^2/var_sum*100,2)
+        var_sum <- sum(space$pca$sdev^2)
+        var1 <- round(space$pca$sdev[dims[1]]^2/var_sum*100,2)
+        var2 <- round(space$pca$sdev[dims[2]]^2/var_sum*100,2)
         xlabel <- paste0(
-            "PC",as.character(space@dims[1]),
+            "PC",as.character(dims[1]),
             " (",as.character(var1), "%", ")" )
         ylabel <- paste0(
-            "PC",as.character(space@dims[2]),
+            "PC",as.character(dims[2]),
             " (",as.character(var2), "%", ")" )
 
         # Prepare a dataframe for ggplot2
-        Dim1 <- space@model$x[,space@dims[1]]
-        Dim2 <- space@model$x[,space@dims[2]]
+        Dim1 <- space$pca$x[,dims[1]]
+        Dim2 <- space$pca$x[,dims[2]]
     } else{
+        stopifnot("No UMAP space in scaffold" = !is(space$umap, "NULL"))
         # Prepare a dataframe for ggplot2
-        Dim1 <- space@model[,1]
-        Dim2 <- space@model[,2]
+        Dim1 <- space$umap[,1]
+        Dim2 <- space$umap[,2]
         xlabel <- "UMAP1"
         ylabel <- "UMAP2"
     }
 
 
-    Scaffold_group <- space@label
-    df <- data.frame(Dim1,Dim2,Scaffold_group)
+    df <- data.frame(Dim1,Dim2,"Scaffold_group" = space$label)
 
 
     # calculate centroids
@@ -51,12 +69,12 @@ plotScaffold <- function(space, title = "Scaffold plot"){
 
 
     # define color scheme
-    total_types <- length(unique(Scaffold_group))
+    total_types <- length(unique(df$Scaffold_group))
     if (total_types>12){
         my_col <- RColorBrewer::brewer.pal(12, "Paired")
         pal <- grDevices::colorRampPalette(my_col)
         my_col <- pal(total_types)
-        if (space@plot_mode=="dot"){
+        if (plot_mode=="dot"){
             message("More than 12 cell types are to be displayed. Setting
                     'plot_mode='tiny_label' may yield better visualization.")
         }
@@ -65,7 +83,7 @@ plotScaffold <- function(space, title = "Scaffold plot"){
     }
 
     # ggplot2 for dot mode
-    if (space@plot_mode=="dot"){
+    if (plot_mode=="dot"){
         g <- ggplot2::ggplot(data=df) +
             ggplot2::geom_point(
                 mapping=ggplot2::aes(
@@ -87,7 +105,7 @@ plotScaffold <- function(space, title = "Scaffold plot"){
     }
 
     # ggplot2 for label mode
-    if (space@plot_mode=="tiny_label"){
+    if (plot_mode=="tiny_label"){
         message("plot_mode='tiny_label', shorter names for cell types in
                 phenotype table yields better visualization.")
         g <- ggplot2::ggplot()+

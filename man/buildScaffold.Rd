@@ -7,20 +7,16 @@ or a new one calculated from input expression matrix}
 \usage{
 buildScaffold(
     object,
-    pheno_scaffold = NULL,
+    pheno = NULL,
     colname = NULL,
     assay = "counts",
     data = "logged",
     threshold = 10,
-    dim_reduction = c("PCA", "UMAP"),
-    dims = c(1, 2),
-    plot_mode = "dot",
+    add_umap = FALSE,
     classes = NULL,
     pval_cutoff = 0.05,
     lfc_cutoff = 2,
-    title = "Scaffold Plot",
     pca_scale = FALSE,
-    auto_plot = TRUE,
     annotation = "ensembl_gene"
     )
 }
@@ -40,11 +36,11 @@ please specify \code{annotation=NA}. See parameter
 Counts of several transcript ID corresponding to same gene will
 be added and recorded as the counts of the gene.}
 
-\item{pheno_scaffold}{Phenotype table corresponding to
+\item{pheno}{Phenotype table corresponding to
 the expression matrix.
 Row names are sample names, identical to column names of \code{object}.}
 
-\item{colname}{A column name of \code{pheno_scaffold}.
+\item{colname}{A column name of \code{pheno}.
 Cells will be grouped by this column of values.
 Thus, differential expression analysis will be performed using this
 column of phenotype as independent variables.}
@@ -57,20 +53,6 @@ log-transformed or raw. By default \code{data="logged"}.
 If the count matrix is raw counts, please specify \code{data="raw"}}
 
 \item{threshold}{(Default: 10) Prefiltering threshold for count row sums.}
-
-\item{dim_reduction}{A character indicating the method for
-dimensionality reduction. Currently "PCA" and "UMAP" are supported.}
-
-\item{dims}{A numeric vector containing 2 numbers, indicating
-which two principle components to plot.}
-
-\item{plot_mode}{A character indicating whether to add tiny
-labels to each data point.
-By default \code{plot_mode="dot"} and tiny labels will not be attached.
-If more than 12 cell types are to be displayed, setting
-\code{plot_mode="tiny_label"} may yield better visualization.
-Shorter names for phenotypes (e.g. cell types) is strongly recommended
-in "tiny_label" mode.}
 
 \item{classes}{Cell types to use in plot
 For example, set \code{annotation="hgnc_symbol"} will convert the row names
@@ -89,20 +71,18 @@ differentially expressed genes. By default \code{pval_cutoff=0.05}.}
 \item{lfc_cutoff}{A cutoff value for logFC when selecting
 differentially expressed genes. By default \code{lfc_cutoff=2}.}
 
-\item{title}{Title for the plot}
-
 \item{pca_scale}{A logical variable determining whether to
 normalize rows when plotting PCA}
-
-\item{auto_plot}{A logical variable determining whether
-to plot the resulting scaffold space when calling the function.}
 
 \item{annotation}{Type of gene identifier to use for scaffold.
 Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol",
 and "refseq_mrna" are supported.}
+
+\item{dim_reduction}{A character indicating the method for
+dimensionality reduction. Currently "PCA" and "UMAP" are supported.}
 }
 \value{
-A scaffoldSpace object
+A scaffold space
 }
 \description{
 This function returns a \code{\link{scaffoldSpace-class}}
@@ -127,14 +107,9 @@ differentially expressed genes (DE genes),
 subsets the scaffold dataset to contain only the DE genes,
 ranks the genes within each sample, finally performs
 principle component analysis (PCA) using ranks.
-
-By default this function plots the resulting
-\code{\link{scaffoldSpace-class}} object before returning it,
-but this autoplot mode can be turned off by specifying
-\code{auto_plot=FALSE}.
 }
 \examples{
 utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
 buildScaffold(exprs_dmap,pData_dmap,"cell_types",
-pval_cutoff=0.01,pca_scale=TRUE, auto_plot = FALSE)
+pval_cutoff=0.01,pca_scale=TRUE)
 }

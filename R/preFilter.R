@@ -2,25 +2,38 @@
 #'
 #' @inheritParams buildScaffold
 #' @noRd
-preFilter <- function(counts, data = "logged", threshold = 10){
-    # data preprocessing and create eset
-    if (data == "logged"){
-        # remove genes with total count<10
-        idx <- which(rowSums(exp(counts))<threshold)
-        if (length(idx)==dim(counts)[1])
-            stop("Low quality data!All genes have total counts less than 10.")
-        if (length(idx)>0) counts <- counts[-idx,]
+preFilter <- function(object, assay = "counts", data = "logged",
+                      threshold = 10) {
 
-    } else if(data == "raw"){
-        # ensure no negative value
-        if (any(counts<0))
+    # Access the counts from the SummarizedExperiment
+    counts <- assay(object, assay = assay)
+
+    # Determine genes to keep based on threshold
+    if (data == "logged") {
+        idx <- which(rowSums(expm1(counts)) >= threshold)
+    } else if (data == "raw") {
+        if (any(counts < 0)) {
             stop("Negative values are not allowed in raw count matrix!")
-        # remove genes with total count<10
-        idx <- which(rowSums(counts)<threshold)
-        if (length(idx)==dim(counts)[1])
-            stop("Low quality data! All genes have total counts less than 10.")
-        if (length(idx)>0) counts <- counts[-idx,]
-        counts <- log(counts+1)
+        }
+        idx <- which(rowSums(counts) >= threshold)
+    } else {
+        stop("Invalid 'data' argument. Please choose 'logged' or 'raw'.")
     }
-    return(counts)
+
+    # Check for low quality data
+    if (length(idx) == 0) {
+        stop("Low quality data! All genes have total counts less than ",
+             threshold)
+    }
+
+    # Filter the SummarizedExperiment object
+    object <- object[idx,]
+
+    # If data is 'raw', update the assay data
+    if (data == "raw") {
+        assay(object, assay = assay) <- log1p(assay(object, assay = assay))
+    }
+
+    return(object)
 }
+

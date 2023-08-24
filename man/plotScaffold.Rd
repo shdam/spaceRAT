@@ -4,13 +4,30 @@
 \alias{plotScaffold}
 \title{Plot a scaffoldSpace object}
 \usage{
-plotScaffold(space, title = "Scaffold plot")
+plotScaffold(
+  space,
+  dim_reduction = c("PCA", "UMAP"),
+  title = "Scaffold plot",
+  plot_mode = c("dot", "tiny_label"),
+  dims = c(1, 2)
+)
 }
 \arguments{
 \item{space}{A \code{scaffoldSpace} object returned by
 \code{\link{buildScaffold}} function.}
 
 \item{title}{Title for the plot}
+
+\item{plot_mode}{A character indicating whether to add tiny
+labels to each data point.
+By default \code{plot_mode="dot"} and tiny labels will not be attached.
+If more than 12 cell types are to be displayed, setting
+\code{plot_mode="tiny_label"} may yield better visualization.
+Shorter names for phenotypes (e.g. cell types) is strongly recommended
+in "tiny_label" mode.}
+
+\item{dims}{A numeric vector containing 2 numbers, indicating
+which two principle components to plot.}
 }
 \value{
 ggplot object.

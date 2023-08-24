@@ -24,11 +24,10 @@ knitr::opts_chunk$set(
 
 
 ```{r tldr}
-
 library(spaceRAT)
 
 # Load count data
-data("exprs_ilaria", package="spaceRATScaffolds")
+data("counts_ilaria", package="spaceRATScaffolds")
 
 # Load custom or prebuilt scaffold
 scaffold <- buildScaffold("DMAP_scaffold")
@@ -36,7 +35,7 @@ scaffold <- buildScaffold("DMAP_scaffold")
 # Project sample
 projectSample(
     space = scaffold,
-    sample = exprs_ilaria,
+    sample = counts_ilaria,
     title = "Samples projected into DMAP scaffold")
 ```
 
@@ -75,9 +74,9 @@ The sample data can have the data format `matrix`, `data.frame`, or
 It should have samples as columns and features as rows. Here is an example:
 
 ```{r ilexprs}
-utils::data("exprs_ilaria", "pData_ilaria",
+utils::data("counts_ilaria", "pData_ilaria",
             package = "spaceRATScaffolds")
-exprs_ilaria[1:5,1:5]
+counts_ilaria[1:5,1:5]
 ```
 
 Optionally, you can add phenotype information to the projection. 
@@ -93,7 +92,7 @@ The projection is then performed by `projectSample`:
 ```{r project}
 projectSample(
     space = scaffold, 
-    sample = exprs_ilaria,
+    sample = counts_ilaria,
     title = "Samples projected into DMAP scaffold")
 ```
 
@@ -101,7 +100,7 @@ With added phenotype information:
 ```{r projectwpheno}
 projectSample(
     space = scaffold,
-    sample = exprs_ilaria,
+    sample = counts_ilaria,
     pheno = pData_ilaria,
     colname =  "cancer_type",
     title = "Samples projected into DMAP scaffold")
@@ -116,7 +115,7 @@ with your sample data, the process is very similar.
 ```{r SE}
 # Prepare data
 se <- SummarizedExperiment::SummarizedExperiment(
-    assays = S4Vectors::SimpleList("counts" = exprs_ilaria),
+    assays = S4Vectors::SimpleList("counts" = counts_ilaria),
     colData = S4Vectors::DataFrame(pData_ilaria)
 )
 

@@ -31,14 +31,16 @@
 #' utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
 #' space <- buildScaffold(exprs_dmap, pData_dmap, "cell_types")
 #' loadingPlot(space)
-loadingPlot <- function(space, num_genes = 3, gene_name = "hgnc_symbol",
-                        angle = 30, df_only = FALSE){
-    stopifnot(
-        "Please only use loading plot with PCA scaffolds" =
-            is(space@model, "prcomp"))
+loadingPlot <- function(
+        space,
+        dims = c(1, 2),
+        num_genes = 3,
+        gene_name = "hgnc_symbol",
+        angle = 30,
+        df_only = FALSE){
 
-    pca <- space@model; pcs <- space@dims
-    pc1 <- pcs[1]; pc2 <- pcs[2]
+    pca <- space$pca
+    pc1 <- dims[1]; pc2 <- dims[2]
 
     # calculate variance explained and add percentage to axis labels
     var_sum <- sum(pca$sdev^2)
@@ -50,7 +52,7 @@ loadingPlot <- function(space, num_genes = 3, gene_name = "hgnc_symbol",
         "PC", as.character(pc2), " (", as.character(var2), "%", ")" )
     # determine most important genes
     pc1 <- paste0("PC", pc1); pc2 <- paste0("PC", pc2)
-    datapc <- as.data.frame(pca$rotation[,pcs])
+    datapc <- as.data.frame(pca$rotation[,dims])
     datapc <- convertGeneName(datapc,to=gene_name)
     df <- extractGenes(datapc, num_genes)
 

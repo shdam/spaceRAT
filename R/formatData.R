@@ -3,74 +3,90 @@
 #' @inheritParams buildScaffold
 #' @importFrom stats complete.cases
 #' @noRd
-formatPheno <- function(pheno, colname = NULL, classes = NULL){
+formatPheno <- function(object, colname = NULL, classes = NULL) {
 
-    pheno <- as.data.frame(pheno, row.names = rownames(pheno))
-    # If no rownames in pheno data
-    if(all( as.character(seq_len(6)) %in% rownames(pheno)[seq_len(6)])){
-        pheno <- as.data.frame(pheno, row.names = pheno[[colnames(pheno)[1]]])
+    # Access the colData of the SummarizedExperiment object
+    pheno_data <- as.data.frame(colData(object), row.names = rownames(colData(object)))
+
+    # If no rownames in pheno_data
+    if(all( as.character(seq_len(6)) %in% rownames(pheno_data)[seq_len(6)])){
+        pheno_data <- as.data.frame(pheno_data, row.names = pheno_data[[colnames(pheno_data)[1]]])
     }
-    # If colname not in pheno
-    if(is(colname, "NULL")) colname <- colnames(pheno)[1]
-    if(!(colname %in% colnames(pheno)))
+
+    # If colname not in pheno_data
+    if(is.null(colname)) colname <- colnames(pheno_data)[1]
+    if(!(colname %in% colnames(pheno_data)))
         stop("Column ", colname, " was not found in annotation data.")
 
     # Remove everything but the colname
-    pheno <- pheno[, colname, drop = FALSE]
+    pheno_data <- pheno_data[, colname, drop = FALSE]
 
     # subset data if classes != NULL
-    if (!is(classes, "NULL")){
-        idx <- which(pheno[[colname]] %in% classes)
-        pheno <- pheno[idx,,drop = FALSE]
+    if (!is.null(classes)) {
+        idx <- which(pheno_data[[colname]] %in% classes)
+        pheno_data <- pheno_data[idx,,drop = FALSE]
     }
 
-    # remove rows with NA in pheno and throw message
-    complete_idx <- which(stats::complete.cases(pheno[[colname]]))
-    na_rownum <- nrow(pheno)-length(complete_idx)
-    if (na_rownum){
-        pheno <- pheno[complete_idx,,drop = FALSE]
+    # Remove rows with NA in pheno_data and throw message
+    complete_idx <- which(stats::complete.cases(pheno_data[[colname]]))
+    na_rownum <- nrow(pheno_data) - length(complete_idx)
+    if (na_rownum) {
+        pheno_data <- pheno_data[complete_idx,,drop = FALSE]
         message(na_rownum, " row(s) in phenotype table contain NA
                 in the required column, thus removed.")
     }
 
+    pheno_data[[colname]] <- factor(pheno_data[[colname]])
 
-    pheno[[colname]] <- as.factor(pheno[[colname]])
+    # Update the colData of the SummarizedExperiment object
+    object <- object[, rownames(pheno_data)]
+    colData(object) <- DataFrame(pheno_data)
 
-    return(pheno)
+    return(object)
 }
+
 
 #' Remove missing annotations
 #' @inheritParams buildScaffold
 #' @noRd
-missingAnnotation <- function(counts, pheno){
-    # subset counts to only contain samples with annotation
-    idx <- which(!(colnames(counts) %in% rownames(pheno)))
-    if (length(idx)>0){
-        counts <- counts[,-idx]
+missingAnnotation <- function(object) {
+
+    # Identify samples without phenotype annotation
+    idx <- which(!(colnames(object) %in% rownames(colData(object))))
+
+    if (length(idx) > 0) {
+        # Remove those samples from the SummarizedExperiment object
+        object <- object[, -idx, drop = FALSE]
         message(length(idx),
                 " sample(s) have no phenotype annotation, therefore removed.")
     }
-    return(counts)
-
+    return(object)
 }
+
 
 #' Remove annotations with missing annotations
 #' @inheritParams buildScaffold
 #' @noRd
-missingExpression <- function(pheno, counts){
-    # subset counts to only contain samples with annotation
-    idx <- which(!(rownames(pheno) %in% colnames(counts)))
-    if (length(idx)>0){
-        pheno <- pheno[-idx,,drop = FALSE]
+missingExpression <- function(object) {
+
+    # Identify annotations without expression data
+    idx <- which(!(rownames(colData(object)) %in% colnames(object)))
+
+    if (length(idx) > 0) {
+        # Remove those samples from the colData of the SummarizedExperiment object
+        object <- object[, -idx, drop = FALSE]
         message(length(idx),
                 " annotation(s) have no expression data, therefore removed.")
     }
+
     stopifnot(
         "None of the samples in the annotation data was found in the
         counts matrix. Please ensure the rownames and column names match"
-        = nrow(pheno) > 0)
-    return(pheno)
+        = ncol(object) > 0)
+
+    return(object)
 }
+
 
 #' Match annotation to expression data
 #' @inheritParams buildScaffold
@@ -86,14 +102,20 @@ matchToExpression <- function(pheno, counts){
 #' Remove NAs from expression data
 #' @inheritParams buildScaffold
 #' @noRd
-removeNAs <- function(counts){
+removeNAs <- function(object, assay = "counts") {
 
-    # fill NA in count matrix with 0.
+    # Access the counts from the SummarizedExperiment object
+    counts <- assay(object, assay = assay)
+
+    # Fill NA in count matrix with 0
     is_nans <- is.na(counts)
-    if (sum(is_nans) > 0){
-    counts[is_nans] <- 0
-    message("Expression data has ", sum(is_nans),
-            " missing values. Replacing NAs by 0.")
+    if (sum(is_nans) > 0) {
+        counts[is_nans] <- 0
+        assay(object, assay = assay) <- counts
+        message("Expression data has ", sum(is_nans),
+                " missing values. Replacing NAs by 0.")
     }
-    return(counts)
+
+    return(object)
 }
+

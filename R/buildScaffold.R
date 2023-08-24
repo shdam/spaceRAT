@@ -23,10 +23,6 @@
 #' ranks the genes within each sample, finally performs
 #' principle component analysis (PCA) using ranks.
 #'
-#' By default this function plots the resulting
-#' \code{\link{scaffoldSpace-class}} object before returning it,
-#' but this autoplot mode can be turned off by specifying
-#' \code{auto_plot=FALSE}.
 #'
 #'
 #' @param object An expression matrix of class
@@ -44,11 +40,11 @@
 #' Counts of several transcript ID corresponding to same gene will
 #' be added and recorded as the counts of the gene.
 #'
-#' @param pheno_scaffold Phenotype table corresponding to
+#' @param pheno Phenotype table corresponding to
 #' the expression matrix.
 #' Row names are sample names, identical to column names of \code{object}.
 #'
-#' @param colname A column name of \code{pheno_scaffold}.
+#' @param colname A column name of \code{pheno}.
 #' Cells will be grouped by this column of values.
 #' Thus, differential expression analysis will be performed using this
 #' column of phenotype as independent variables.
@@ -59,15 +55,6 @@
 #'
 #' @param assay (Default: "counts") The assay slot to use with your
 #' Bioconductor object.
-#' @param dims A numeric vector containing 2 numbers, indicating
-#' which two principle components to plot.
-#' @param plot_mode A character indicating whether to add tiny
-#' labels to each data point.
-#' By default \code{plot_mode="dot"} and tiny labels will not be attached.
-#' If more than 12 cell types are to be displayed, setting
-#' \code{plot_mode="tiny_label"} may yield better visualization.
-#' Shorter names for phenotypes (e.g. cell types) is strongly recommended
-#' in "tiny_label" mode.
 #' @param dim_reduction A character indicating the method for
 #' dimensionality reduction. Currently "PCA" and "UMAP" are supported.
 #' @param threshold (Default: 10) Prefiltering threshold for count row sums.
@@ -75,11 +62,8 @@
 #' differentially expressed genes. By default \code{pval_cutoff=0.05}.
 #' @param lfc_cutoff A cutoff value for logFC when selecting
 #' differentially expressed genes. By default \code{lfc_cutoff=2}.
-#' @param title Title for the plot
 #' @param pca_scale A logical variable determining whether to
 #' normalize rows when plotting PCA
-#' @param auto_plot A logical variable determining whether
-#' to plot the resulting scaffold space when calling the function.
 #' @param annotation Type of gene identifier to use for scaffold.
 #' Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol",
 #' and "refseq_mrna" are supported.
@@ -96,51 +80,44 @@
 #' @usage
 #' buildScaffold(
 #'     object,
-#'     pheno_scaffold = NULL,
+#'     pheno = NULL,
 #'     colname = NULL,
 #'     assay = "counts",
 #'     data = "logged",
 #'     threshold = 10,
-#'     dim_reduction = c("PCA", "UMAP"),
-#'     dims = c(1, 2),
-#'     plot_mode = "dot",
+#'     add_umap = FALSE,
 #'     classes = NULL,
 #'     pval_cutoff = 0.05,
 #'     lfc_cutoff = 2,
-#'     title = "Scaffold Plot",
 #'     pca_scale = FALSE,
-#'     auto_plot = TRUE,
 #'     annotation = "ensembl_gene"
 #'     )
 #' @importFrom methods is
 #' @importFrom stats prcomp
 #' @importFrom uwot umap
 #' @importFrom spaceRATScaffolds listScaffolds
+#' @import SummarizedExperiment
+#' @importFrom S4Vectors DataFrame metadata
 #' @export
-#' @return A scaffoldSpace object
+#' @return A scaffold space
 #' @examples
 #' utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
 #' buildScaffold(exprs_dmap,pData_dmap,"cell_types",
-#' pval_cutoff=0.01,pca_scale=TRUE, auto_plot = FALSE)
+#' pval_cutoff=0.01,pca_scale=TRUE)
 buildScaffold <- function(
         object,
-        pheno_scaffold = NULL,
+        pheno = NULL,
         colname = NULL,
         assay = "counts",
-        data = "logged",
+        data = "raw",
         threshold = 10,
-        dim_reduction = c("PCA", "UMAP"),
-        dims = c(1,2),
-        plot_mode = "dot",
+        add_umap = FALSE,
         classes = NULL,
         pval_cutoff = 0.05,
         lfc_cutoff = 2,
-        title = "Scaffold Plot",
         pca_scale = FALSE,
-        auto_plot = TRUE,
         annotation = "ensembl_gene"){
 
-    dim_reduction <- match.arg(dim_reduction)
     # prebuilt_DMAP no samples removed
     if(
         is(object, "character") &&
@@ -148,8 +125,6 @@ buildScaffold <- function(
         is(classes, "NULL")
         ){
         space <- loadData(object)
-        space@dims <- dims
-        space@plot_mode <- plot_mode
         return(space)
         # prebuilt DMAP samples removed
     } else if(
@@ -158,7 +133,7 @@ buildScaffold <- function(
         !is(classes, "NULL")
         ){
         object <- loadData("exprs_dmap")
-        pheno_scaffold <- loadData("pData_dmap")
+        pheno <- loadData("pData_dmap")
         colname <- "cell_types"
     } else if(is(object, "character")){
         stop(
@@ -167,59 +142,48 @@ buildScaffold <- function(
         )
     }
 
+    stopifnot("Please ensure unique column names in data." = all(!duplicated(colnames(object))))
+
     # Preprocessing ----
 
-    if(is(pheno_scaffold, "NULL")) {
-        warning("No annotation data provided.
-                Expression data colnames are used instead.")
-        pheno_scaffold <- data.frame(colnames(object))
-        colname <- NULL
+    if(is(pheno, "NULL")) {
+        warning("No annotation data provided. ",
+                "Expression data colnames are used instead.")
+        pheno <- data.frame(cell_types = factor(colnames(object)))
+        rownames(pheno) <- pheno$cell_types
+        colname <- "cell_types"
+        if(is(object, "SummarizedExperiment")) colData(object) <- DataFrame(pheno)
     }
 
     object <- preprocess(
         object,
         colname = colname,
-        pheno = pheno_scaffold,
+        pheno = pheno,
         assay = assay,
         data = data,
-        annotation = annotation
+        annotation = annotation,
+        classes = classes
         )
 
-    counts_scaffold <- object[[1]]
-    cell_types <- object[[2]]
-    rm(object)
-
     # Find DE genes
-    DEgenes <- findDEGenes(
-        counts_scaffold, cell_types, pval_cutoff, lfc_cutoff)
+    object <- findDEGenes(object, assay = assay, pval_cutoff, lfc_cutoff)
 
     # subset
-    counts_scaffold <- counts_scaffold[DEgenes, ]
+    object <- object[metadata(object)$DEgenes, ]
 
     # rank
-    scaffold_rank <- apply(counts_scaffold, 2, rank)
+    assay(object, "rank") <- apply(assay(object, assay = assay), 2, rank)
 
     # dimension reduction
     message("Reducing dimensions.")
-    if (dim_reduction == "PCA"){
-        reduced_dims <- stats::prcomp(t(scaffold_rank), scale = pca_scale)
-    } else if (dim_reduction == "UMAP"){
-        reduced_dims <- uwot::umap(t(scaffold_rank))
+    metadata(object)$pca <- stats::prcomp(t(assay(object, "rank")), scale = pca_scale)
+    if (add_umap){
+        metadata(object)$umap <- uwot::umap(t(assay(object, "rank")))
     }
 
-
-    # record standard data in scaffoldSpace class
-    space <- methods::new(
-        "scaffoldSpace",
-        DEgene = DEgenes,
-        label = as.character(cell_types),
-        model = reduced_dims,
-        dims = dims,
-        plot_mode = plot_mode
-        )
     message("Done.")
 
-    return(space)
+    return(metadata(object))
 }
 
 

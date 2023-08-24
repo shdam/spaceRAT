@@ -3,50 +3,51 @@
 #' @noRd
 preprocess <- function(
         object, colname = NULL, pheno = NULL,
-        assay = NULL,
-        data = "logged", threshold = 10,
+        assay = "counts",
+        data = "raw", threshold = 10,
         annotation = "ensembl_gene", classes = NULL){
     if(!is(object, "matrix") && !is(object, "data.frame")){
         object <- checkObject(object, assay = assay)
-        counts <- object[[1]]
-        pheno <- object[[2]]
     } else{
-        # Check that matrix has rownames (converts data.frame to matrix)
-        counts <- checkMatrix(object)
+        # Convert data.frame and matrix to SE
+        object <- matrixToSE(object)
+        if(!is.null(pheno)) colData(object) <- DataFrame(pheno)
     }
-    rm(object)
-    # If colname not in pheno
+    # If colname not in colData
     if(
-        !is(colname, "NULL") && !is(pheno, "NULL") &&
-        !(colname %in% colnames(pheno))) stop(
-            "Column ", colname, " wasn't found in pheno data.")
+        !is(colname, "NULL") && !is(colData(object), "NULL") &&
+        !(colname %in% names(colData(object)))) stop(
+            "Column ", colname, " was not found in pheno/colData data.")
     # Convert gene names
     if (is.na(annotation) || is(annotation, "NULL")) {
         warning(
         "Gene identifier has not been resolved.
         Please manually make sure that projected samples uses same
         gene identifier as scaffold dataset")
-    } else { counts <- convertGeneName(counts, to = annotation)}
+    } else { object <- convertGeneName(object, to = annotation)}
 
     # Prefiltering ----
-    if(is.numeric(threshold)) counts <- preFilter(counts, data, threshold)
+    if(is.numeric(threshold)) object <- preFilter(object, assay = assay, data, threshold)
 
     # Match counts and pheno ----
-    if(!is(pheno, "NULL")){
-        if(is(colname, "NULL")) colname <- colnames(pheno)[1]
-        pheno <- formatPheno(pheno, colname, classes = classes)
+    if(ncol(colData(object)) > 0){
+        if(is(colname, "NULL")) colname <- names(colData(object))[1]
+        object <- formatPheno(object, colname, classes = classes)
 
         # Remove missing information
-        counts <- missingAnnotation(counts, pheno)
-        pheno <- missingExpression(pheno, counts)
+        object <- missingAnnotation(object)
+        object <- missingExpression(object)
 
         # Ensure annotation data order matches expression data
-        cell_types <- pheno[match(colnames(counts), rownames(pheno)), ]
+        metadata(object)$label <- colData(object)[
+                match(colnames(object), rownames(colData(object))), colname]
+
+
     } else{
-        cell_types <- NULL
+        metadata(object)$label <- NULL
     }
     # Remove NAs ----
-    counts <- removeNAs(counts)
+    object <- removeNAs(object, assay = assay)
     message("Preprocessing complete.")
-    return(list(counts, cell_types))
+    return(object)
 }

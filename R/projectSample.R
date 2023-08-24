@@ -48,8 +48,10 @@
 #' projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
 projectSample <- function(
         space, sample,
-        pheno = NULL, colname = "cancer_type",
+        pheno = NULL,
+        colname = NULL,
         assay = "counts",
+        dims = c(1, 2),
         title = "Samples projected onto scaffold PCA",
         verbose = TRUE,
         annotation = "ensembl_gene"){
@@ -63,51 +65,47 @@ projectSample <- function(
         threshold = NULL
         )
 
-    counts <- sample[[1]]
-    cell_types <- sample[[2]]
-    rm(sample)
-
-
     # add absent genes then subset eset_sample so counts_scaffold
     # and counts_project contain same genes
-    absent_genes <- space@DEgene[!(space@DEgene %in% rownames(counts))]
-    absent_exprs <- matrix(
-        0,length(absent_genes), ncol(counts),
-        dimnames = list(absent_genes, colnames(counts)))
-    rownames(absent_exprs) <- absent_genes
-    counts_sample <- rbind(counts,absent_exprs)
+    absent_genes <- space$DEgene[!(space$DEgene %in% rownames(sample))]
+    absent_counts <- matrix(
+        0,length(absent_genes), ncol(sample),
+        dimnames = list(absent_genes, colnames(sample)))
+    rownames(absent_counts) <- absent_genes
+    counts_sample <- rbind(assay(sample, assay), absent_counts)
 
     if (verbose){
         message(
-        length(absent_genes)," genes are added to count matrix
-        with imputed expression level 0.")
+        length(absent_genes)," genes are added to count matrix ",
+        "with imputed expression level 0.")
     }
 
-    if (length(absent_genes)/length(space@DEgene)>1/4){
-        warning("More than 1/4 genes are added to sample with imputed
-                expression level 0!")
+    if (length(absent_genes)/length(space$DEgene)>1/4){
+        warning("More than 1/4 genes are added to sample with imputed ",
+                "expression level 0!")
     }
 
-    #subset
-    counts_sample <- counts_sample[space@DEgene, ]
+    # Subset sample to DEgenes
+    counts_sample <- counts_sample[space$DEgene, ]
 
 
     # rank and transform exprs_project and multiply with the percent of
     # missing values, to retain comparable numeric range
     ranked_sample <- apply(counts_sample, 2, rank) *
-        (1+(length(absent_genes)/length(space@DEgene)))
+        (1+(length(absent_genes)/length(space$DEgene)))
 
     # PCA transform the sample data
 
     transformed_sample <- stats::predict(
-        space@model, newdata = t(ranked_sample))
+        space$pca, newdata = t(ranked_sample))
 
     # Prepare dataframe for ggplot
-    PC1_sample <- transformed_sample[, space@dims[1]]
-    PC2_sample <- transformed_sample[, space@dims[2]]
+    PC1_sample <- transformed_sample[, dims[1]]
+    PC2_sample <- transformed_sample[, dims[2]]
 
     graph <- plotScaffold(space, title = title)
-    if (is.null(cell_types)){
+
+    if (ncol(colData(sample)) == 0){
         # calculate correct color scale
         p <- ggplot2::ggplot_build(graph)$data[[2]]
         cols <- p[["colour"]]
@@ -116,7 +114,7 @@ projectSample <- function(
         cols <- append(cols,"#000000", after = idx-1)
         df_sample <- data.frame(PC1_sample, PC2_sample)
 
-        g <- graph +
+        suppressMessages(g <- graph +
             ggplot2::geom_point(data = df_sample,
                                 mapping = ggplot2::aes(
                                     .data$PC1_sample,
@@ -124,15 +122,15 @@ projectSample <- function(
                                     color = "New_samples")) +
             ggplot2::scale_color_manual(values = cols) +
             ggplot2::ggtitle(title) +
-            ggplot2::coord_fixed()
-    return (g)
+            ggplot2::coord_fixed())
+        return (g)
         }
 
-    New_samples <- cell_types
+    New_samples <- colData(sample)[, colname]
     df_sample <- data.frame(PC1_sample, PC2_sample, New_samples)
 
     # project points
-    g <- graph +
+    suppressMessages(g <- graph +
         ggplot2::geom_point(data = df_sample,
                             mapping = ggplot2::aes(
                                 .data$PC1_sample,
@@ -141,6 +139,6 @@ projectSample <- function(
                             color = "black") +
         ggplot2::scale_shape_manual(values = seq_along(unique(New_samples))) +
         ggplot2::ggtitle(title) +
-        ggplot2::coord_fixed()
+        ggplot2::coord_fixed())
     return(g)
 }

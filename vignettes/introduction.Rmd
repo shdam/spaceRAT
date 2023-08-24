@@ -50,10 +50,10 @@ colname <- "cell_types"
 
 # Build scaffold
 scaffold <- buildScaffold(
-    exprs_dmap, 
-    pheno_scaffold = pData_dmap,
-    colname = colname,
-    title = "DMAP Scaffold"
+    exprs_dmap,
+    data = "logged",
+    pheno = pData_dmap,
+    colname = colname
 )
 
 # Plot scaffold
@@ -70,7 +70,7 @@ Here is a quick overview:
 library(spaceRAT)
 
 # Load count data
-data("exprs_ilaria", package="spaceRATScaffolds")
+data("counts_ilaria", package="spaceRATScaffolds")
 
 # Load custom or prebuilt scaffold
 scaffold <- buildScaffold("DMAP_scaffold")
@@ -78,7 +78,7 @@ scaffold <- buildScaffold("DMAP_scaffold")
 # Project sample
 projectSample(
     space = scaffold,
-    sample = exprs_ilaria,
+    sample = counts_ilaria,
     title = "Samples projected into DMAP scaffold")
 ```
 

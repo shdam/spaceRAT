@@ -1,26 +1,27 @@
 #' Check and extract from object
 #' @inheritParams buildScaffold
 #' @noRd
-checkObject <- function(object, assay = "counts"){
+checkObject <- function(object, assay = "counts") {
 
-    if(!is(object, "matrix") && !is(object, "data.frame")){
-    # Convert Bioconductor objects to matrix
-        if(is(object, "SummarizedExperiment")){
-            pheno <- as.data.frame(object@colData)
-            if(
-                is(assay, "NULL") ||
-                !(assay %in% names(object@assays))
-                )
-                assay <- names(object@assays)[1]
-            object <- object@assays@data[[assay]]
-
-        } else{stop("Expression data was not provided in a supported format
-                    (matrix, data.frame, SummarizedExperiment,
-                    or SingleCellExperiment).\n If you'd like us to
-                    support a new format, please raise an issue on GitHub.")}
-        return(list(object, pheno))
-        } else{
+    if (is(object, "SummarizedExperiment")) {
+        # Check if the desired assay is present
+        if (assay %in% SummarizedExperiment::assayNames(object)) {
             return(object)
+        } else {
+            stop("The provided SummarizedExperiment does not contain a '",
+                 assay, "' assay. Available assays: ",
+                 paste(SummarizedExperiment::assayNames(object), collapse=", "))
         }
+
+    } else if (is(object, "matrix") || is(object, "data.frame")) {
+        return(object)
+    } else {
+        stop("Expression data was not provided in a supported format ",
+             "(matrix, data.frame, or SummarizedExperiment).\n",
+             "If you'd like us to support a new format, ",
+             "please raise an issue on GitHub.")
+    }
 }
+
+
 

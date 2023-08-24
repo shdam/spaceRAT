@@ -36,9 +36,9 @@ colname <- "cell_types"
 # Build scaffold
 scaffold <- buildScaffold(
     exprs_dmap, 
-    pheno_scaffold = pData_dmap,
-    colname = colname,
-    title = "DMAP Scaffold"
+    pheno = pData_dmap,
+    data = "logged",
+    colname = colname
 )
 
 # Plot scaffold
@@ -117,9 +117,9 @@ From there, the scaffold can be built with `buildScaffold`.
 ```{r build}
 scaffold <- buildScaffold(
     exprs_dmap,
-    pheno_scaffold = pData_dmap,
-    colname = colname,
-    title = "DMAP Scaffold"
+    pheno = pData_dmap,
+    data = "logged",
+    colname = colname
 )
 
 
@@ -159,15 +159,19 @@ plotScaffold(scaffold, title = "Scaffold plot")
 You can also turn on the "tiny_label" mode by specifying `plot_mode`.
 You can also visualize other principle components by specifying `dims`.  
 ```{r}
-scaffold <- buildScaffold("DMAP_scaffold",plot_mode = "tiny_label",dims=c(3,4))
-plotScaffold(scaffold, "Scaffold Plot")
+scaffold <- buildScaffold("DMAP_scaffold")
+plotScaffold(
+    scaffold,
+    plot_mode = "tiny_label",
+    dims = c(3,4),
+    title = "Scaffold Plot")
 ```
 
 To make sense of scaffold space, `loadingPlot()` can visualize the genes
 that contribute most to the
 selected principle components. It returns a data frame containing
 the loading scores as well by setting `df_only = TRUE`.
-```{r}
+```{r, eval=FALSE}
 loadingPlot(
     scaffold,
     df_only = FALSE
@@ -193,8 +197,8 @@ colname <- "cell_types"
 scaffold <- buildScaffold(
     se,
     assay = "exprs",
-    colname = colname,
-    title = "DMAP Scaffold"
+    data = "logged",
+    colname = colname
 )
 
 # Plot scaffold
