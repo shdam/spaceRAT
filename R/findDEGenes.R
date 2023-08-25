@@ -12,31 +12,29 @@
 #' @importFrom stats model.matrix
 #' @importFrom limma lmFit contrasts.fit eBayes topTable
 #' @noRd
-findDEGenes <- function(object, assay = "counts", pval_cutoff = 0.05,
+findDEGenes <- function(mat, label, pval_cutoff = 0.05,
                         lfc_cutoff = 2){
 
     message("Finding differentially expressed genes")
 
-
     # remove cell types with less than 2 cells
-    cell_types <- metadata(object)$label
-    count_table <- data.frame(table(cell_types))
-    keep_cell_types <- count_table[count_table$Freq>1, 1]
-    keep <- cell_types %in% keep_cell_types
-    object <- object[, keep]
-    cell_types <- cell_types[keep]
+    count_table <- data.frame(table(label))
+    keep_labels <- count_table[count_table$Freq>1, 1]
+    keep <- label %in% keep_labels
+    mat <- mat[, keep]
+    label <- label[keep]
 
     # create contrast matrix
-    n <- length(keep_cell_types)
+    n <- length(keep_labels)
     cm <- matrix(-1/(n-1),n,n)
     diag(cm) <- 1
-    rownames(cm) <- keep_cell_types
-    colnames(cm) <- paste(keep_cell_types,"others",sep="_")
+    rownames(cm) <- keep_labels
+    colnames(cm) <- paste(keep_labels,"others",sep="_")
 
     # limma
-    design <- stats::model.matrix(~0+ cell_types)
-    colnames(design) <- gsub("cell_types","", colnames(design))
-    fit <- limma::lmFit(assay(object, assay = assay), design)
+    design <- stats::model.matrix(~0+ label)
+    colnames(design) <- gsub("label","", colnames(design))
+    fit <- limma::lmFit(mat, design)
     fit <- limma::contrasts.fit(fit, contrast=cm)
     fit <- limma::eBayes(fit)
     de_genes <- lapply(colnames(cm), function(name){

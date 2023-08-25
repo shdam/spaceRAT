@@ -6,6 +6,8 @@
 #' \code{\link{buildScaffold}} function.
 #' @param title Title for the plot
 #' @param plot_mode A character indicating whether to add tiny
+#' @param dim_reduction A character indicating the method for
+#' dimensionality reduction. Currently "PCA" and "UMAP" are supported.
 #' labels to each data point.
 #' By default \code{plot_mode="dot"} and tiny labels will not be attached.
 #' If more than 12 cell types are to be displayed, setting
@@ -64,7 +66,7 @@ plotScaffold <- function(
 
     # calculate centroids
     centroids_df <- stats::aggregate(
-        cbind(Dim1, Dim2) ~ Scaffold_group, data = df, FUN = mean)
+        cbind(Dim1, Dim2) ~ df$Scaffold_group, FUN = mean)
     colnames(centroids_df) <- c("Scaffold_group", "mean_Dim1", "mean_Dim2")
 
 
@@ -110,9 +112,11 @@ plotScaffold <- function(
                 phenotype table yields better visualization.")
         g <- ggplot2::ggplot()+
             ggplot2::geom_point(data=df,mapping=ggplot2::aes(
-                Dim1,Dim2,color=Scaffold_group),size = 0.8)+
-            ggplot2::geom_text(data=df,ggplot2::aes(
-                Dim1,Dim2,label=Scaffold_group,color=Scaffold_group),
+                .data$Dim1,.data$Dim2,color=.data$Scaffold_group),size = 0.8)+
+            ggplot2::geom_text(
+                data=df,ggplot2::aes(
+                    .data$Dim1, .data$Dim2,
+                    label = .data$Scaffold_group, color = .data$Scaffold_group),
                 alpha=0.5,size=3,show.legend = FALSE)+
             ggplot2::geom_label(data=centroids_df,ggplot2::aes(
                 .data$mean_Dim1,.data$mean_Dim2,

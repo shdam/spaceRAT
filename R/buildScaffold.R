@@ -1,9 +1,9 @@
 #' Returns either a prebuilt scaffoldSpace object,
 #' or a new one calculated from input expression matrix
 #'
-#' This function returns a \code{\link{scaffoldSpace-class}}
+#' This function returns a scaffold space as a list
 #' object that contains all parameters needed for plotting
-#' the PCA transformed sample space.
+#' the PCA/UMAP transformed sample space.
 #' To use prebuilt scaffold space, simply call:
 #' \code{buildScaffold("scaffold_name")}. Get a list of scaffolds with:
 #' \code{\link[spaceRATScaffolds:listScaffolds]{listScaffolds()}}
@@ -25,7 +25,7 @@
 #'
 #'
 #'
-#' @param object An expression matrix of class
+#' @param object An count or expression matrix of class
 #' \code{\link[SummarizedExperiment:SummarizedExperiment]{SummarizedExperiment}}
 #' ,
 #' \code{\link[SingleCellExperiment:SingleCellExperiment]{SingleCellExperiment}}
@@ -55,8 +55,6 @@
 #'
 #' @param assay (Default: "counts") The assay slot to use with your
 #' Bioconductor object.
-#' @param dim_reduction A character indicating the method for
-#' dimensionality reduction. Currently "PCA" and "UMAP" are supported.
 #' @param threshold (Default: 10) Prefiltering threshold for count row sums.
 #' @param pval_cutoff A cutoff value for p value when selecting
 #' differentially expressed genes. By default \code{pval_cutoff=0.05}.
@@ -64,6 +62,7 @@
 #' differentially expressed genes. By default \code{lfc_cutoff=2}.
 #' @param pca_scale A logical variable determining whether to
 #' normalize rows when plotting PCA
+#' @param add_umap Add a UMAP space to the scaffold
 #' @param annotation Type of gene identifier to use for scaffold.
 #' Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol",
 #' and "refseq_mrna" are supported.
@@ -83,7 +82,7 @@
 #'     pheno = NULL,
 #'     colname = NULL,
 #'     assay = "counts",
-#'     data = "logged",
+#'     data = "counts",
 #'     threshold = 10,
 #'     add_umap = FALSE,
 #'     classes = NULL,
@@ -96,20 +95,18 @@
 #' @importFrom stats prcomp
 #' @importFrom uwot umap
 #' @importFrom spaceRATScaffolds listScaffolds
-#' @import SummarizedExperiment
-#' @importFrom S4Vectors DataFrame metadata
 #' @export
 #' @return A scaffold space
 #' @examples
 #' utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
-#' buildScaffold(exprs_dmap,pData_dmap,"cell_types",
+#' buildScaffold(exprs_dmap,pData_dmap,"cell_types", data = "logged",
 #' pval_cutoff=0.01,pca_scale=TRUE)
 buildScaffold <- function(
         object,
         pheno = NULL,
         colname = NULL,
         assay = "counts",
-        data = "raw",
+        data = "counts",
         threshold = 10,
         add_umap = FALSE,
         classes = NULL,
@@ -142,20 +139,13 @@ buildScaffold <- function(
         )
     }
 
-    stopifnot("Please ensure unique column names in data." = all(!duplicated(colnames(object))))
+    stopifnot("Please ensure unique column names in data." = all(
+        !duplicated(colnames(object))))
+    if(!is(pheno, "NULL") & is(colname, "NULL")) stop(
+        "Please specify colname for pheno data")
 
     # Preprocessing ----
-
-    if(is(pheno, "NULL")) {
-        warning("No annotation data provided. ",
-                "Expression data colnames are used instead.")
-        pheno <- data.frame(cell_types = factor(colnames(object)))
-        rownames(pheno) <- pheno$cell_types
-        colname <- "cell_types"
-        if(is(object, "SummarizedExperiment")) colData(object) <- DataFrame(pheno)
-    }
-
-    object <- preprocess(
+    mat <- preprocess(
         object,
         colname = colname,
         pheno = pheno,
@@ -164,26 +154,40 @@ buildScaffold <- function(
         annotation = annotation,
         classes = classes
         )
+    pheno <- mat$pheno
+    mat <- mat$mat
+
+    if(is(pheno, "NULL")) {
+        warning("No annotation data provided. ",
+                "Expression data colnames are used instead.")
+        pheno <- data.frame(cell_types = factor(colnames(object)))
+        rownames(pheno) <- pheno$cell_types
+        colname <- "cell_types"
+    }
+
+    # Define scaffold space
+    space <- list("label" = pheno[, colname])
 
     # Find DE genes
-    object <- findDEGenes(object, assay = assay, pval_cutoff, lfc_cutoff)
+    space$DEgenes <- findDEGenes(
+        mat, space$label, pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff)
 
     # subset
-    object <- object[metadata(object)$DEgenes, ]
+    mat <- mat[space$DEgenes, ]
 
     # rank
-    assay(object, "rank") <- apply(assay(object, assay = assay), 2, rank)
+    mat <- apply(mat, 2, rank)
 
     # dimension reduction
     message("Reducing dimensions.")
-    metadata(object)$pca <- stats::prcomp(t(assay(object, "rank")), scale = pca_scale)
+    space$pca <- stats::prcomp(t(mat), scale = pca_scale)
     if (add_umap){
-        metadata(object)$umap <- uwot::umap(t(assay(object, "rank")))
+        space$umap <- uwot::umap(t(mat))
     }
 
-    message("Done.")
+    message("Scaffold is built.")
 
-    return(metadata(object))
+    return(space)
 }
 
 

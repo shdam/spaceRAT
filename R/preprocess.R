@@ -1,22 +1,26 @@
 #' Preprocess data
 #' @inheritParams buildScaffold
+#' @importFrom SummarizedExperiment assay colData
 #' @noRd
 preprocess <- function(
         object, colname = NULL, pheno = NULL,
         assay = "counts",
-        data = "raw", threshold = 10,
+        data = "counts", threshold = 10,
         annotation = "ensembl_gene", classes = NULL){
     if(!is(object, "matrix") && !is(object, "data.frame")){
         object <- checkObject(object, assay = assay)
+        mat <- assay(object, assay)
+        if(is(pheno, "NULL")) pheno <- as.data.frame(
+            colData(object), row.names = rownames(colData(object)))
+        rm(object)
     } else{
-        # Convert data.frame and matrix to SE
-        object <- matrixToSE(object)
-        if(!is.null(pheno)) colData(object) <- DataFrame(pheno)
+        # Check matrix or data.frame
+        mat <- checkMatrix(object)
     }
     # If colname not in colData
     if(
-        !is(colname, "NULL") && !is(colData(object), "NULL") &&
-        !(colname %in% names(colData(object)))) stop(
+        !is(colname, "NULL") && !is(pheno, "NULL") &&
+        !(colname %in% colnames(pheno))) stop(
             "Column ", colname, " was not found in pheno/colData data.")
     # Convert gene names
     if (is.na(annotation) || is(annotation, "NULL")) {
@@ -24,30 +28,27 @@ preprocess <- function(
         "Gene identifier has not been resolved.
         Please manually make sure that projected samples uses same
         gene identifier as scaffold dataset")
-    } else { object <- convertGeneName(object, to = annotation)}
+    } else { mat <- convertGeneName(mat, to = annotation)}
 
     # Prefiltering ----
-    if(is.numeric(threshold)) object <- preFilter(object, assay = assay, data, threshold)
+    if(is.numeric(threshold)) mat <- preFilter(
+        mat, data = data, threshold = threshold)
 
     # Match counts and pheno ----
-    if(ncol(colData(object)) > 0){
-        if(is(colname, "NULL")) colname <- names(colData(object))[1]
-        object <- formatPheno(object, colname, classes = classes)
+    if(!is(pheno, "NULL")){
+        if(is(colname, "NULL")) colname <- colnames(pheno)[1]
+        pheno <- formatPheno(pheno, colname, classes = classes)
 
         # Remove missing information
-        object <- missingAnnotation(object)
-        object <- missingExpression(object)
+        mat <- missingAnnotation(mat, pheno)
+        pheno <- missingExpression(mat, pheno)
 
         # Ensure annotation data order matches expression data
-        metadata(object)$label <- colData(object)[
-                match(colnames(object), rownames(colData(object))), colname]
+        pheno <- matchToExpression(mat, pheno)
 
-
-    } else{
-        metadata(object)$label <- NULL
     }
     # Remove NAs ----
-    object <- removeNAs(object, assay = assay)
+    mat <- removeNAs(mat)
     message("Preprocessing complete.")
-    return(object)
+    return(list("mat" = mat, "pheno" = pheno))
 }

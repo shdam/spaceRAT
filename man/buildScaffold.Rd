@@ -10,7 +10,7 @@ buildScaffold(
     pheno = NULL,
     colname = NULL,
     assay = "counts",
-    data = "logged",
+    data = "counts",
     threshold = 10,
     add_umap = FALSE,
     classes = NULL,
@@ -21,7 +21,7 @@ buildScaffold(
     )
 }
 \arguments{
-\item{object}{An expression matrix of class
+\item{object}{An count or expression matrix of class
 \code{\link[SummarizedExperiment:SummarizedExperiment]{SummarizedExperiment}}
 ,
 \code{\link[SingleCellExperiment:SingleCellExperiment]{SingleCellExperiment}}
@@ -54,6 +54,8 @@ If the count matrix is raw counts, please specify \code{data="raw"}}
 
 \item{threshold}{(Default: 10) Prefiltering threshold for count row sums.}
 
+\item{add_umap}{Add a UMAP space to the scaffold}
+
 \item{classes}{Cell types to use in plot
 For example, set \code{annotation="hgnc_symbol"} will convert the row names
 (gene identifiers) of \code{counts_scaffold} to hgnc symbol,
@@ -77,17 +79,14 @@ normalize rows when plotting PCA}
 \item{annotation}{Type of gene identifier to use for scaffold.
 Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol",
 and "refseq_mrna" are supported.}
-
-\item{dim_reduction}{A character indicating the method for
-dimensionality reduction. Currently "PCA" and "UMAP" are supported.}
 }
 \value{
 A scaffold space
 }
 \description{
-This function returns a \code{\link{scaffoldSpace-class}}
+This function returns a scaffold space as a list
 object that contains all parameters needed for plotting
-the PCA transformed sample space.
+the PCA/UMAP transformed sample space.
 To use prebuilt scaffold space, simply call:
 \code{buildScaffold("scaffold_name")}. Get a list of scaffolds with:
 \code{\link[spaceRATScaffolds:listScaffolds]{listScaffolds()}}
@@ -110,6 +109,6 @@ principle component analysis (PCA) using ranks.
 }
 \examples{
 utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
-buildScaffold(exprs_dmap,pData_dmap,"cell_types",
+buildScaffold(exprs_dmap,pData_dmap,"cell_types", data = "logged",
 pval_cutoff=0.01,pca_scale=TRUE)
 }

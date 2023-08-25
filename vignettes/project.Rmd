@@ -124,6 +124,7 @@ se <- SummarizedExperiment::SummarizedExperiment(
 projectSample(
     space = scaffold,
     sample = se,
+    assay = "counts",
     colname =  "cancer_type",
     title = "Samples projected into DMAP scaffold")
 ```

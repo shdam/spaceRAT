@@ -13,11 +13,11 @@ test_that("function matches row/col names correctly", {
                                    "control", "treatment"))
     rownames(pheno2) <- pheno2$id
 
-    expect_equal(matchToExpression(pheno1, counts1),
+    expect_equal(matchToExpression(counts1, pheno1),
                  data.frame(id = c("sample1", "sample2", "sample3"),
                             group = c("control", "treatment", "treatment"),
                             row.names = c("sample1", "sample2", "sample3")))
-    expect_equal(matchToExpression(pheno2, counts2),
+    expect_equal(matchToExpression(counts2, pheno2),
                  data.frame(id = c("sample3", "sample4", "sample5"),
                  group = c("treatment", "control", "treatment"),
                  row.names = c("sample3", "sample4", "sample5")))
@@ -30,7 +30,7 @@ test_that("function gives correct output when there is no match", {
                          group = c("control", "treatment", "treatment"))
     rownames(pheno1) <- pheno1$id
 
-    expect_equal(matchToExpression(pheno1, counts1),
+    expect_equal(matchToExpression(counts1, pheno1),
                  data.frame(id = character(0),
                             group = character(0),
                             row.names = character(0)))

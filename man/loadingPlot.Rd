@@ -6,6 +6,7 @@
 \usage{
 loadingPlot(
     space,
+    dims = c(1, 2),
     num_genes = 3,
     gene_name = "hgnc_symbol",
     angle = 30,
@@ -13,8 +14,11 @@ loadingPlot(
     )
 }
 \arguments{
-\item{space}{A \code{scaffoldSpace} object created by function
-\code{\link{buildScaffold}}.}
+\item{space}{A \code{scaffoldSpace} object returned by
+\code{\link{buildScaffold}} function.}
+
+\item{dims}{A numeric vector containing 2 numbers, indicating
+which two principle components to plot.}
 
 \item{num_genes}{Optional parameter indicating number of genes to be shown.}
 
@@ -32,7 +36,7 @@ that contribute most to the selected principle components.
 The loading plot is printed automatically, thus not returned.
 }
 \description{
-This function takes a \code{\link{scaffoldSpace-class}} object
+This function takes a previously built scaffold space
 and generates a loading plot to visualize the genes
 that contribute most to the selected principle components.
 }

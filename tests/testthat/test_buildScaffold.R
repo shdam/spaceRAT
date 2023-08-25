@@ -1,7 +1,7 @@
 data("exprs_dmap", package = "spaceRATScaffolds")
 data("pData_dmap", package = "spaceRATScaffolds")
 
-test_that("buildScaffold() returns an scaffoldSpace object",{
+test_that("buildScaffold() returns a proper space",{
 
     scaffold <- "DMAP_scaffold"
     # test prebuilt scaffold
@@ -34,7 +34,7 @@ test_that("buildScaffold() returns an scaffoldSpace object",{
     expect_setequal(names(space6), c("label","DEgenes", "pca"))
     expect_setequal(as.character(unique(space6$label)), c("HSC","MEP","ERY"))
 
-    space7 <- buildScaffold(exprs_dmap, pData_dmap, data = "logged", add_umap = TRUE)
+    space7 <- buildScaffold(exprs_dmap, pData_dmap,"cell_types", data = "logged", add_umap = TRUE)
     expect_type(space7,"list")
     expect_setequal(names(space7), c("label","DEgenes", "pca", "umap"))
 

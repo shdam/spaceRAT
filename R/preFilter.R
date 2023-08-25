@@ -2,20 +2,17 @@
 #'
 #' @inheritParams buildScaffold
 #' @noRd
-preFilter <- function(object, assay = "counts", data = "logged",
+preFilter <- function(mat, data = "counts",
                       threshold = 10) {
-
-    # Access the counts from the SummarizedExperiment
-    counts <- assay(object, assay = assay)
 
     # Determine genes to keep based on threshold
     if (data == "logged") {
-        idx <- which(rowSums(expm1(counts)) >= threshold)
-    } else if (data == "raw") {
-        if (any(counts < 0)) {
+        idx <- which(rowSums(exp(mat)) >= threshold)
+    } else if (data == "counts") {
+        if (any(mat < 0)) {
             stop("Negative values are not allowed in raw count matrix!")
         }
-        idx <- which(rowSums(counts) >= threshold)
+        idx <- which(rowSums(mat) >= threshold)
     } else {
         stop("Invalid 'data' argument. Please choose 'logged' or 'raw'.")
     }
@@ -27,13 +24,13 @@ preFilter <- function(object, assay = "counts", data = "logged",
     }
 
     # Filter the SummarizedExperiment object
-    object <- object[idx,]
+    mat <- mat[idx,]
 
-    # If data is 'raw', update the assay data
-    if (data == "raw") {
-        assay(object, assay = assay) <- log1p(assay(object, assay = assay))
+    # If data is 'raw', convert to expression
+    if (data == "counts") {
+        mat <- log1p(mat)
     }
 
-    return(object)
+    return(mat)
 }
 

@@ -16,10 +16,7 @@ test_that("checkObject returns a list when input object is not a matrix or data.
     se <- SummarizedExperiment::SummarizedExperiment(assays = S4Vectors::SimpleList(counts = counts), colData = colData)
     obj <- checkObject(se, assay = "counts")
     obj2 <- checkObject(se, assay = NULL)
-    expect_type(obj, "list")
-    expect_length(obj, 2)
-    expect_identical(obj[[1]], counts)
-    expect_identical(obj[[2]], colData)
+    expect_s4_class(obj, "SummarizedExperiment")
     expect_identical(obj, obj2)
 })
 

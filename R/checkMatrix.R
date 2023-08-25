@@ -3,7 +3,7 @@
 #'
 #' @param mat A matrix to check
 #' @noRd
-matrixToSE <- function(mat){
+checkMatrix <- function(mat){
 
     # Identify non-numerics in counts data
     numerics <- vapply(mat[seq_len(3),], is, "numeric", FUN.VALUE = TRUE)
@@ -33,9 +33,6 @@ matrixToSE <- function(mat){
     # Convert to matrix
     mat <- as.matrix(mat)
 
-    # Create SummarizedExperiment object
-    se <- SummarizedExperiment(assays = list(counts = mat))
-
-    return(se)
+    return(mat)
 }
 

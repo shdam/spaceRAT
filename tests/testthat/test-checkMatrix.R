@@ -38,3 +38,4 @@ test_that("checkMatrix adds rownames", {
     mat <- matrix(c(1, 2, 3, 3, 2, 1), ncol = 2)
     expect_error(checkMatrix(mat), "The expression matrix does not contain rownames")
 })
+

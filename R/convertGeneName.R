@@ -10,14 +10,9 @@
 #' @return A count matrix with transformed gene names as row names.
 #' @importFrom stats aggregate
 #' @noRd
-convertGeneName <- function(object, assay = "counts", to = "ensembl_gene") {
-    # Ensure the provided object is a SummarizedExperiment
-    if (!is(object, "SummarizedExperiment")) {
-        stop("Please provide a SummarizedExperiment object.")
-    }
-
+convertGeneName <- function(mat, assay = "counts", to = "ensembl_gene") {
     # remove version number
-    cur_genes <- gsub("\\.[0-9]+$","", rownames(object))
+    cur_genes <- gsub("\\.[0-9]+$","", rownames(mat))
 
     # get gene mapper data frame
     gene_mapper <- mapGene(cur_genes, to = to)
@@ -33,8 +28,8 @@ convertGeneName <- function(object, assay = "counts", to = "ensembl_gene") {
     from <- colnames(gene_mapper)[1]
     # case 2: from==to. Only need to remove version number before return
     if (from == to) {
-        rownames(object) <- cur_genes
-        return(object)
+        rownames(mat) <- cur_genes
+        return(mat)
     }
 
     # case 3: conversion between gene id and gene id or transcript id.
@@ -43,34 +38,23 @@ convertGeneName <- function(object, assay = "counts", to = "ensembl_gene") {
 
 
     if(any(matches == 0)){
-        object <- object[which(matches != 0), ]
+        mat <- mat[which(matches != 0), ]
         cur_genes <- cur_genes[which(matches != 0)]
     }
 
     if(length(unique(cur_genes)) != length(cur_genes)){
-        # Access the counts from the SummarizedExperiment
-        counts <- assay(object, assay = assay)
 
         # Sum genes with the same new id
         extra_warning <- paste(
             "\nOBS: Duplicate gene names were found after ",
             "conversion. Expression values will be summed.")
-        counts <- stats::aggregate(counts, by = list(cur_genes), FUN = sum)
-        rownames(counts) <- counts$Group.1
-        counts$Group.1 <- NULL
+        mat <- stats::aggregate(mat, by = list(cur_genes), FUN = sum)
+        rownames(mat) <- mat$Group.1
+        mat$Group.1 <- NULL
 
-        # Set the updated counts back to the SummarizedExperiment object
-        metadata <- metadata(object)
-        coldata <- colData(object)
-        object <- SummarizedExperiment(
-            assays = list("counts" = counts),
-            colData = coldata,
-            metadata = metadata
-        )
-        assay(object, assay) <- counts
     } else {
         extra_warning <- ""
-        rownames(object) <- cur_genes
+        rownames(mat) <- cur_genes
     }
 
 
@@ -82,5 +66,5 @@ convertGeneName <- function(object, assay = "counts", to = "ensembl_gene") {
         Use 'annotation = NULL' to prevent conversion.",
         extra_warning)
 
-    return(object)
+    return(mat)
 }

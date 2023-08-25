@@ -30,6 +30,7 @@ Encoding: UTF-8
 Imports: 
     spaceRATScaffolds,
     utils, stats, methods,
+    SummarizedExperiment,
     ggplot2, RColorBrewer, grDevices,
     limma,
     uwot
@@ -37,10 +38,9 @@ RoxygenNote: 7.2.3
 Depends: 
     R (>= 4.2.0)
 Suggests: 
-    tibble,
-    S4Vectors,
-    SummarizedExperiment,
     rmarkdown,
+    S4Vectors,
+    tibble,
     knitr,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr

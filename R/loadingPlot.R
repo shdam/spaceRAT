@@ -1,11 +1,11 @@
 #' Generate a loading plot of scaffold PCA
 #'
-#' This function takes a \code{\link{scaffoldSpace-class}} object
+#' This function takes a previously built scaffold space
 #' and generates a loading plot to visualize the genes
 #' that contribute most to the selected principle components.
 #'
-#' @param space A \code{scaffoldSpace} object created by function
-#' \code{\link{buildScaffold}}.
+#' @inheritParams plotScaffold
+#' @inheritParams projectSample
 #' @param num_genes Optional parameter indicating number of genes to be shown.
 #' @param gene_name Character indicating which type of gene name to show by
 #' the side of arrows. By default HGNC symbol is shown.
@@ -22,6 +22,7 @@
 #' @usage
 #' loadingPlot(
 #'     space,
+#'     dims = c(1, 2),
 #'     num_genes = 3,
 #'     gene_name = "hgnc_symbol",
 #'     angle = 30,
@@ -29,7 +30,7 @@
 #'     )
 #' @examples
 #' utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
-#' space <- buildScaffold(exprs_dmap, pData_dmap, "cell_types")
+#' space <- buildScaffold(exprs_dmap, pData_dmap, "cell_types", data = "logged")
 #' loadingPlot(space)
 loadingPlot <- function(
         space,

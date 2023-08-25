@@ -8,15 +8,16 @@ projectSample(
     space,
     sample,
     pheno = NULL,
-    colname = "cancer_type",
-    assay = "counts",
+    colname = NULL,
+    assay = NULL,
+    dims = c(1, 2),
     title = "Samples projected onto scaffold PCA",
     verbose = TRUE,
     annotation = "ensembl_gene"
     )
 }
 \arguments{
-\item{space}{A scaffoldSpace object, returned by function
+\item{space}{A scaffold space object, returned by function
 \code{\link{buildScaffold}}}
 
 \item{sample}{sample data to project. A `matrix`, `data.frame`, or
@@ -34,6 +35,9 @@ and the output plot will not show legends for new samples.}
 \item{assay}{(Default: "counts") The assay slot to use with your
 Bioconductor object.}
 
+\item{dims}{A numeric vector containing 2 numbers, indicating
+which two principle components to plot.}
+
 \item{title}{Title of the plot.}
 
 \item{verbose}{A logical vector indicating whether to report the number of
@@ -50,14 +54,14 @@ set to "NA", to avoid translation
 ggplot object with new samples projected to existing scaffold plot
 }
 \description{
-This function takes in a \code{\link{scaffoldSpace-class}} objects, subsets
+This function takes in a scaffold space objects, subsets
 the new dataset to contain only the genes that defines the scaffold space,
 ranks the subset within new sample(s),
 finally projects the new sample(s) onto the existing scaffold PCA plot.
 }
 \examples{
-utils::data("DMAP_scaffold", "exprs_ilaria", "pData_ilaria",
+utils::data("DMAP_scaffold", "counts_ilaria", "pData_ilaria",
 package = "spaceRATScaffolds")
 space <- DMAP_scaffold # or create your own scaffoldSpace
-projectSample(space,exprs_ilaria,pData_ilaria,"cancer_type")
+projectSample(space,counts_ilaria,pData_ilaria,"cancer_type")
 }

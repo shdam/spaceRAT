@@ -8,8 +8,8 @@ test_that("function removes samples with no expression data", {
     rownames(pheno1) <- pheno1$id
     expected_output <- pheno1[-c(2:3), ,drop = FALSE]
     expect_message(
-        missingExpression(pheno1, counts1))
-    expect_equal(missingExpression(pheno1, counts1), expected_output)
+        missingExpression(counts1, pheno1))
+    expect_equal(missingExpression(counts1, pheno1), expected_output)
 })
 
 # Test case 2: Check output when all samples have expression data
@@ -19,7 +19,7 @@ test_that("function does not remove any samples when all samples have expression
     pheno2 <- data.frame(id = c("sample1", "sample2", "sample3"),
                          group = c("control", "treatment", "treatment"))
     rownames(pheno2) <- pheno2$id
-    expect_equal(missingExpression(pheno2, counts2), pheno2)
+    expect_equal(missingExpression(counts2, pheno2), pheno2)
 })
 
 # Test case 3: Check output when none of the samples have expression data
@@ -29,5 +29,5 @@ test_that("function removes all samples when none of the samples have expression
     pheno3 <- data.frame(id = c("sample1", "sample2", "sample3"),
                          group = c("control", "treatment", "treatment"))
     rownames(pheno3) <- pheno3$id
-    expect_error(missingExpression(pheno3, counts3))
+    expect_error(missingExpression(counts3, pheno3))
 })

@@ -89,14 +89,14 @@ pData_dmap[1:5,,drop=FALSE]
 
 # Load data
 
-The first step is to load in the raw data.
+The first step is to load in the counts data.
 
 ```{r load}
 library(spaceRAT)
 
 if(FALSE){
     # Data in csv
-    counts_scaffold <- read.csv("path/to/raw_data.csv")
+    counts_scaffold <- read.csv("path/to/counts_data.csv")
     pheno_scaffold <- read.csv("path/to/pheno.csv")
     # Data in SummarizedExperiment stored as .rds
     se <- readRDS("path/to/data.RDS")
@@ -137,7 +137,7 @@ differentially expressed genes (DE genes).
 - Finally, it performs principle component analysis (PCA) or UMAP using ranks.
 
 By default `buildScaffold()` takes in logged count matrix.
-It can also handle raw count data if `data="raw"` is specified. 
+It can also handle raw count data if `data="counts"` is specified. 
 
 The resulting scaffold has five slots:
 
