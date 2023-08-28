@@ -24,3 +24,8 @@ test_that("checkObject fails if wrong format is provided", {
     expect_error(checkObject(list(counts, colData)), "Expression data was not provided in a supported format.*")
     expect_error(checkObject(NULL), "Expression data was not provided in a supported format.*")
 })
+
+test_that("checkObject fails if wrong assay name is provided", {
+    se <- SummarizedExperiment::SummarizedExperiment(assays = S4Vectors::SimpleList(counts = counts), colData = colData)
+    expect_error(checkObject(se, assay = "exprs"), "The provided SummarizedExperiment does not contain a 'exprs' assay. Available assays: counts")
+})

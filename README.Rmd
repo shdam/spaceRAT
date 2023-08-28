@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 
 ## Install from GitHub
-``` {r, eval = FALSE}
+``` {r install, eval = FALSE}
 # Install using devtools
 # install.packages("devtools")
 devtools::install_github("XueningHe/spaceRAT", build_vignettes = TRUE)
@@ -51,11 +51,15 @@ a phenotype table, an a column name of the phenotype table
 to function `buildScaffold()`.  
   
 Build as space with example data:
-```{r} 
+```{r build} 
 library(spaceRAT)
 data("exprs_dmap", "pData_dmap", package="spaceRATScaffolds")
-scaffold <- buildScaffold(exprs_dmap, pheno_scaffold = pData_dmap, colname = "cell_types")
-plotScaffold(scaffold, "Scaffold Plot")
+scaffold <- buildScaffold(
+    exprs_dmap, pheno = pData_dmap,
+    colname = "cell_types", data = "logged")
+plotScaffold(
+    scaffold, title = "Scaffold Plot",
+    dim_reduction = "PCA", dims = c(1,2), plot_mode = "dot")
 ```
 
 
@@ -64,15 +68,15 @@ plotScaffold(scaffold, "Scaffold Plot")
 Get a list of available prebuilt scaffolds with:
 
 ```{r list_scaffolds} 
-library(spaceRATScaffolds)
+library("spaceRATScaffolds")
 listScaffolds()
 ```
 
 Project a sample of interest into a custom built or prebuilt scaffold:
 
-```{r}
+```{r project}
 # Load count data
-data("exprs_ilaria", package="spaceRATScaffolds")
+data("counts_ilaria", package="spaceRATScaffolds")
 
 # Load custom or prebuilt scaffold
 scaffold <- buildScaffold("DMAP_scaffold")
@@ -80,7 +84,7 @@ scaffold <- buildScaffold("DMAP_scaffold")
 # Project sample
 projectSample(
     space = scaffold,
-    sample = exprs_ilaria,
+    sample = counts_ilaria, dims = c(1,2),
     title = "Samples projected into DMAP scaffold")
 ```
 

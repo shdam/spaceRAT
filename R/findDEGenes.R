@@ -20,6 +20,9 @@ findDEGenes <- function(mat, label, pval_cutoff = 0.05,
     # remove cell types with less than 2 cells
     count_table <- data.frame(table(label))
     keep_labels <- count_table[count_table$Freq>1, 1]
+    stopifnot(
+        "All cells have unique phenotype information.
+        Please group cells by phenotype." = length(keep_labels) > 0)
     keep <- label %in% keep_labels
     mat <- mat[, keep]
     label <- label[keep]

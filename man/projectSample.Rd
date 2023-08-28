@@ -32,7 +32,7 @@ This argument should be set together with \code{pheno}.
 If \code{pheno} is not specified, this argument will be ignored,
 and the output plot will not show legends for new samples.}
 
-\item{assay}{(Default: "counts") The assay slot to use with your
+\item{assay}{(Default: NULL) The assay slot to use with your
 Bioconductor object.}
 
 \item{dims}{A numeric vector containing 2 numbers, indicating

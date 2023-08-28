@@ -53,7 +53,7 @@
 #' log-transformed or raw. By default \code{data="logged"}.
 #' If the count matrix is raw counts, please specify \code{data="raw"}
 #'
-#' @param assay (Default: "counts") The assay slot to use with your
+#' @param assay (Default: NULL) The assay slot to use with your
 #' Bioconductor object.
 #' @param threshold (Default: 10) Prefiltering threshold for count row sums.
 #' @param pval_cutoff A cutoff value for p value when selecting
@@ -157,13 +157,13 @@ buildScaffold <- function(
     pheno <- mat$pheno
     mat <- mat$mat
 
-    if(is(pheno, "NULL")) {
-        warning("No annotation data provided. ",
-                "Expression data colnames are used instead.")
-        pheno <- data.frame(cell_types = factor(colnames(object)))
-        rownames(pheno) <- pheno$cell_types
-        colname <- "cell_types"
-    }
+    # if(is(pheno, "NULL")) {
+    #     warning("No annotation data provided. ",
+    #             "Expression data colnames are used instead.")
+    #     pheno <- data.frame("cell_types" = factor(colnames(object)))
+    #     rownames(pheno) <- pheno$cell_types
+    #     colname <- "cell_types"
+    # }
 
     # Define scaffold space
     space <- list("label" = pheno[, colname])

@@ -45,7 +45,7 @@ Cells will be grouped by this column of values.
 Thus, differential expression analysis will be performed using this
 column of phenotype as independent variables.}
 
-\item{assay}{(Default: "counts") The assay slot to use with your
+\item{assay}{(Default: NULL) The assay slot to use with your
 Bioconductor object.}
 
 \item{data}{A character indicating whether the count matrix is

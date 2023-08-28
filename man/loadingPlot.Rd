@@ -42,6 +42,6 @@ that contribute most to the selected principle components.
 }
 \examples{
 utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
-space <- buildScaffold(exprs_dmap, pData_dmap, "cell_types")
+space <- buildScaffold(exprs_dmap, pData_dmap, "cell_types", data = "logged")
 loadingPlot(space)
 }

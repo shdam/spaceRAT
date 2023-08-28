@@ -5,13 +5,13 @@ test_that("buildScaffold() returns a proper space",{
 
     scaffold <- "DMAP_scaffold"
     # test prebuilt scaffold
-    space1 <- buildScaffold(scaffold, data = "logged")
+    space1 <- buildScaffold(scaffold)
     expect_type(space1,"list")
     expect_setequal(names(space1), c("label","DEgenes", "pca"))
 
-    space2 <- buildScaffold(scaffold,classes=c("HSC","MONO","ERY"), data = "logged")
+    space2 <- buildScaffold(scaffold,classes=c("HSC","MONO","ERY"), data = "logged", add_umap = TRUE)
     expect_type(space2,"list")
-    expect_setequal(names(space2), c("label","DEgenes", "pca"))
+    expect_setequal(names(space2), c("label","DEgenes", "pca", "umap"))
     expect_setequal(as.character(unique(space2$label)), c("HSC","MONO","ERY"))
 
     space3 <- buildScaffold(scaffold,classes=c("BASO","EOS","GRAN"), data = "logged")
@@ -44,8 +44,12 @@ test_that("test error checks", {
 
     expect_error(buildScaffold("something"), "Incorrectly named prebuilt scaffold. The available are.*")
 
+    expect_error(buildScaffold(exprs_dmap, pheno = pData_dmap, data = "logged"), "Please specify colname for pheno data")
+    expect_error(buildScaffold(exprs_dmap, pheno = NULL, data = "logged"), "All cells have unique phenotype information.*")
+
+
     colnames(exprs_dmap) <- pData_dmap$cell_types
-    expect_error(buildScaffold(exprs_dmap), "Please ensure unique column names in data.")
+    expect_error(buildScaffold(exprs_dmap, data = "logged"), "Please ensure unique column names in data.")
 
 
 })

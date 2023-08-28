@@ -17,7 +17,7 @@ preprocess <- function(
         # Check matrix or data.frame
         mat <- checkMatrix(object)
     }
-    # If colname not in colData
+    # If colname not in pheno data
     if(
         !is(colname, "NULL") && !is(pheno, "NULL") &&
         !(colname %in% colnames(pheno))) stop(

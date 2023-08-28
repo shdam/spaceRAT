@@ -45,22 +45,26 @@ Build as space with example data:
 ``` r
 library(spaceRAT)
 data("exprs_dmap", "pData_dmap", package="spaceRATScaffolds")
-scaffold <- buildScaffold(exprs_dmap, pheno_scaffold = pData_dmap, colname = "cell_types")
+scaffold <- buildScaffold(
+    exprs_dmap, pheno = pData_dmap,
+    colname = "cell_types", data = "logged")
 #> Preprocessing complete.
 #> Finding differentially expressed genes
 #> Reducing dimensions.
 #> Done.
-plotScaffold(scaffold, "Scaffold Plot")
+plotScaffold(
+    scaffold, title = "Scaffold Plot",
+    dim_reduction = "PCA", dims = c(1,2), plot_mode = "dot")
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-build-1.png" width="100%" />
 
 ### Project new samples
 
 Get a list of available prebuilt scaffolds with:
 
 ``` r
-library(spaceRATScaffolds)
+library("spaceRATScaffolds")
 listScaffolds()
 #> [1] "DMAP_scaffold"
 ```
@@ -69,7 +73,7 @@ Project a sample of interest into a custom built or prebuilt scaffold:
 
 ``` r
 # Load count data
-data("exprs_ilaria", package="spaceRATScaffolds")
+data("counts_ilaria", package="spaceRATScaffolds")
 
 # Load custom or prebuilt scaffold
 scaffold <- buildScaffold("DMAP_scaffold")
@@ -77,15 +81,10 @@ scaffold <- buildScaffold("DMAP_scaffold")
 # Project sample
 projectSample(
     space = scaffold,
-    sample = exprs_ilaria,
+    sample = counts_ilaria, dims = c(1,2),
     title = "Samples projected into DMAP scaffold")
 #> Preprocessing complete.
-#> 6 genes are added to count matrix
-#>         with imputed expression level 0.
-#> Scale for colour is already present.
-#> Adding another scale for colour, which will replace the existing scale.
-#> Coordinate system already present. Adding new coordinate system, which will
-#> replace the existing one.
+#> 6 genes are added to count matrix with imputed expression level 0.
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-project-1.png" width="100%" />

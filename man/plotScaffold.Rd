@@ -5,12 +5,11 @@
 \title{Plot a scaffoldSpace object}
 \usage{
 plotScaffold(
-  space,
-  dim_reduction = c("PCA", "UMAP"),
-  title = "Scaffold plot",
-  plot_mode = c("dot", "tiny_label"),
-  dims = c(1, 2)
-)
+space,
+dim_reduction = "PCA",
+title = "Scaffold plot",
+plot_mode = "dot",
+dims = c(1, 2))
 }
 \arguments{
 \item{space}{A \code{scaffoldSpace} object returned by
@@ -18,16 +17,16 @@ plotScaffold(
 
 \item{dim_reduction}{A character indicating the method for
 dimensionality reduction. Currently "PCA" and "UMAP" are supported.
-labels to each data point.
+labels to each data point.}
+
+\item{title}{Title for the plot}
+
+\item{plot_mode}{A character indicating whether to add tiny
 By default \code{plot_mode="dot"} and tiny labels will not be attached.
 If more than 12 cell types are to be displayed, setting
 \code{plot_mode="tiny_label"} may yield better visualization.
 Shorter names for phenotypes (e.g. cell types) is strongly recommended
 in "tiny_label" mode.}
-
-\item{title}{Title for the plot}
-
-\item{plot_mode}{A character indicating whether to add tiny}
 
 \item{dims}{A numeric vector containing 2 numbers, indicating
 which two principle components to plot.}
@@ -41,5 +40,5 @@ This function plot a \code{scaffoldSpace} object created by
 }
 \examples{
 scaffold <- buildScaffold("DMAP_scaffold")
-plotScaffold(scaffold, "Scaffold plot title")
+plotScaffold(scaffold, "Scaffold plot title", dim_reduction = "PCA")
 }
