@@ -10,18 +10,19 @@ checkObject <- function(object, assay = "counts") {
         if (assay %in% assayNames(object)) {
             return(object)
         } else {
-            stop("The provided SummarizedExperiment does not contain a '",
-                 assay, "' assay. Available assays: ",
-                 paste(assayNames(object), collapse=", "))
+            stop(
+                "The provided SummarizedExperiment does not contain a '",
+                assay, "' assay. Available assays: ",
+                paste(assayNames(object), collapse=", "))
         }
-
     } else if (is(object, "matrix") || is(object, "data.frame")) {
         return(object)
     } else {
-        stop("Expression data was not provided in a supported format ",
-             "(matrix, data.frame, or SummarizedExperiment).\n",
-             "If you'd like us to support a new format, ",
-             "please raise an issue on GitHub.")
+        stop(
+            "Expression data was not provided in a supported format ",
+            "(matrix, data.frame, or SummarizedExperiment).\n",
+            "If you'd like us to support a new format, ",
+            "please raise an issue on GitHub.")
     }
 }
 

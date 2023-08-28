@@ -81,8 +81,9 @@ plotScaffold <- function(
         pal <- grDevices::colorRampPalette(my_col)
         my_col <- pal(total_types)
         if (plot_mode=="dot"){
-            message("More than 12 cell types are to be displayed. Setting
-                    'plot_mode='tiny_label' may yield better visualization.")
+            message(
+            "More than 12 cell types are to be displayed. Setting
+            'plot_mode='tiny_label' may yield better visualization.")
         }
     } else{
         my_col <- RColorBrewer::brewer.pal(total_types, "Paired")
@@ -112,8 +113,9 @@ plotScaffold <- function(
 
     # ggplot2 for label mode
     if (plot_mode=="tiny_label"){
-        message("plot_mode='tiny_label', shorter names for cell types in
-                phenotype table yields better visualization.")
+        message(
+        "plot_mode='tiny_label', shorter names for cell types in
+        phenotype table yields better visualization.")
         g <- ggplot2::ggplot()+
             ggplot2::geom_point(data=df,mapping=ggplot2::aes(
                 .data$Dim1,.data$Dim2,color=.data$Scaffold_group),size = 0.8)+

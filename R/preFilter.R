@@ -2,8 +2,9 @@
 #'
 #' @inheritParams buildScaffold
 #' @noRd
-preFilter <- function(mat, data = "counts",
-                      threshold = 10) {
+preFilter <- function(
+        mat, data,
+        threshold = 10) {
 
     # Determine genes to keep based on threshold
     if (data == "logged") {
@@ -14,13 +15,14 @@ preFilter <- function(mat, data = "counts",
         }
         idx <- which(rowSums(mat) >= threshold)
     } else {
-        stop("Invalid 'data' argument. Please choose 'logged' or 'raw'.")
+        stop("Invalid 'data' argument. Please choose 'logged' or 'counts'.")
     }
 
     # Check for low quality data
     if (length(idx) == 0) {
-        stop("Low quality data! All genes have total counts less than ",
-             threshold)
+        stop(
+            "Low quality data! All genes have total counts less than ",
+            threshold)
     }
 
     # Filter the SummarizedExperiment object

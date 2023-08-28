@@ -13,12 +13,10 @@ preprocess <- function(
         if(is(pheno, "NULL")) pheno <- as.data.frame(
             colData(object), row.names = rownames(colData(object)))
         rm(object)
-    } else{
-        # Check matrix or data.frame
+    } else{# Check matrix or data.frame
         mat <- checkMatrix(object)
     }
-    # If colname not in pheno data
-    if(
+    if( # If colname not in pheno data
         !is(colname, "NULL") && !is(pheno, "NULL") &&
         !(colname %in% colnames(pheno))) stop(
             "Column ", colname, " was not found in pheno/colData data.")
@@ -33,7 +31,6 @@ preprocess <- function(
     # Prefiltering ----
     if(is.numeric(threshold)) mat <- preFilter(
         mat, data = data, threshold = threshold)
-
     # Match counts and pheno ----
     if(!is(pheno, "NULL")){
         if(is(colname, "NULL")) colname <- colnames(pheno)[1]

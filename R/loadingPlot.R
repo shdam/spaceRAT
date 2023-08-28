@@ -42,7 +42,6 @@ loadingPlot <- function(
 
     pca <- space$pca
     pc1 <- dims[1]; pc2 <- dims[2]
-
     # calculate variance explained and add percentage to axis labels
     var_sum <- sum(pca$sdev^2)
     var1 <- round(pca$sdev[pc1]^2/var_sum*100,2)
@@ -59,8 +58,7 @@ loadingPlot <- function(
 
     xmin <- min(df[[pc1]]); xmax <- max(df[[pc1]])
     ymin <- min(df[[pc2]]); ymax <- max(df[[pc2]])
-
-# ggplot
+    # ggplot
     if(df_only) return(df)
     g <- ggplot2::ggplot(data=df)+
         ggplot2::aes(color=.data$class) +

@@ -7,7 +7,7 @@ formatPheno <- function(pheno, colname = NULL, classes = NULL) {
 
     # If no rownames in pheno_data
     if(all( as.character(seq_len(6)) %in% rownames(pheno)[seq_len(6)])){
-        pheno <- as.data.frame(pheno, row.names = pheno[[colnames(pheno)[1]]])
+        pheno <- as.data.frame(pheno[, -1, drop=FALSE], row.names = as.character(pheno[[colnames(pheno)[1]]]))
     }
 
     # If colname not in pheno_data
@@ -49,8 +49,9 @@ missingAnnotation <- function(mat, pheno) {
     if (length(idx) > 0) {
         # Remove those samples from the SummarizedExperiment object
         mat <- mat[, -idx, drop = FALSE]
-        message(length(idx),
-                " sample(s) have no phenotype annotation, therefore removed.")
+        message(
+            length(idx),
+            " sample(s) have no phenotype annotation, therefore removed.")
     }
     return(mat)
 }
@@ -67,8 +68,9 @@ missingExpression <- function(mat, pheno) {
     if (length(idx) > 0) {
         # Remove those samples from the pheno data
         pheno <- pheno[-idx, , drop = FALSE]
-        message(length(idx),
-                " annotation(s) have no expression data, therefore removed.")
+        message(
+            length(idx),
+            " annotation(s) have no expression data, therefore removed.")
     }
 
     stopifnot(
@@ -99,8 +101,9 @@ removeNAs <- function(mat) {
     is_nans <- is.na(mat)
     if (sum(is_nans) > 0) {
         mat[is_nans] <- 0
-        message("Expression data has ", sum(is_nans),
-                " missing values. Replacing NAs by 0.")
+        message(
+            "Expression data has ", sum(is_nans),
+            " missing values. Replacing NAs by 0.")
     }
     return(mat)
 }

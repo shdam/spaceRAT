@@ -157,14 +157,6 @@ buildScaffold <- function(
     pheno <- mat$pheno
     mat <- mat$mat
 
-    # if(is(pheno, "NULL")) {
-    #     warning("No annotation data provided. ",
-    #             "Expression data colnames are used instead.")
-    #     pheno <- data.frame("cell_types" = factor(colnames(object)))
-    #     rownames(pheno) <- pheno$cell_types
-    #     colname <- "cell_types"
-    # }
-
     # Define scaffold space
     space <- list("label" = pheno[, colname])
 

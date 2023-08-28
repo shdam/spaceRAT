@@ -4,7 +4,7 @@ test_that("plotScaffold works", {
     plt <- plotScaffold(scaffold, dim_reduction = "PCA", "Scaffold plot title")
     expect_s3_class(plt, "ggplot")
 
-    plt <- plotScaffold(scaffold, dim_reduction = "UMAP",plot_mode = "tiny_label", "Scaffold plot title")
+    plt <- plotScaffold(scaffold, dim_reduction = "UMAP", plot_mode = "tiny_label", "Scaffold plot title")
     expect_s3_class(plt, "ggplot")
 
     scaffold$pca$x <- scaffold$pca$x[,1:2]
