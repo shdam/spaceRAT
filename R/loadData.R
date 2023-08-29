@@ -2,8 +2,11 @@
 #' @importFrom utils data
 #' @noRd
 loadData <- function(name){
-    utils::data(list = name, package = "spaceRATScaffolds")
+    utils::data(
+        list = name,
+        package = "spaceRATScaffolds",
+        envir = environment()
+        )
     return(get(name))
 }
-
 

@@ -2,23 +2,19 @@
 #'
 #' @noRd
 checkPrebuilt <- function(object, classes){
-    if(
-        is(object, "character") &&
-        object %in% listScaffolds() &&
-        is(classes, "NULL")
-    ){ # Return prebuil scaffold
+    stopifnot("Please only check a character string" = is(object, "character"))
+    if( # Return prebuilt scaffold
+        object %in% listScaffolds() && is(classes, "NULL")
+        ){
         space <- loadData(object)
         return(space)
-        # prebuilt DMAP samples removed
-    } else if(
-        is(object, "character") &&
-        object == "DMAP_scaffold" &&
-        !is(classes, "NULL")
-    ){ # Subsetting a Scaffold
+    } else if( # Subsetting a Scaffold
+        object == "DMAP_scaffold" && !is(classes, "NULL")
+        ){
         object <- loadData("exprs_dmap")
         pheno <- loadData("pData_dmap")
         colname <- "cell_types"
-    } else if(is(object, "character")){ # Unknown scaffold
+    } else{ # Unknown scaffold
         stop(
             "Incorrectly named prebuilt scaffold. The available are: ",
             listScaffolds()
