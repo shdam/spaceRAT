@@ -9,6 +9,11 @@ test_that("loadingPlot works", {
     expect_equal(nrow(df), 12)
     expect_equal(ncol(df), 4)
     expect_equal(colnames(df), c("PC1", "PC2", "class", "gene"))
+
+    expect_s3_class(loadingPlot(space, dims = c(2,3)), "ggplot")
+    expect_s3_class(loadingPlot(space, dims = c(2,3), num_genes = 5), "ggplot")
+    expect_warning(loadingPlot(space, dims = c(2,3), gene_name = "entrez"))
+    expect_s3_class(loadingPlot(space, dims = c(2,3), angle = 45), "ggplot")
 })
 
 

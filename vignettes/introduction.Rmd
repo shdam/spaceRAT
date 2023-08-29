@@ -32,6 +32,27 @@ allows the user to visually investigate their sample data.
 In the following, a brief overview of the `spaceRAT` is illustrated. 
 See the respective vignettes for additional information.
 
+# Installation
+
+*Dependencies*
+
+```{r dependencies, eval = FALSE}
+# Install Bioconductor dependencies
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install(c("SummarizedExperiment", "S4Vectors"))
+
+# Install spaceRATScaffolds from github
+remotes::install_github("shdam/spaceRATScaffolds", build_vignettes = TRUE)
+```
+
+
+*Install from GitHub*
+``` {r install, eval = FALSE}
+remotes::install_github("XueningHe/spaceRAT", build_vignettes = TRUE)
+```
+
 
 # Build scaffold
 
@@ -42,16 +63,16 @@ Here is a quick overview:
 library(spaceRAT)
 
 # Load expression data
-data("exprs_dmap", package="spaceRAT")
+data("exprs_dmap", package="spaceRATScaffolds")
 # Load phenotype data
-data("pData_dmap", package="spaceRAT")
+data("pData_dmap", package="spaceRATScaffolds")
 # Specify colname with phenotype information
 colname <- "cell_types"
 
 # Build scaffold
 scaffold <- buildScaffold(
     exprs_dmap,
-    data = "logged",
+    data = "exprs",
     pheno = pData_dmap,
     colname = colname
 )

@@ -4,8 +4,8 @@
 #' @noRd
 preprocess <- function(
         object, colname = NULL, pheno = NULL,
-        assay = "counts",
-        data = "counts", threshold = 10,
+        assay = NULL,
+        data = NULL, threshold = 10,
         annotation = "ensembl_gene", classes = NULL){
     if(!is(object, "matrix") && !is(object, "data.frame")){
         object <- checkObject(object, assay = assay)

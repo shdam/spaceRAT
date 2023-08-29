@@ -49,9 +49,9 @@
 #' Thus, differential expression analysis will be performed using this
 #' column of phenotype as independent variables.
 #'
-#' @param data A character indicating whether the count matrix is
-#' log-transformed or raw. By default \code{data="logged"}.
-#' If the count matrix is raw counts, please specify \code{data="raw"}
+#' @param data A character indicating whether the matrix is
+#' log-transformed or raw counts. By default \code{data="exprs"}.
+#' If the count matrix is raw counts, please specify \code{data="counts"}
 #'
 #' @param assay (Default: NULL) The assay slot to use with your
 #' Bioconductor object.
@@ -81,8 +81,8 @@
 #'     object,
 #'     pheno = NULL,
 #'     colname = NULL,
-#'     assay = "counts",
-#'     data = "counts",
+#'     assay = NULL,
+#'     data = NULL,
 #'     threshold = 10,
 #'     add_umap = FALSE,
 #'     classes = NULL,
@@ -99,14 +99,14 @@
 #' @return A scaffold space
 #' @examples
 #' utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
-#' buildScaffold(exprs_dmap,pData_dmap,"cell_types", data = "logged",
+#' buildScaffold(exprs_dmap,pData_dmap,"cell_types", data = "exprs",
 #' pval_cutoff=0.01,pca_scale=TRUE)
 buildScaffold <- function(
         object,
         pheno = NULL,
         colname = NULL,
-        assay = "counts",
-        data = "counts",
+        assay = NULL,
+        data = NULL,
         threshold = 10,
         add_umap = FALSE,
         classes = NULL,
@@ -115,37 +115,23 @@ buildScaffold <- function(
         pca_scale = FALSE,
         annotation = "ensembl_gene"){
 
-    # prebuilt_DMAP no samples removed
-    if(
-        is(object, "character") &&
-        object %in% listScaffolds() &&
-        is(classes, "NULL")
-        ){
-        space <- loadData(object)
-        return(space)
-        # prebuilt DMAP samples removed
-    } else if(
-        is(object, "character") &&
-        object == "DMAP_scaffold" &&
-        !is(classes, "NULL")
-        ){
-        object <- loadData("exprs_dmap")
-        pheno <- loadData("pData_dmap")
-        colname <- "cell_types"
-    } else if(is(object, "character")){
-        stop(
-        "Incorrectly named prebuilt scaffold. The available are: ",
-        listScaffolds()
-        )
-    }
+    # Check prebuilt
+    if(is(object, "character")) {
+        object <- checkPrebuilt(object, classes)
+        if(!is(object$pca, "NULL")) return(object)
+        else{ # Extract modified prebuilt scaffold
+            pheno <- object$pheno
+            colname <- object$colname
+            object <- object$object
+        }}
 
     stopifnot("Please ensure unique column names in data." = all(
         !duplicated(colnames(object))))
     if(!is(pheno, "NULL") & is(colname, "NULL")) stop(
         "Please specify colname for pheno data")
 
-    # Preprocessing ----
-    mat <- preprocess(
+    # Preprocessing
+    object <- preprocess(
         object,
         colname = colname,
         pheno = pheno,
@@ -154,8 +140,7 @@ buildScaffold <- function(
         annotation = annotation,
         classes = classes
         )
-    pheno <- mat$pheno
-    mat <- mat$mat
+    pheno <- object$pheno; mat <- object$mat; rm(object)
 
     # Define scaffold space
     space <- list("label" = pheno[, colname])
@@ -163,8 +148,6 @@ buildScaffold <- function(
     # Find DE genes
     space$DEgenes <- findDEGenes(
         mat, space$label, pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff)
-
-    # subset
     mat <- mat[space$DEgenes, ]
 
     # rank
@@ -173,12 +156,9 @@ buildScaffold <- function(
     # dimension reduction
     message("Reducing dimensions.")
     space$pca <- stats::prcomp(t(mat), scale = pca_scale)
-    if (add_umap){
-        space$umap <- uwot::umap(t(mat))
-    }
+    if (add_umap) space$umap <- uwot::umap(t(mat))
 
     message("Scaffold is built.")
-
     return(space)
 }
 

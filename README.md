@@ -9,12 +9,25 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-## Install from GitHub
+## Installation
+
+*Dependencies*
 
 ``` r
-# Install using devtools
-# install.packages("devtools")
-devtools::install_github("XueningHe/spaceRAT", build_vignettes = TRUE)
+# Install Bioconductor dependencies
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install(c("SummarizedExperiment", "S4Vectors"))
+
+# Install spaceRATScaffolds from github
+remotes::install_github("shdam/spaceRATScaffolds", build_vignettes = TRUE)
+```
+
+*Install from GitHub*
+
+``` r
+remotes::install_github("XueningHe/spaceRAT", build_vignettes = TRUE)
 ```
 
 ## View vignettes
@@ -36,22 +49,22 @@ information can be found in the vignettes.
 ### Build a scaffold space
 
 There are two ways to get a scaffold space. You can either obtain the
-prebuilt DMAP or GTEX space, or build a scaffold space of your own, by
-passing as arguments a count matrix, a phenotype table, an a column name
-of the phenotype table to function `buildScaffold()`.
+prebuilt DMAP, or build a scaffold space of your own, by passing as
+arguments a count matrix, a phenotype table, an a column name of the
+phenotype table to function `buildScaffold()`.
 
-Build as space with example data:
+Build a space with example data:
 
 ``` r
 library(spaceRAT)
 data("exprs_dmap", "pData_dmap", package="spaceRATScaffolds")
 scaffold <- buildScaffold(
     exprs_dmap, pheno = pData_dmap,
-    colname = "cell_types", data = "logged")
+    colname = "cell_types", data = "exprs")
 #> Preprocessing complete.
 #> Finding differentially expressed genes
 #> Reducing dimensions.
-#> Done.
+#> Scaffold is built.
 plotScaffold(
     scaffold, title = "Scaffold Plot",
     dim_reduction = "PCA", dims = c(1,2), plot_mode = "dot")
@@ -80,8 +93,9 @@ scaffold <- buildScaffold("DMAP_scaffold")
 
 # Project sample
 projectSample(
+    sample = counts_ilaria,
     space = scaffold,
-    sample = counts_ilaria, dims = c(1,2),
+    dims = c(1,2),
     title = "Samples projected into DMAP scaffold")
 #> Preprocessing complete.
 #> 6 genes are added to count matrix with imputed expression level 0.

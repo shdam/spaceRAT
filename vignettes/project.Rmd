@@ -54,7 +54,10 @@ information on how to build a custom scaffold.
 
 For prebuilt scaffold, you can choose from the following scaffolds:
 
-- `"prebuilt_DMAP"`
+```{r list_scaffolds} 
+library("spaceRATScaffolds")
+listScaffolds()
+```
 
 
 Getting a prebuilt scaffold:
@@ -120,7 +123,6 @@ se <- SummarizedExperiment::SummarizedExperiment(
 )
 
 # Build scaffold
-
 projectSample(
     space = scaffold,
     sample = se,

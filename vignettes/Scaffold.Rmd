@@ -37,7 +37,7 @@ colname <- "cell_types"
 scaffold <- buildScaffold(
     exprs_dmap, 
     pheno = pData_dmap,
-    data = "logged",
+    data = "exprs",
     colname = colname
 )
 
@@ -53,18 +53,20 @@ See `?buildScaffold` for additional parameter settings.
 This vignette will describe how to create a scaffold space
 that samples can later be projected into.
 You will need:
-- Raw count or expression matrix 
+
+- Counts or expression matrix 
 - Phenotype data that describes the desired phenotype of each
 column of the matrix.
 
-*Count/expression data*
+*Counts/expression data*
 
 The matrix may be formatted as a `matrix`, `data.frame`,
 or `r  BiocStyle::Biocpkg("SummarizedExperiment")`.
 Column names are sample names. Row names are gene names,
 which can be Ensembl Gene ID, HGNC Symbol, Entrez Gene ID Ensembl,
-Transcript ID or Refseq mRNA. All gene ID will be automatically converted to
-Ensembl Gene ID. Counts of several transcript ID corresponding to same gene
+Transcript ID, or Refseq mRNA. All gene ID will be automatically converted to
+Ensembl Gene ID (Unless otherwise specified by the user).
+Counts of several transcript ID corresponding to same gene
 will be added and recorded as the counts of the gene.
 
 Below is a valid (log-transformed) count matrix:
@@ -76,7 +78,8 @@ exprs_dmap[1:5,1:5]
 
 *Phenotype*
 
-Phenotype table should have row names as sample names identical to count matrix,
+Phenotype table should have sample names as row names, such that they are
+identical to the column names of the data matrix,
 as well as at least one column for cell types, or any sample feature
 suitable for grouping cells and perform differential expression analysis.
 For example:
@@ -89,7 +92,7 @@ pData_dmap[1:5,,drop=FALSE]
 
 # Load data
 
-The first step is to load in the counts data.
+The first step is to load in the counts/expression data.
 
 ```{r load}
 library(spaceRAT)
@@ -119,7 +122,8 @@ scaffold <- buildScaffold(
     exprs_dmap,
     pheno = pData_dmap,
     data = "logged",
-    colname = colname
+    colname = colname,
+    add_umap = FALSE # Set to TRUE if you also want UMAP space in the scaffold
 )
 
 
@@ -128,7 +132,7 @@ str(scaffold)
 
 `buildScaffold()` performs the following steps:
 
-- Preprocesses the count matrix: It removes genes with total counts
+- Preprocesses the counts/expression matrix: It removes genes with total counts
 less than 10 and replaces `NA` by 0.
 - Differential expression analysis to select 
 differentially expressed genes (DE genes).
@@ -136,45 +140,55 @@ differentially expressed genes (DE genes).
 - Ranks the genes within each sample
 - Finally, it performs principle component analysis (PCA) or UMAP using ranks.
 
-By default `buildScaffold()` takes in logged count matrix.
-It can also handle raw count data if `data="counts"` is specified. 
+By default `buildScaffold()` takes in a counts matrix.
+It can also handle expression data if `data="exprs"` is specified. 
 
-The resulting scaffold has five slots:
+The resulting scaffold has three-four slots:
 
 - `DEgene`: The differentially expressed genes, determined using
 `r  BiocStyle::Biocpkg("limma")`.
 - `label`: The phenotype labels from the provided pheno data.
-- `model`: The `PCA` or `UMAP` dimensionality reduction model.
-- `dims`: The principal components to use,
-- `plot_mode`: The plotting type specified when building the scaffold.
-Can be either `"dot"` or `"tiny_label"`.
+- `pca`: The PCA space
+- `umap`: The UMAP space
 
 
 The scaffold space can be plotted with `plotScaffold`:
 
+Here, you specify if the PCA or UMAP should be used,
+the PCs to plot, and the plotmode (`dot` or `tiny_label`)
+
 ```{r plotscaffold}
-plotScaffold(scaffold, title = "Scaffold plot")
+plotScaffold(
+    scaffold,
+    title = "Scaffold plot",
+    dim_reduction = "PCA",
+    plot_mode = "dot",
+    dims = c(1,2))
 ```
 
 You can also turn on the "tiny_label" mode by specifying `plot_mode`.
 You can also visualize other principle components by specifying `dims`.  
 ```{r}
-scaffold <- buildScaffold("DMAP_scaffold")
 plotScaffold(
     scaffold,
+    dim_reduction = "PCA",
     plot_mode = "tiny_label",
     dims = c(3,4),
     title = "Scaffold Plot")
 ```
+## Loading plot
 
 To make sense of scaffold space, `loadingPlot()` can visualize the genes
-that contribute most to the
-selected principle components. It returns a data frame containing
-the loading scores as well by setting `df_only = TRUE`.
+that contribute most to the selected principle components.
+It returns a data frame containing
+the loading scores by setting `df_only = TRUE`.
 ```{r, eval=FALSE}
 loadingPlot(
     scaffold,
-    df_only = FALSE
+    df_only = FALSE,
+    dims = c(1,2),
+    num_genes = 3,
+    gene_name = "hgnc_symbol"
     )
 ```
 
@@ -197,7 +211,7 @@ colname <- "cell_types"
 scaffold <- buildScaffold(
     se,
     assay = "exprs",
-    data = "logged",
+    data = "exprs",
     colname = colname
 )
 

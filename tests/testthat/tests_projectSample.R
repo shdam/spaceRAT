@@ -5,8 +5,18 @@ test_that("projectSample() correctly projects.",{
     g <- projectSample(space,counts_ilaria,pData_ilaria,"cancer_type")
     expect_s3_class(g,"ggplot")
 
+    g <- projectSample(space,counts_ilaria,pData_ilaria,"cancer_type", dims = c(2,3))
+    expect_s3_class(g,"ggplot")
+
+    g <- projectSample(space,counts_ilaria,pData_ilaria,"cancer_type", title = "Some title")
+    expect_s3_class(g,"ggplot")
+
     g <- projectSample(space,counts_ilaria)
     expect_s3_class(g,"ggplot")
+
+    g <- projectSample(space,counts_ilaria, dims = c(2,3))
+    expect_s3_class(g,"ggplot")
+
 })
 
 test_that("projectSample() gives warning when sample is shallow.",{

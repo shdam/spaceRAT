@@ -9,8 +9,8 @@ buildScaffold(
     object,
     pheno = NULL,
     colname = NULL,
-    assay = "counts",
-    data = "counts",
+    assay = NULL,
+    data = NULL,
     threshold = 10,
     add_umap = FALSE,
     classes = NULL,
@@ -48,9 +48,9 @@ column of phenotype as independent variables.}
 \item{assay}{(Default: NULL) The assay slot to use with your
 Bioconductor object.}
 
-\item{data}{A character indicating whether the count matrix is
-log-transformed or raw. By default \code{data="logged"}.
-If the count matrix is raw counts, please specify \code{data="raw"}}
+\item{data}{A character indicating whether the matrix is
+log-transformed or raw counts. By default \code{data="exprs"}.
+If the count matrix is raw counts, please specify \code{data="counts"}}
 
 \item{threshold}{(Default: 10) Prefiltering threshold for count row sums.}
 
@@ -109,6 +109,6 @@ principle component analysis (PCA) using ranks.
 }
 \examples{
 utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
-buildScaffold(exprs_dmap,pData_dmap,"cell_types", data = "logged",
+buildScaffold(exprs_dmap,pData_dmap,"cell_types", data = "exprs",
 pval_cutoff=0.01,pca_scale=TRUE)
 }

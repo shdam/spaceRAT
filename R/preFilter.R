@@ -7,7 +7,7 @@ preFilter <- function(
         threshold = 10) {
 
     # Determine genes to keep based on threshold
-    if (data == "logged") {
+    if (data == "exprs" | data == "logged") {
         idx <- which(rowSums(exp(mat)) >= threshold)
     } else if (data == "counts") {
         if (any(mat < 0)) {
@@ -15,7 +15,7 @@ preFilter <- function(
         }
         idx <- which(rowSums(mat) >= threshold)
     } else {
-        stop("Invalid 'data' argument. Please choose 'logged' or 'counts'.")
+        stop("Invalid 'data' argument. Please choose 'exprs' or 'counts'.")
     }
 
     # Check for low quality data

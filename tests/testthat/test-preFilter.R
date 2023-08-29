@@ -36,5 +36,5 @@ test_that("preFilter() throws an error when all genes have total counts less tha
 # Test for correct data input
 test_that("preFilter() throws an error when all genes have total counts less than threshold for raw data", {
     expect_error(preFilter(matrix(rep(0, 16), nrow = 4), data = "whatnow", threshold = 20),
-                 "Invalid 'data' argument. Please choose 'logged' or 'counts'.")
+                 "Invalid 'data' argument. Please choose 'exprs' or 'counts'.")
 })
