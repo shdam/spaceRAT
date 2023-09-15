@@ -1,3 +1,4 @@
+data("gene_id_converter_hs", package = "spaceRATScaffolds")
 test_that("mapGene() converts from Ensembl_gene to others",{
     ensembl <- rownames(exprs_dmap)
     df <- mapGene(ensembl,to="ensembl_transcript")

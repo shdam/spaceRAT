@@ -57,6 +57,9 @@ projectSample <- function(
         title = "Samples projected onto scaffold PCA",
         verbose = TRUE,
         annotation = "ensembl_gene"){
+    if(is(space, "NULL") | is(sample, "NULL")){
+        warning("No space or sample provided.")
+        return(NULL)}
     # Preprocess data
     sample <- preprocess(
         sample,
