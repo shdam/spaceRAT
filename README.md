@@ -57,9 +57,9 @@ Build a space with example data:
 
 ``` r
 library(spaceRAT)
-data("exprs_dmap", "pData_dmap", package="spaceRATScaffolds")
+data("DMAP_exprs", "DMAP_pData", package="spaceRATScaffolds")
 scaffold <- buildScaffold(
-    exprs_dmap, pheno = pData_dmap,
+    DMAP_exprs, pheno = DMAP_pData,
     colname = "cell_types", data = "exprs")
 #> Preprocessing complete.
 #> Finding differentially expressed genes
@@ -86,14 +86,14 @@ Project a sample of interest into a custom built or prebuilt scaffold:
 
 ``` r
 # Load count data
-data("counts_ilaria", package="spaceRATScaffolds")
+data("ilaria_counts", package="spaceRATScaffolds")
 
 # Load custom or prebuilt scaffold
 scaffold <- buildScaffold("DMAP_scaffold")
 
 # Project sample
 projectSample(
-    sample = counts_ilaria,
+    sample = ilaria_counts,
     space = scaffold,
     dims = c(1,2),
     title = "Samples projected into DMAP scaffold")
