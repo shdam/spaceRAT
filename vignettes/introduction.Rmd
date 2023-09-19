@@ -63,17 +63,17 @@ Here is a quick overview:
 library(spaceRAT)
 
 # Load expression data
-data("exprs_dmap", package="spaceRATScaffolds")
+data("DMAP_exprs", package="spaceRATScaffolds")
 # Load phenotype data
-data("pData_dmap", package="spaceRATScaffolds")
+data("DMAP_pData", package="spaceRATScaffolds")
 # Specify colname with phenotype information
 colname <- "cell_types"
 
 # Build scaffold
 scaffold <- buildScaffold(
-    exprs_dmap,
+    DMAP_exprs,
     data = "exprs",
-    pheno = pData_dmap,
+    pheno = DMAP_pData,
     colname = colname
 )
 
@@ -91,7 +91,7 @@ Here is a quick overview:
 library(spaceRAT)
 
 # Load count data
-data("counts_ilaria", package="spaceRATScaffolds")
+data("ilaria_counts", package="spaceRATScaffolds")
 
 # Load custom or prebuilt scaffold
 scaffold <- buildScaffold("DMAP_scaffold")
@@ -99,7 +99,7 @@ scaffold <- buildScaffold("DMAP_scaffold")
 # Project sample
 projectSample(
     space = scaffold,
-    sample = counts_ilaria,
+    sample = ilaria_counts,
     title = "Samples projected into DMAP scaffold")
 ```
 

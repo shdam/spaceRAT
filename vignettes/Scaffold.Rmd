@@ -27,16 +27,16 @@ knitr::opts_chunk$set(
 library(spaceRAT)
 
 # Load expression data
-data("exprs_dmap", package="spaceRATScaffolds")
+data("DMAP_exprs", package="spaceRATScaffolds")
 # Load phenotype data
-data("pData_dmap", package="spaceRATScaffolds")
+data("DMAP_pData", package="spaceRATScaffolds")
 # Specify colname with phenotype information
 colname <- "cell_types"
 
 # Build scaffold
 scaffold <- buildScaffold(
-    exprs_dmap, 
-    pheno = pData_dmap,
+    DMAP_exprs, 
+    pheno = DMAP_pData,
     data = "exprs",
     colname = colname
 )
@@ -71,8 +71,8 @@ will be added and recorded as the counts of the gene.
 
 Below is a valid (log-transformed) count matrix:
 ```{r expression}
-data("exprs_dmap", package="spaceRATScaffolds")
-exprs_dmap[1:5,1:5]
+data("DMAP_exprs", package="spaceRATScaffolds")
+DMAP_exprs[1:5,1:5]
 ```
 
 
@@ -85,8 +85,8 @@ suitable for grouping cells and perform differential expression analysis.
 For example:
 
 ```{r pdata}
-data("pData_dmap", package="spaceRATScaffolds")
-pData_dmap[1:5,,drop=FALSE]
+data("DMAP_pData", package="spaceRATScaffolds")
+DMAP_pData[1:5,,drop=FALSE]
 ```
 
 
@@ -119,9 +119,9 @@ From there, the scaffold can be built with `buildScaffold`.
 
 ```{r build}
 scaffold <- buildScaffold(
-    exprs_dmap,
-    pheno = pData_dmap,
-    data = "logged",
+    DMAP_exprs,
+    pheno = DMAP_pData,
+    data = "exprs",
     colname = colname,
     add_umap = FALSE # Set to TRUE if you also want UMAP space in the scaffold
 )
@@ -201,8 +201,8 @@ the process is very similar.
 ```{r SE}
 # Prepare data
 se <- SummarizedExperiment::SummarizedExperiment(
-    assays = S4Vectors::SimpleList("exprs" = exprs_dmap),
-    colData = S4Vectors::DataFrame(pData_dmap)
+    assays = S4Vectors::SimpleList("exprs" = DMAP_exprs),
+    colData = S4Vectors::DataFrame(DMAP_pData)
 )
 colname <- "cell_types"
 

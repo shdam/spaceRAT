@@ -1,22 +1,22 @@
 test_that("formatData works", {
 
-    data("pData_dmap", package = "spaceRATScaffolds")
+    data("DMAP_pData", package = "spaceRATScaffolds")
 
-    expect_equal(formatPheno(pData_dmap), pData_dmap)
+    expect_equal(formatPheno(DMAP_pData), DMAP_pData)
 
-    pData_dmap2 <- data.frame(
-        "rownames" = rownames(pData_dmap),
-        "cell_types" = pData_dmap$cell_types)
-    expect_equal(formatPheno(pData_dmap2), pData_dmap)
+    DMAP_pData2 <- data.frame(
+        "rownames" = rownames(DMAP_pData),
+        "cell_types" = DMAP_pData$cell_types)
+    expect_equal(formatPheno(DMAP_pData2), DMAP_pData)
 
-    pData_dmap$na <- rep(NA, nrow(pData_dmap))
-    expect_message(formatPheno(pData_dmap, "na"), ".*in phenotype table contain NA.*")
+    DMAP_pData$na <- rep(NA, nrow(DMAP_pData))
+    expect_message(formatPheno(DMAP_pData, "na"), ".*in phenotype table contain NA.*")
 })
 
 test_that("formatData errors checks", {
 
-    data("pData_dmap", package = "spaceRATScaffolds")
+    data("DMAP_pData", package = "spaceRATScaffolds")
 
-    expect_error(formatPheno(pData_dmap, colname = "Wrong"), "Column Wrong was not found in annotation data.")
+    expect_error(formatPheno(DMAP_pData, colname = "Wrong"), "Column Wrong was not found in annotation data.")
 })
 

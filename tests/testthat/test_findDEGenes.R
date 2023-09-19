@@ -1,8 +1,8 @@
 object <- preprocess(
-    exprs_dmap,
-    data = "logged",
+    DMAP_exprs,
+    data = "exprs",
     colname = "cell_types",
-    pheno = pData_dmap)
+    pheno = DMAP_pData)
 
 counts_scaffold <- object[[1]]
 cell_types <- object[[2]]

@@ -1,5 +1,5 @@
-utils::data("exprs_dmap", "pData_dmap", package = "spaceRATScaffolds")
-space <- buildScaffold(exprs_dmap, pData_dmap, "cell_types", data = "logged")
+utils::data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
+space <- buildScaffold(DMAP_exprs, DMAP_pData, "cell_types", data = "logged")
 
 test_that("loadingPlot works", {
     l <- loadingPlot(space)

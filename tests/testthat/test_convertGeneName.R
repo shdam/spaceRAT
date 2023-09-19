@@ -1,10 +1,10 @@
 data("gene_id_converter_hs", package = "spaceRATScaffolds")
 
 test_that("convertGeneName() converts between Ensembl_gene and Entrez",{
-    exprs_entrez <- suppressWarnings(convertGeneName(exprs_dmap,to="entrez"))
+    exprs_entrez <- suppressWarnings(convertGeneName(DMAP_exprs,to="entrez"))
     expect_true(all(rownames(exprs_entrez) %in% gene_id_converter_hs$entrez))
-    expect_true(ncol(exprs_entrez)==ncol(exprs_dmap))
-    expect_true(nrow(exprs_entrez)<=nrow(exprs_dmap))
+    expect_true(ncol(exprs_entrez)==ncol(DMAP_exprs))
+    expect_true(nrow(exprs_entrez)<=nrow(DMAP_exprs))
     expect_false( "" %in% rownames(exprs_entrez))
 
     exprs_ensembl <- convertGeneName(exprs_entrez,to="ensembl_gene")
@@ -16,10 +16,10 @@ test_that("convertGeneName() converts between Ensembl_gene and Entrez",{
 
 
 test_that("convertGeneName() converts between Ensembl_gene and hgnc_symbol",{
-    exprs_symbol <- suppressWarnings(convertGeneName(exprs_dmap,to="hgnc_symbol"))
+    exprs_symbol <- suppressWarnings(convertGeneName(DMAP_exprs,to="hgnc_symbol"))
     expect_true(all(rownames(exprs_symbol) %in% gene_id_converter_hs$hgnc_symbol ))
-    expect_true(ncol(exprs_symbol)==ncol(exprs_dmap))
-    expect_true(nrow(exprs_symbol)<=nrow(exprs_dmap))
+    expect_true(ncol(exprs_symbol)==ncol(DMAP_exprs))
+    expect_true(nrow(exprs_symbol)<=nrow(DMAP_exprs))
     expect_false( "" %in% rownames(exprs_symbol))
 
     exprs_ensembl <- convertGeneName(exprs_symbol,to="ensembl_gene")

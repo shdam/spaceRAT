@@ -11,8 +11,8 @@ checkPrebuilt <- function(object, classes){
     } else if( # Subsetting a Scaffold
         object == "DMAP_scaffold" && !is(classes, "NULL")
         ){
-        object <- loadData("exprs_dmap")
-        pheno <- loadData("pData_dmap")
+        object <- loadData("DMAP_exprs")
+        pheno <- loadData("DMAP_pData")
         colname <- "cell_types"
     } else{ # Unknown scaffold
         stop(

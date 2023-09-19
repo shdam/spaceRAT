@@ -1,25 +1,25 @@
-exprs_dmap <- loadData("exprs_dmap")
-pData_dmap <- loadData("pData_dmap")
+exprs_dmap <- loadData("DMAP_exprs")
+pData_dmap <- loadData("DMAP_pData")
 
-se <- SummarizedExperiment::SummarizedExperiment(assays = S4Vectors::SimpleList("exprs" = exprs_dmap), colData = pData_dmap)
+se <- SummarizedExperiment::SummarizedExperiment(assays = S4Vectors::SimpleList("exprs" = DMAP_exprs), colData = DMAP_pData)
 test_that("preprocess works", {
 
 
-    preprocessed <- preprocess(exprs_dmap, data = "exprs", pheno = pData_dmap, colname = "cell_types", threshold = 10)
+    preprocessed <- preprocess(DMAP_exprs, data = "exprs", pheno = DMAP_pData, colname = "cell_types", threshold = 10)
 
     expect_equal(preprocessed[[1]], exprs_dmap)
     expect_equal(preprocessed[[2]], pData_dmap)
 
-    preprocessed <- suppressWarnings(preprocess(exprs_dmap, pheno = pData_dmap, data = "exprs", colname = "cell_types", annotation = "entrez"))
+    preprocessed <- suppressWarnings(preprocess(DMAP_exprs, pheno = DMAP_pData, data = "exprs", colname = "cell_types", annotation = "entrez"))
 
     expect_no_error(as.numeric(rownames(preprocessed[[1]])))
 
 
-    preprocessed <- preprocess(exprs_dmap, data = "exprs")
+    preprocessed <- preprocess(DMAP_exprs, data = "exprs")
     expect_null(preprocessed[[2]])
 
     preprocessed <- preprocess(se, assay = "exprs", data = "exprs")
-    expect_equal(preprocessed[[1]], exprs_dmap)
+    expect_equal(preprocessed[[1]], DMAP_exprs)
     expect_equal(preprocessed[[2]], pData_dmap)
 
 

@@ -1,6 +1,6 @@
 data("gene_id_converter_hs", package = "spaceRATScaffolds")
 test_that("mapGene() converts from Ensembl_gene to others",{
-    ensembl <- rownames(exprs_dmap)
+    ensembl <- rownames(DMAP_exprs)
     df <- mapGene(ensembl,to="ensembl_transcript")
     tx <- as.character(df[,2])
     expect_match(tx,"^^ENST[0-9]+$")
@@ -28,7 +28,7 @@ test_that("mapGene() converts from Ensembl_gene to others",{
 
 
 test_that("mapGene() converts from Ensembl_transcript to others",{
-    ensembl <- rownames(exprs_dmap)
+    ensembl <- rownames(DMAP_exprs)
     df <- mapGene(ensembl,to="ensembl_transcript")
     tx<- df[,2]
 
@@ -59,7 +59,7 @@ test_that("mapGene() converts from Ensembl_transcript to others",{
 
 
 test_that("mapGene() converts from Entrez to others",{
-  ensembl <- rownames(exprs_dmap)[1:5]
+  ensembl <- rownames(DMAP_exprs)[1:5]
   df <- mapGene(ensembl,to="entrez")
   entrez <- as.character(df[,2])
 
@@ -91,7 +91,7 @@ test_that("mapGene() converts from Entrez to others",{
 
 
 test_that("mapGene() converts between hgnc_symbol to others",{
-  ensembl <- rownames(exprs_dmap)
+  ensembl <- rownames(DMAP_exprs)
   df <- mapGene(ensembl,to="hgnc_symbol")
   hgnc <- df[,2]
 
@@ -122,7 +122,7 @@ test_that("mapGene() converts between hgnc_symbol to others",{
 
 
 test_that("mapGene() converts from refseq_mrna to others",{
-  ensembl <- rownames(exprs_dmap)
+  ensembl <- rownames(DMAP_exprs)
   df <- mapGene(ensembl,to="refseq_mrna")
   refseq <- df[,2]
 
@@ -153,7 +153,7 @@ test_that("mapGene() converts from refseq_mrna to others",{
 
 
 test_that("mapGene() doesn't convert if the target gene id is same as current gene id",{
-  ensembl <- rownames(exprs_dmap)
+  ensembl <- rownames(DMAP_exprs)
   df <- mapGene(ensembl,to="ensembl_gene")
   expect_equal(df[,1],df[,2])
 })
