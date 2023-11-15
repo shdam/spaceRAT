@@ -1,5 +1,6 @@
 # Create example data
-
+data("DMAP_exprs", package = "spaceRATScaffolds")
+data("DMAP_pData", package = "spaceRATScaffolds")
 
 # Test for logged data with some genes having total counts less than threshold
 test_that("preFilter() removes genes with total counts less than threshold for logged data", {

@@ -52,7 +52,8 @@
 #' @param data A character indicating whether the matrix is
 #' log-transformed or raw counts. By default \code{data="exprs"}.
 #' If the count matrix is raw counts, please specify \code{data="counts"}
-#'
+#' @param subset_deg (Default: TRUE) Inform whether the scaffold should be
+#' built using all genes or only the differentially expressed ones in the input.
 #' @param assay (Default: NULL) The assay slot to use with your
 #' Bioconductor object.
 #' @param threshold (Default: 10) Prefiltering threshold for count row sums.
@@ -83,6 +84,7 @@
 #'     colname = NULL,
 #'     assay = NULL,
 #'     data = NULL,
+#'     subset_deg = TRUE,
 #'     threshold = 10,
 #'     add_umap = FALSE,
 #'     classes = NULL,
@@ -107,6 +109,7 @@ buildScaffold <- function(
         colname = NULL,
         assay = NULL,
         data = NULL,
+        subset_deg = TRUE,
         threshold = 10,
         add_umap = FALSE,
         classes = NULL,
@@ -143,23 +146,25 @@ buildScaffold <- function(
     pheno <- object$pheno; mat <- object$mat; rm(object)
 
     # Define scaffold space
-    space <- list("label" = pheno[, colname])
+    scaffold <- list("label" = pheno[, colname])
 
     # Find DE genes
-    space$DEgenes <- findDEGenes(
-        mat, space$label, pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff)
-    mat <- mat[space$DEgenes, ]
+    if(subset_deg){
+        scaffold$DEgenes <- findDEGenes(
+            mat, scaffold$label, pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff)
+        mat <- mat[scaffold$DEgenes, ]
+    }
 
     # rank
     mat <- apply(mat, 2, rank)
 
     # dimension reduction
     message("Reducing dimensions.")
-    space$pca <- stats::prcomp(t(mat), scale = pca_scale)
-    if (add_umap) space$umap <- uwot::umap(t(mat))
+    scaffold$pca <- stats::prcomp(t(mat), scale = pca_scale)
+    if (add_umap) scaffold$umap <- uwot::umap(t(mat), ret_model = TRUE)
 
     message("Scaffold is built.")
-    return(space)
+    return(scaffold)
 }
 
 

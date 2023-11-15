@@ -1,5 +1,5 @@
-exprs_dmap <- loadData("DMAP_exprs")
-pData_dmap <- loadData("DMAP_pData")
+data("DMAP_exprs", package = "spaceRATScaffolds")
+data("DMAP_pData", package = "spaceRATScaffolds")
 
 se <- SummarizedExperiment::SummarizedExperiment(assays = S4Vectors::SimpleList("exprs" = DMAP_exprs), colData = DMAP_pData)
 test_that("preprocess works", {
@@ -7,8 +7,8 @@ test_that("preprocess works", {
 
     preprocessed <- preprocess(DMAP_exprs, data = "exprs", pheno = DMAP_pData, colname = "cell_types", threshold = 10)
 
-    expect_equal(preprocessed[[1]], exprs_dmap)
-    expect_equal(preprocessed[[2]], pData_dmap)
+    expect_equal(preprocessed[[1]], DMAP_exprs)
+    expect_equal(preprocessed[[2]], DMAP_pData)
 
     preprocessed <- suppressWarnings(preprocess(DMAP_exprs, pheno = DMAP_pData, data = "exprs", colname = "cell_types", annotation = "entrez"))
 
@@ -20,7 +20,7 @@ test_that("preprocess works", {
 
     preprocessed <- preprocess(se, assay = "exprs", data = "exprs")
     expect_equal(preprocessed[[1]], DMAP_exprs)
-    expect_equal(preprocessed[[2]], pData_dmap)
+    expect_equal(preprocessed[[2]], DMAP_pData)
 
 
     preprocessed <- preprocess(se, assay = "exprs", classes = c("HSC", "ERY"), data = "exprs")

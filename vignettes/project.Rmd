@@ -34,7 +34,7 @@ scaffold <- buildScaffold("DMAP_scaffold")
 
 # Project sample
 projectSample(
-    space = scaffold,
+    scaffold = scaffold,
     sample = ilaria_counts,
     title = "Samples projected into DMAP scaffold")
 ```
@@ -94,7 +94,7 @@ The projection is then performed by `projectSample`:
 
 ```{r project}
 projectSample(
-    space = scaffold, 
+    scaffold = scaffold, 
     sample = ilaria_counts,
     title = "Samples projected into DMAP scaffold")
 ```
@@ -102,7 +102,7 @@ projectSample(
 With added phenotype information:
 ```{r projectwpheno}
 projectSample(
-    space = scaffold,
+    scaffold = scaffold,
     sample = ilaria_counts,
     pheno = ilaria_pData,
     colname =  "cancer_type",
@@ -124,7 +124,7 @@ se <- SummarizedExperiment::SummarizedExperiment(
 
 # Build scaffold
 projectSample(
-    space = scaffold,
+    scaffold = scaffold,
     sample = se,
     assay = "counts",
     colname =  "cancer_type",

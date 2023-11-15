@@ -5,19 +5,20 @@
 \title{Project new sample(s) onto existing scaffold PCA plot}
 \usage{
 projectSample(
-    space,
-    sample,
+    scaffold, sample,
     pheno = NULL,
     colname = NULL,
     assay = NULL,
+    dimred = "PCA",
     dims = c(1, 2),
+    plot_mode = "dot",
     title = "Samples projected onto scaffold PCA",
     verbose = TRUE,
     annotation = "ensembl_gene"
     )
 }
 \arguments{
-\item{space}{A scaffold space object, returned by function
+\item{scaffold}{A scaffold space object, returned by function
 \code{\link{buildScaffold}}}
 
 \item{sample}{sample data to project. A `matrix`, `data.frame`, or
@@ -35,8 +36,19 @@ and the output plot will not show legends for new samples.}
 \item{assay}{(Default: NULL) The assay slot to use with your
 Bioconductor object.}
 
+\item{dimred}{A character indicating the method for
+dimensionality reduction. Currently "PCA" and "UMAP" are supported.
+labels to each data point.}
+
 \item{dims}{A numeric vector containing 2 numbers, indicating
 which two principle components to plot.}
+
+\item{plot_mode}{A character indicating whether to add tiny
+By default \code{plot_mode="dot"} and tiny labels will not be attached.
+If more than 12 cell types are to be displayed, setting
+\code{plot_mode="tiny_label"} may yield better visualization.
+Shorter names for phenotypes (e.g. cell types) is strongly recommended
+in "tiny_label" mode.}
 
 \item{title}{Title of the plot.}
 
@@ -62,6 +74,6 @@ finally projects the new sample(s) onto the existing scaffold PCA plot.
 \examples{
 utils::data("DMAP_scaffold", "ilaria_counts", "ilaria_pData",
 package = "spaceRATScaffolds")
-space <- DMAP_scaffold # or create your own scaffoldSpace
-projectSample(space,ilaria_counts,ilaria_pData,"cancer_type")
+scaffold <- DMAP_scaffold # or create your own scaffoldSpace
+projectSample(scaffold,ilaria_counts,ilaria_pData,"cancer_type")
 }

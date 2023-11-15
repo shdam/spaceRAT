@@ -11,6 +11,7 @@ buildScaffold(
     colname = NULL,
     assay = NULL,
     data = NULL,
+    subset_deg = TRUE,
     threshold = 10,
     add_umap = FALSE,
     classes = NULL,
@@ -51,6 +52,9 @@ Bioconductor object.}
 \item{data}{A character indicating whether the matrix is
 log-transformed or raw counts. By default \code{data="exprs"}.
 If the count matrix is raw counts, please specify \code{data="counts"}}
+
+\item{subset_deg}{(Default: TRUE) Inform whether the scaffold should be
+built using all genes or only the differentially expressed ones in the input.}
 
 \item{threshold}{(Default: 10) Prefiltering threshold for count row sums.}
 

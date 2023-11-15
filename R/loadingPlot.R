@@ -21,7 +21,7 @@
 #' The loading plot is printed automatically, thus not returned.
 #' @usage
 #' loadingPlot(
-#'     space,
+#'     scaffold,
 #'     dims = c(1, 2),
 #'     num_genes = 3,
 #'     gene_name = "hgnc_symbol",
@@ -30,17 +30,17 @@
 #'     )
 #' @examples
 #' utils::data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
-#' space <- buildScaffold(DMAP_exprs, DMAP_pData, "cell_types", data = "exprs")
-#' loadingPlot(space)
+#' scaffold <- buildScaffold(DMAP_exprs, DMAP_pData, "cell_types", data = "exprs")
+#' loadingPlot(scaffold)
 loadingPlot <- function(
-        space,
+        scaffold,
         dims = c(1, 2),
         num_genes = 3,
         gene_name = "hgnc_symbol",
         angle = 30,
         df_only = FALSE){
 
-    pca <- space$pca
+    pca <- scaffold$pca
     pc1 <- dims[1]; pc2 <- dims[2]
     # calculate variance explained and add percentage to axis labels
     var_sum <- sum(pca$sdev^2)

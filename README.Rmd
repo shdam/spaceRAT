@@ -36,7 +36,7 @@ remotes::install_github("shdam/spaceRATScaffolds", build_vignettes = TRUE)
 
 *Install from GitHub*
 ``` {r install, eval = FALSE}
-remotes::install_github("XueningHe/spaceRAT", build_vignettes = TRUE)
+remotes::install_github("shdam/spaceRAT", build_vignettes = TRUE)
 ```
 
 ## View vignettes
@@ -63,16 +63,16 @@ scaffold space of your own, by passing as arguments a count matrix,
 a phenotype table, an a column name of the phenotype table
 to function `buildScaffold()`.  
   
-Build a space with example data:
+Build a scaffold with example data:
 ```{r build} 
 library(spaceRAT)
-data("DMAP_exprs", "DMAP_pData", package="spaceRATScaffolds")
+data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
 scaffold <- buildScaffold(
     DMAP_exprs, pheno = DMAP_pData,
     colname = "cell_types", data = "exprs")
 plotScaffold(
     scaffold, title = "Scaffold Plot",
-    dim_reduction = "PCA", dims = c(1,2), plot_mode = "dot")
+    dimred = "PCA", dims = c(1,2), plot_mode = "dot")
 ```
 
 
@@ -97,8 +97,11 @@ scaffold <- buildScaffold("DMAP_scaffold")
 # Project sample
 projectSample(
     sample = ilaria_counts,
-    space = scaffold,
+    scaffold = scaffold, 
+    plot_mode = "dot",
     dims = c(1,2),
-    title = "Samples projected into DMAP scaffold")
+    dimred = "PCA",
+    title = "Samples projected into DMAP scaffold in PCA space")
+
 ```
 

@@ -1,3 +1,5 @@
+data("DMAP_exprs", package = "spaceRATScaffolds")
+data("DMAP_pData", package = "spaceRATScaffolds")
 object <- preprocess(
     DMAP_exprs,
     data = "exprs",

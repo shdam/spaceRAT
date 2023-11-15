@@ -7,7 +7,7 @@
 #'
 #' @inheritParams buildScaffold
 #' @inheritParams plotScaffold
-#' @param space A scaffold space object, returned by function
+#' @param scaffold A scaffold space object, returned by function
 #' \code{\link{buildScaffold}}
 #' @param sample sample data to project. A `matrix`, `data.frame`, or
 #' `SummarizedExperiment`
@@ -29,12 +29,13 @@
 #' \code{scaffold}
 #' @usage
 #' projectSample(
-#'     space,
-#'     sample,
+#'     scaffold, sample,
 #'     pheno = NULL,
 #'     colname = NULL,
 #'     assay = NULL,
+#'     dimred = "PCA",
 #'     dims = c(1, 2),
+#'     plot_mode = "dot",
 #'     title = "Samples projected onto scaffold PCA",
 #'     verbose = TRUE,
 #'     annotation = "ensembl_gene"
@@ -46,19 +47,21 @@
 #' @examples
 #' utils::data("DMAP_scaffold", "ilaria_counts", "ilaria_pData",
 #' package = "spaceRATScaffolds")
-#' space <- DMAP_scaffold # or create your own scaffoldSpace
-#' projectSample(space,ilaria_counts,ilaria_pData,"cancer_type")
+#' scaffold <- DMAP_scaffold # or create your own scaffoldSpace
+#' projectSample(scaffold,ilaria_counts,ilaria_pData,"cancer_type")
 projectSample <- function(
-        space, sample,
+        scaffold, sample,
         pheno = NULL,
         colname = NULL,
         assay = NULL,
+        dimred = "PCA",
         dims = c(1, 2),
+        plot_mode = "dot",
         title = "Samples projected onto scaffold PCA",
         verbose = TRUE,
         annotation = "ensembl_gene"){
-    if(is(space, "NULL") | is(sample, "NULL")){
-        warning("No space or sample provided.")
+    if(is(scaffold, "NULL") | is(sample, "NULL")){
+        warning("No scaffold or sample provided.")
         return(NULL)}
     # Preprocess data
     sample <- preprocess(
@@ -74,7 +77,7 @@ projectSample <- function(
 
     # add absent genes then subset eset_sample so counts_scaffold
     # and counts_project contain same genes
-    absent_genes <- space$DEgenes[!(space$DEgenes %in% rownames(sample))]
+    absent_genes <- scaffold$DEgenes[!(scaffold$DEgenes %in% rownames(sample))]
     absent_counts <- matrix(
         0,length(absent_genes), ncol(sample),
         dimnames = list(absent_genes, colnames(sample)))
@@ -87,45 +90,52 @@ projectSample <- function(
         "with imputed expression level 0.")
     }
 
-    if (length(absent_genes)/length(space$DEgenes)>1/4){
+    if (length(absent_genes)/length(scaffold$DEgenes)>1/4){
         warning("More than 1/4 genes are added to sample with imputed ",
                 "expression level 0!")
     }
 
     # Subset sample to DEgenes
-    sample <- sample[space$DEgenes, ]
+    sample <- sample[scaffold$DEgenes, ]
 
 
     # rank and transform sample and multiply with the percent of
     # missing values, to retain comparable numeric range
     ranked_sample <- apply(sample, 2, rank) *
-        (1+(length(absent_genes)/length(space$DEgenes))); rm(sample)
+        (1+(length(absent_genes)/length(scaffold$DEgenes))); rm(sample)
 
-    # PCA transform the sample data
-    transformed_sample <- stats::predict(
-        space$pca, newdata = t(ranked_sample)); rm(ranked_sample)
+    if(toupper(dimred) == "PCA"){
+        # PCA transform the sample data
+        transformed_sample <- stats::predict(
+            scaffold$pca, newdata = t(ranked_sample)); rm(ranked_sample)
+    } else if(toupper(dimred) == "UMAP"){
+        transformed_sample <- uwot::umap_transform(t(ranked_sample), scaffold$umap)
+    }
+
 
     # Prepare dataframe for ggplot
-    PC1_sample <- transformed_sample[, dims[1]]
-    PC2_sample <- transformed_sample[, dims[2]]
+    Dim1 <- transformed_sample[, dims[1]]
+    Dim2 <- transformed_sample[, dims[2]]
     rm(transformed_sample)
 
-    graph <- plotScaffold(space, title = title)
+    graph <- plotScaffold(
+        scaffold = scaffold, title = title,
+        dimred = dimred, plot_mode = plot_mode)
 
     if (is(pheno, "NULL")){
         # calculate correct color scale
         p <- ggplot2::ggplot_build(graph)$data[[2]]
-        cols <- p[["colour"]]
+        cols <- unique(p[["colour"]])
         label <- as.character(p[["label"]])
         idx <- rank(c(label, "New_samples"))[length(label)+1]
-        cols <- append(cols,"#000000", after = idx-1)
-        df_sample <- data.frame(PC1_sample, PC2_sample)
+        cols <- append(cols, "#000000", after = idx-1)
+        df_sample <- data.frame(Dim1, Dim2)
 
         suppressMessages(g <- graph +
             ggplot2::geom_point(data = df_sample,
                                 mapping = ggplot2::aes(
-                                    .data$PC1_sample,
-                                    .data$PC2_sample,
+                                    x = .data$Dim1,
+                                    y = .data$Dim2,
                                     color = "New_samples")) +
             ggplot2::scale_color_manual(values = cols) +
             ggplot2::ggtitle(title) +
@@ -134,8 +144,8 @@ projectSample <- function(
         }
 
     New_samples <- pheno[, colname]
-    df_sample <- data.frame(PC1_sample, PC2_sample, New_samples)
-    rm(PC1_sample, PC2_sample)
+    df_sample <- data.frame(Dim1, Dim2, New_samples)
+    rm(Dim1, Dim2)
 
     # project points
     suppressMessages(
@@ -143,13 +153,14 @@ projectSample <- function(
             ggplot2::geom_point(
                 data = df_sample,
                 mapping = ggplot2::aes(
-                    .data$PC1_sample,
-                    .data$PC2_sample,
+                    .data$Dim1,
+                    .data$Dim2,
                     shape = .data$New_samples),
                 color = "black") +
             ggplot2::scale_shape_manual(
                 values = seq_along(unique(New_samples))) +
             ggplot2::ggtitle(title) +
-            ggplot2::coord_fixed())
+            ggplot2::coord_fixed() +
+            ggplot2::labs(shape = colname))
     return(g)
 }

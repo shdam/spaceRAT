@@ -7,7 +7,7 @@ test_that("buildScaffold() returns a proper space",{
     # test prebuilt scaffold
     space1 <- buildScaffold(scaffold)
     expect_type(space1,"list")
-    expect_setequal(names(space1), c("label","DEgenes", "pca"))
+    expect_setequal(names(space1), c("label","DEgenes", "pca", "umap"))
 
     space2 <- buildScaffold(scaffold,classes=c("HSC","MONO","ERY"), data = "exprs", add_umap = TRUE)
     expect_type(space2,"list")

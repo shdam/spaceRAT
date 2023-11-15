@@ -98,7 +98,7 @@ scaffold <- buildScaffold("DMAP_scaffold")
 
 # Project sample
 projectSample(
-    space = scaffold,
+    scaffold = scaffold,
     sample = ilaria_counts,
     title = "Samples projected into DMAP scaffold")
 ```

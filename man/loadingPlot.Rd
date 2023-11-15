@@ -5,7 +5,7 @@
 \title{Generate a loading plot of scaffold PCA}
 \usage{
 loadingPlot(
-    space,
+    scaffold,
     dims = c(1, 2),
     num_genes = 3,
     gene_name = "hgnc_symbol",
@@ -14,7 +14,7 @@ loadingPlot(
     )
 }
 \arguments{
-\item{space}{A \code{scaffoldSpace} object returned by
+\item{scaffold}{A \code{scaffoldSpace} object returned by
 \code{\link{buildScaffold}} function.}
 
 \item{dims}{A numeric vector containing 2 numbers, indicating
@@ -42,6 +42,6 @@ that contribute most to the selected principle components.
 }
 \examples{
 utils::data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
-space <- buildScaffold(DMAP_exprs, DMAP_pData, "cell_types", data = "exprs")
-loadingPlot(space)
+scaffold <- buildScaffold(DMAP_exprs, DMAP_pData, "cell_types", data = "exprs")
+loadingPlot(scaffold)
 }

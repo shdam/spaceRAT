@@ -1,7 +1,5 @@
+data("DMAP_pData", package = "spaceRATScaffolds")
 test_that("formatData works", {
-
-    data("DMAP_pData", package = "spaceRATScaffolds")
-
     expect_equal(formatPheno(DMAP_pData), DMAP_pData)
 
     DMAP_pData2 <- data.frame(
@@ -15,7 +13,6 @@ test_that("formatData works", {
 
 test_that("formatData errors checks", {
 
-    data("DMAP_pData", package = "spaceRATScaffolds")
 
     expect_error(formatPheno(DMAP_pData, colname = "Wrong"), "Column Wrong was not found in annotation data.")
 })

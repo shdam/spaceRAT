@@ -5,17 +5,17 @@
 \title{Plot a scaffoldSpace object}
 \usage{
 plotScaffold(
-space,
-dim_reduction = "PCA",
+scaffold,
+dimred = "PCA",
 title = "Scaffold plot",
 plot_mode = "dot",
 dims = c(1, 2))
 }
 \arguments{
-\item{space}{A \code{scaffoldSpace} object returned by
+\item{scaffold}{A \code{scaffoldSpace} object returned by
 \code{\link{buildScaffold}} function.}
 
-\item{dim_reduction}{A character indicating the method for
+\item{dimred}{A character indicating the method for
 dimensionality reduction. Currently "PCA" and "UMAP" are supported.
 labels to each data point.}
 
@@ -40,5 +40,5 @@ This function plot a \code{scaffoldSpace} object created by
 }
 \examples{
 scaffold <- buildScaffold("DMAP_scaffold")
-plotScaffold(scaffold, "Scaffold plot title", dim_reduction = "PCA")
+plotScaffold(scaffold, "Scaffold plot title", dimred = "PCA")
 }

@@ -161,7 +161,7 @@ the PCs to plot, and the plotmode (`dot` or `tiny_label`)
 plotScaffold(
     scaffold,
     title = "Scaffold plot",
-    dim_reduction = "PCA",
+    dimred = "PCA",
     plot_mode = "dot",
     dims = c(1,2))
 ```
@@ -171,7 +171,7 @@ You can also visualize other principle components by specifying `dims`.
 ```{r}
 plotScaffold(
     scaffold,
-    dim_reduction = "PCA",
+    dimred = "PCA",
     plot_mode = "tiny_label",
     dims = c(3,4),
     title = "Scaffold Plot")
