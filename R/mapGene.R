@@ -8,13 +8,20 @@
 #' @param to A character specifying the gene identifier to convert to.
 #' Options are "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol",
 #' and "refseq_mrna".
+#' @param converter The gene id converter to use
 #' @return A data frame with original gene identifier as first column,
 #' converted gene identifier as second column.
 #' @noRd
 
-mapGene <- function(vec,to){
+mapGene <- function(vec,to, converter = "gene_id_converter_hs"){
 
-    gene_id_converter_hs <- loadData("gene_id_converter_hs")
+    if(! (converter %in% spaceRATScaffolds::listConverters())){
+        stop(
+            "Converter not available. Use one of the following: ",
+            paste(spaceRATScaffolds::listConverters(), collapse = " "))
+    }
+    gene_id_converter <- loadData(converter)
+
     vec <- as.character(vec)
     from <- NULL
 
@@ -28,7 +35,7 @@ mapGene <- function(vec,to){
     }else if(all(grepl("^[0-9]+$",vec))){
         from <- "entrez"
     }else{
-        idx <- which(gene_id_converter_hs$hgnc_symbol %in% vec)
+        idx <- which(gene_id_converter$hgnc_symbol %in% vec)
         if (length(idx)>0) from <- "hgnc_symbol"
     }
 
@@ -48,10 +55,10 @@ mapGene <- function(vec,to){
     # if from=="hgnc_symbol", then the idx has already be calculated.
     # Avoid repetitive calculation.
     if(from != "hgnc_symbol") {
-        idx <- which(gene_id_converter_hs[[from]] %in% vec)
+        idx <- which(gene_id_converter[[from]] %in% vec)
     }
 
-    df <- gene_id_converter_hs[idx,c(from,to),drop=FALSE]
+    df <- gene_id_converter[idx,c(from,to),drop=FALSE]
     df <- df[stats::complete.cases(df),]
     df <- df[order(df[[from]]), ]
     df <- df[!duplicated(df[[from]]), ]

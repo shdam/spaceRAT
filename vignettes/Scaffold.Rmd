@@ -38,7 +38,8 @@ scaffold <- buildScaffold(
     DMAP_exprs, 
     pheno = DMAP_pData,
     data = "exprs",
-    colname = colname
+    colname = colname,
+    add_umap = TRUE
 )
 
 # Plot scaffold
@@ -133,17 +134,18 @@ str(scaffold)
 `buildScaffold()` performs the following steps:
 
 - Preprocesses the counts/expression matrix: It removes genes with total counts
-less than 10 and replaces `NA` by 0.
+less than 10 and replaces `NA` with 0.
 - Differential expression analysis to select 
 differentially expressed genes (DE genes).
-- Subsets the scaffold dataset to contain only the DE genes.
+- Subsets the scaffold dataset to contain only the DE genes. 
+    - (This can be disabled with `subset_deg = FALSE`)
 - Ranks the genes within each sample
 - Finally, it performs principle component analysis (PCA) or UMAP using ranks.
 
 By default `buildScaffold()` takes in a counts matrix.
-It can also handle expression data if `data="exprs"` is specified. 
+It can also handle expression data if `data = "exprs"` is specified. 
 
-The resulting scaffold has three-four slots:
+The resulting scaffold has 3-4 slots:
 
 - `DEgene`: The differentially expressed genes, determined using
 `r  BiocStyle::Biocpkg("limma")`.

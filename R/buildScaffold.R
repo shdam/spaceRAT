@@ -151,7 +151,8 @@ buildScaffold <- function(
     # Find DE genes
     if(subset_deg){
         scaffold$DEgenes <- findDEGenes(
-            mat, scaffold$label, pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff)
+            mat, scaffold$label,
+            pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff)
         mat <- mat[scaffold$DEgenes, ]
     }
 

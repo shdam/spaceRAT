@@ -72,8 +72,8 @@ ranks the subset within new sample(s),
 finally projects the new sample(s) onto the existing scaffold PCA plot.
 }
 \examples{
-utils::data("DMAP_scaffold", "ilaria_counts", "ilaria_pData",
-package = "spaceRATScaffolds")
-scaffold <- DMAP_scaffold # or create your own scaffoldSpace
+utils::data("ilaria_counts", "ilaria_pData", package = "spaceRATScaffolds")
+scaffold <- buildScaffold("DMAP")
+# or create your own scaffoldSpace
 projectSample(scaffold,ilaria_counts,ilaria_pData,"cancer_type")
 }

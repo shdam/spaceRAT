@@ -1,5 +1,6 @@
 # spaceRAT 0.99.0
 
+* Adjusted to updated `spaceRATScaffolds`
 * Added `add_umap` option for `buildScaffold` to include UMAP scaffolds
 * Parameter renaming: `space` -> `scaffold` and `dim_reduction` -> `dimred`
 * Added parameter that enables or disables differential expression analysis in `buildScaffold` (`subset_deg`).

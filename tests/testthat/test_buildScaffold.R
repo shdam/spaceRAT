@@ -3,7 +3,7 @@ data("DMAP_pData", package = "spaceRATScaffolds")
 
 test_that("buildScaffold() returns a proper space",{
 
-    scaffold <- "DMAP_scaffold"
+    scaffold <- "DMAP.v1"
     # test prebuilt scaffold
     space1 <- buildScaffold(scaffold)
     expect_type(space1,"list")
@@ -42,7 +42,7 @@ test_that("buildScaffold() returns a proper space",{
 
 test_that("test error checks", {
 
-    expect_error(buildScaffold("something"), "Incorrectly named prebuilt scaffold. The available are.*")
+    expect_error(buildScaffold("something"), "something is not an available scaffold. The available are:*")
 
     expect_error(buildScaffold(DMAP_exprs, pheno = DMAP_pData, data = "exprs"), "Please specify colname for pheno data")
     expect_error(buildScaffold(DMAP_exprs, pheno = NULL, data = "exprs"), "All cells have unique phenotype information.*")

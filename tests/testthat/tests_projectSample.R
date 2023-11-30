@@ -1,6 +1,6 @@
 data("ilaria_counts", package = "spaceRATScaffolds")
 data("ilaria_pData", package = "spaceRATScaffolds")
-space <- buildScaffold("DMAP_scaffold")
+space <- buildScaffold("DMAP.v1")
 test_that("projectSample() correctly projects.",{
     g <- projectSample(space,ilaria_counts,ilaria_pData,"cancer_type")
     expect_s3_class(g,"ggplot")

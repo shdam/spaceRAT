@@ -30,7 +30,8 @@
 #'     )
 #' @examples
 #' utils::data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
-#' scaffold <- buildScaffold(DMAP_exprs, DMAP_pData, "cell_types", data = "exprs")
+#' scaffold <- buildScaffold(
+#' DMAP_exprs, DMAP_pData, "cell_types", data = "exprs")
 #' loadingPlot(scaffold)
 loadingPlot <- function(
         scaffold,

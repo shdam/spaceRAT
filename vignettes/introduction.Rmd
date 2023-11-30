@@ -8,9 +8,9 @@ output:
 author: "Søren Helweg Dam"
 date: "Last updated: `r format(Sys.Date(), '%Y.%m.%d')`"
 vignette: >
-  %\VignetteIndexEntry{Introduction to spaceRAT}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+    %\VignetteIndexEntry{Introduction to spaceRAT}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -49,8 +49,9 @@ remotes::install_github("shdam/spaceRATScaffolds", build_vignettes = TRUE)
 
 
 *Install from GitHub*
+
 ``` {r install, eval = FALSE}
-remotes::install_github("XueningHe/spaceRAT", build_vignettes = TRUE)
+remotes::install_github("shdam/spaceRAT", build_vignettes = TRUE)
 ```
 
 
@@ -67,7 +68,7 @@ data("DMAP_exprs", package="spaceRATScaffolds")
 # Load phenotype data
 data("DMAP_pData", package="spaceRATScaffolds")
 # Specify colname with phenotype information
-colname <- "cell_types"
+colname <- colnames(DMAP_pData)[1]
 
 # Build scaffold
 scaffold <- buildScaffold(
@@ -91,10 +92,10 @@ Here is a quick overview:
 library(spaceRAT)
 
 # Load count data
-data("ilaria_counts", package="spaceRATScaffolds")
+ilaria_counts <- loadData("ilaria_counts")
 
 # Load custom or prebuilt scaffold
-scaffold <- buildScaffold("DMAP_scaffold")
+scaffold <- buildScaffold("DMAP") # Get the lateset DMAP scaffold
 
 # Project sample
 projectSample(

@@ -1,5 +1,5 @@
 test_that("plotScaffold works", {
-    scaffold <- buildScaffold("DMAP_scaffold", classes = c("BASO", "CMP", "EOS", "ERY", "GMP", "GRAN", "HSC", "MEGA", "MEP", "MONO"),
+    scaffold <- buildScaffold("DMAP.v1", classes = c("BASO", "CMP", "EOS", "ERY", "GMP", "GRAN", "HSC", "MEGA", "MEP", "MONO"),
                               add_umap = TRUE, data = "exprs")
 
     plt <- plotScaffold(scaffold, dimred = "PCA", "Scaffold plot title")

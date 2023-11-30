@@ -39,6 +39,6 @@ This function plot a \code{scaffoldSpace} object created by
 \code{\link{buildScaffold}} function.
 }
 \examples{
-scaffold <- buildScaffold("DMAP_scaffold")
+scaffold <- buildScaffold("DMAP")
 plotScaffold(scaffold, "Scaffold plot title", dimred = "PCA")
 }

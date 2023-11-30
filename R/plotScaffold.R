@@ -30,7 +30,7 @@
 #' plot_mode = "dot",
 #' dims = c(1, 2))
 #' @examples
-#' scaffold <- buildScaffold("DMAP_scaffold")
+#' scaffold <- buildScaffold("DMAP")
 #' plotScaffold(scaffold, "Scaffold plot title", dimred = "PCA")
 plotScaffold <- function(
         scaffold,
@@ -39,7 +39,9 @@ plotScaffold <- function(
         plot_mode = "dot",
         dims = c(1, 2)){
 
-    stopifnot("Please use either 'PCA' or 'UMAP' as dimred." = toupper(dimred) %in% c("PCA", "UMAP"))
+    stopifnot(
+        "Please use either 'PCA' or 'UMAP' as dimred." =
+            toupper(dimred) %in% c("PCA", "UMAP"))
 
     if(toupper(dimred) == "PCA"){
         stopifnot("No PCA space in scaffold" = !is(scaffold$pca, "NULL"))

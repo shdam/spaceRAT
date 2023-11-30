@@ -28,7 +28,6 @@ Description: Use Ranked Analysis for Transcriptomes to project
 License: MIT + file LICENSE
 Encoding: UTF-8
 Imports: 
-    spaceRATScaffolds,
     utils, stats, methods,
     SummarizedExperiment,
     ggplot2, RColorBrewer, grDevices,
@@ -36,6 +35,7 @@ Imports:
     uwot
 RoxygenNote: 7.2.3
 Depends: 
+    spaceRATScaffolds,
     R (>= 4.2.0)
 Suggests: 
     rmarkdown,

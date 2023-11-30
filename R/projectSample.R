@@ -45,9 +45,9 @@
 #' @import ggplot2
 #' @return ggplot object with new samples projected to existing scaffold plot
 #' @examples
-#' utils::data("DMAP_scaffold", "ilaria_counts", "ilaria_pData",
-#' package = "spaceRATScaffolds")
-#' scaffold <- DMAP_scaffold # or create your own scaffoldSpace
+#' utils::data("ilaria_counts", "ilaria_pData", package = "spaceRATScaffolds")
+#' scaffold <- buildScaffold("DMAP")
+#' # or create your own scaffoldSpace
 #' projectSample(scaffold,ilaria_counts,ilaria_pData,"cancer_type")
 projectSample <- function(
         scaffold, sample,
@@ -109,7 +109,8 @@ projectSample <- function(
         transformed_sample <- stats::predict(
             scaffold$pca, newdata = t(ranked_sample)); rm(ranked_sample)
     } else if(toupper(dimred) == "UMAP"){
-        transformed_sample <- uwot::umap_transform(t(ranked_sample), scaffold$umap)
+        transformed_sample <- uwot::umap_transform(
+            t(ranked_sample), scaffold$umap)
     }
 
 
