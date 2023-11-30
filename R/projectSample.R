@@ -42,6 +42,7 @@
 #'     )
 #' @export
 #' @importFrom stats predict
+#' @importFrom uwot umap_transform
 #' @import ggplot2
 #' @return ggplot object with new samples projected to existing scaffold plot
 #' @examples
@@ -98,7 +99,6 @@ projectSample <- function(
     # Subset sample to DEgenes
     sample <- sample[scaffold$DEgenes, ]
 
-
     # rank and transform sample and multiply with the percent of
     # missing values, to retain comparable numeric range
     ranked_sample <- apply(sample, 2, rank) *
@@ -113,30 +113,26 @@ projectSample <- function(
             t(ranked_sample), scaffold$umap)
     }
 
-
     # Prepare dataframe for ggplot
-    Dim1 <- transformed_sample[, dims[1]]
-    Dim2 <- transformed_sample[, dims[2]]
+    df_sample <- data.frame(
+        "Dim1" = transformed_sample[, dims[1]],
+        "Dim2" = transformed_sample[, dims[2]],
+        "shape" = "19", "Scaffold_group" = "New_samples")
     rm(transformed_sample)
 
     graph <- plotScaffold(
         scaffold = scaffold, title = title,
         dimred = dimred, plot_mode = plot_mode)
 
-    # Prepare dataframe with and without phenotype information
+
     if (is(pheno, "NULL")){
-        df_sample <- data.frame(
-            Dim1, Dim2, "New_samples" = "19", "Scaffold_group" = "New_samples")
         shapes <- 19
         # Hide shape from legend
         graph <- graph + ggplot2::guides(shape = "none")
     } else{
-        df_sample <- data.frame(
-            Dim1, Dim2, "New_samples" = pheno[, colname],
-            "Scaffold_group" = "New_samples")
-        shapes <- seq_along(unique(df_sample$New_samples))
+        df_sample$shape <- pheno[, colname]
+        shapes <- seq_along(unique(df_sample$shape))
     }
-    rm(Dim1, Dim2)
     # calculate correct color scale
     p <- ggplot2::ggplot_build(graph)$data[[2]]
     cols <- unique(p[["colour"]])
@@ -152,7 +148,7 @@ projectSample <- function(
                     x = .data$Dim1,
                     y = .data$Dim2,
                     color = .data$Scaffold_group,
-                    shape = .data$New_samples)) +
+                    shape = .data$shape)) +
             ggplot2::scale_color_manual(values = cols) +
             ggplot2::scale_shape_manual(values = shapes) +
             ggplot2::coord_fixed() +
