@@ -49,14 +49,15 @@ information can be found in the vignettes.
 ### Build a scaffold space
 
 There are two ways to get a scaffold space. You can either obtain the
-prebuilt DMAP, or build a scaffold space of your own, by passing as
-arguments a count matrix, a phenotype table, an a column name of the
-phenotype table to function `buildScaffold()`.
+prebuilt scaffolds, or build a scaffold space of your own, by providing
+a count matrix, a phenotype table, and a column name of the phenotype
+table to `buildScaffold()`.
 
 Build a scaffold with example data:
 
 ``` r
 library(spaceRAT)
+#> Loading required package: spaceRATScaffolds
 data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
 scaffold <- buildScaffold(
     DMAP_exprs, pheno = DMAP_pData,
@@ -79,7 +80,7 @@ Get a list of available prebuilt scaffolds with:
 ``` r
 library("spaceRATScaffolds")
 listScaffolds()
-#> [1] "DMAP_scaffold"
+#> [1] "TCGA.v1" "GTEx.v1" "DMAP.v1"
 ```
 
 Project a sample of interest into a custom built or prebuilt scaffold:
@@ -89,7 +90,7 @@ Project a sample of interest into a custom built or prebuilt scaffold:
 data("ilaria_counts", package="spaceRATScaffolds")
 
 # Load custom or prebuilt scaffold
-scaffold <- buildScaffold("DMAP_scaffold")
+scaffold <- buildScaffold("DMAP") # omitting '.vX' gets the latest version
 
 # Project sample
 projectSample(
