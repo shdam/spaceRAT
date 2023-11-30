@@ -54,7 +54,8 @@ loadingPlot <- function(
     # ggplot
     if(df_only) return(df)
     # Add a new column for label position
-    df$label_pos <- ifelse(seq_len(nrow(df)) %% 2 == 0, 0.01, -0.01)  # Alternates between above (1.5) and below (-0.5)
+    nudge <- mean(c(ymax, abs(ymin)))
+    df$label_pos <- ifelse(seq_len(nrow(df)) %% 2 == 0, nudge*0.1, -nudge*0.1)  # Alternates between above (1.5) and below (-0.5)
 
     g <- ggplot2::ggplot(data=df)+
         ggplot2::aes(color=.data$class) +
