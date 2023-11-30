@@ -30,7 +30,7 @@ Encoding: UTF-8
 Imports: 
     utils, stats, methods,
     SummarizedExperiment,
-    ggplot2, RColorBrewer, grDevices,
+    ggplot2, RColorBrewer, grDevices, ggrepel,
     limma,
     uwot
 RoxygenNote: 7.2.3

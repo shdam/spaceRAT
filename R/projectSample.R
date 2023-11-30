@@ -128,8 +128,7 @@ projectSample <- function(
         p <- ggplot2::ggplot_build(graph)$data[[2]]
         cols <- unique(p[["colour"]])
         label <- as.character(p[["label"]])
-        idx <- rank(c(label, "New_samples"))[length(label)+1]
-        cols <- append(cols, "#000000", after = idx-1)
+        cols <- append(cols, "#000000")
         df_sample <- data.frame(Dim1, Dim2)
 
         suppressMessages(g <- graph +

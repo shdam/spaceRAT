@@ -15,6 +15,7 @@
 #' @param df_only The data.frame for the loading plot will be returned
 #' instead of the plot.
 #' @import ggplot2
+#' @importFrom ggrepel geom_text_repel
 #' @export
 #' @return A data frame indicating the loading scores of the genes
 #' that contribute most to the selected principle components.
@@ -38,7 +39,7 @@ loadingPlot <- function(
         dims = c(1, 2),
         num_genes = 3,
         gene_name = "hgnc_symbol",
-        angle = 30,
+        angle = 0,
         df_only = FALSE){
 
     pca <- scaffold$pca
@@ -63,10 +64,10 @@ loadingPlot <- function(
     if(df_only) return(df)
     g <- ggplot2::ggplot(data=df)+
         ggplot2::aes(color=.data$class) +
-        ggplot2::geom_text(ggplot2::aes(
-            x = .data[[pc1]], .data[[pc2]],
-            label=.data$gene),size = 3, angle=angle,show.legend = FALSE
-            )+
+        ggrepel::geom_text_repel(
+            aes(x = .data[[pc1]], y = .data[[pc2]], label = .data$gene),
+            size = 3, angle = angle, show.legend = FALSE
+        ) +
         ggplot2::geom_segment(ggplot2::aes(
             x=0, y=0, xend=.data[[pc1]], yend=.data[[pc2]],
             color=.data$class), arrow=ggplot2::arrow(

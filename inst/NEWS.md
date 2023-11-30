@@ -1,5 +1,7 @@
 # spaceRAT 0.99.0
 
+* Repel labels on loading plot
+* Improve new sample coloring when projected
 * Adjusted to updated `spaceRATScaffolds`
 * Added `add_umap` option for `buildScaffold` to include UMAP scaffolds
 * Parameter renaming: `space` -> `scaffold` and `dim_reduction` -> `dimred`
