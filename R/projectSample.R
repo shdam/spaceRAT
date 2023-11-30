@@ -129,14 +129,15 @@ projectSample <- function(
         cols <- unique(p[["colour"]])
         label <- as.character(p[["label"]])
         cols <- append(cols, "#000000")
-        df_sample <- data.frame(Dim1, Dim2)
+        df_sample <- data.frame(Dim1, Dim2, Scaffold_group = "New_samples")
 
         suppressMessages(g <- graph +
-            ggplot2::geom_point(data = df_sample,
-                                mapping = ggplot2::aes(
-                                    x = .data$Dim1,
-                                    y = .data$Dim2,
-                                    color = "New_samples")) +
+            ggplot2::geom_point(
+                data = df_sample,
+                mapping = ggplot2::aes(
+                    x = .data$Dim1,
+                    y = .data$Dim2,
+                    color = .data$Scaffold_group)) +
             ggplot2::scale_color_manual(values = cols) +
             ggplot2::ggtitle(title) +
             ggplot2::coord_fixed())
@@ -153,8 +154,8 @@ projectSample <- function(
             ggplot2::geom_point(
                 data = df_sample,
                 mapping = ggplot2::aes(
-                    .data$Dim1,
-                    .data$Dim2,
+                    x = .data$Dim1,
+                    y = .data$Dim2,
                     shape = .data$New_samples),
                 color = "black") +
             ggplot2::scale_shape_manual(
