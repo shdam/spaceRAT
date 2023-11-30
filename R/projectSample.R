@@ -123,32 +123,27 @@ projectSample <- function(
         scaffold = scaffold, title = title,
         dimred = dimred, plot_mode = plot_mode)
 
+    # Prepare dataframe with and without phenotype information
     if (is(pheno, "NULL")){
-        # calculate correct color scale
-        p <- ggplot2::ggplot_build(graph)$data[[2]]
-        cols <- unique(p[["colour"]])
-        label <- as.character(p[["label"]])
-        cols <- append(cols, "#000000")
-        df_sample <- data.frame(Dim1, Dim2, Scaffold_group = "New_samples")
-
-        suppressMessages(g <- graph +
-            ggplot2::geom_point(
-                data = df_sample,
-                mapping = ggplot2::aes(
-                    x = .data$Dim1,
-                    y = .data$Dim2,
-                    color = .data$Scaffold_group)) +
-            ggplot2::scale_color_manual(values = cols) +
-            ggplot2::ggtitle(title) +
-            ggplot2::coord_fixed())
-        return (g)
-        }
-
-    New_samples <- pheno[, colname]
-    df_sample <- data.frame(Dim1, Dim2, New_samples)
+        df_sample <- data.frame(
+            Dim1, Dim2, "New_samples" = "19", "Scaffold_group" = "New_samples")
+        shapes <- 19
+        # Hide shape from legend
+        graph <- graph + ggplot2::guides(shape = "none")
+    } else{
+        df_sample <- data.frame(
+            Dim1, Dim2, "New_samples" = pheno[, colname],
+            "Scaffold_group" = "New_samples")
+        shapes <- seq_along(unique(df_sample$New_samples))
+    }
     rm(Dim1, Dim2)
+    # calculate correct color scale
+    p <- ggplot2::ggplot_build(graph)$data[[2]]
+    cols <- unique(p[["colour"]])
+    label <- as.character(p[["label"]])
+    cols <- append(cols, "#000000")
 
-    # project points
+    # Add projection to scaffold plot
     suppressMessages(
         g <- graph +
             ggplot2::geom_point(
@@ -156,12 +151,15 @@ projectSample <- function(
                 mapping = ggplot2::aes(
                     x = .data$Dim1,
                     y = .data$Dim2,
-                    shape = .data$New_samples),
-                color = "black") +
-            ggplot2::scale_shape_manual(
-                values = seq_along(unique(New_samples))) +
-            ggplot2::ggtitle(title) +
+                    color = .data$Scaffold_group,
+                    shape = .data$New_samples)) +
+            ggplot2::scale_color_manual(values = cols) +
+            ggplot2::scale_shape_manual(values = shapes) +
             ggplot2::coord_fixed() +
-            ggplot2::labs(shape = colname))
+            ggplot2::labs(
+                shape = colname,
+                title = title)
+        )
+
     return(g)
 }

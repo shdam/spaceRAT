@@ -20,15 +20,6 @@
 #' @return A data frame indicating the loading scores of the genes
 #' that contribute most to the selected principle components.
 #' The loading plot is printed automatically, thus not returned.
-#' @usage
-#' loadingPlot(
-#'     scaffold,
-#'     dims = c(1, 2),
-#'     num_genes = 3,
-#'     gene_name = "hgnc_symbol",
-#'     angle = 30,
-#'     df_only = FALSE
-#'     )
 #' @examples
 #' utils::data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
 #' scaffold <- buildScaffold(

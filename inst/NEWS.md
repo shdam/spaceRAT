@@ -1,5 +1,6 @@
 # spaceRAT 0.99.0
 
+* Streamline plot code in `projectSample`
 * Repel labels on loading plot
 * Improve new sample coloring when projected
 * Adjusted to updated `spaceRATScaffolds`
