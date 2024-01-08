@@ -113,9 +113,10 @@ buildScaffold <- function(
         threshold = 10,
         add_umap = FALSE,
         classes = NULL,
+        ranking = FALSE,
         pval_cutoff = 0.05,
         lfc_cutoff = 2,
-        pca_scale = FALSE,
+        pca_scale = TRUE,
         annotation = "ensembl_gene"){
 
     # Check prebuilt
@@ -150,18 +151,59 @@ buildScaffold <- function(
 
     # Find DE genes
     if(subset_deg){
-        scaffold$DEgenes <- findDEGenes(
-            mat, scaffold$label,
-            pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff)
-        mat <- mat[scaffold$DEgenes, ]
+        message("Finding differentially expressed genes")
+        # Remove cell types with less than 2 cells
+        count_table <- data.frame(table(scaffold$label))
+        keep_labels <- count_table[count_table$Freq > 1, 1]
+        stopifnot(
+            "All cells have unique phenotype information.
+            Please group cells by phenotype." = length(keep_labels) > 0)
+        if(!all(scaffold$label %in% keep_labels)){
+            warning(
+                "The samples:",
+                scaffold$label[!(scaffold$label %in% keep_labels)],
+                "were removed because there are too few.")
+        }
+        keep <- scaffold$label %in% keep_labels
+        mat <- mat[, keep]
+        scaffold$label <- scaffold$label[keep]
+
+        scaffold$DEgenes <- lapply(unique(scaffold$label), function(group){
+            findDEGenes2(
+                mat = mat, group = group, labels = scaffold$label,
+                pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff)
+        })
+        names(scaffold$DEgenes) <- unique(scaffold$label)
+
+        mat <- mat[unique(unlist(scaffold$DEgenes)), ]
     }
 
-    # rank
-    mat <- apply(mat, 2, rank)
+    # Iterate over groups, calculate PCA, and store eigenvalues
+    mat <- lapply(names(scaffold$DEgenes), function(group) {
+        group_genes <- scaffold$DEgenes[[group]]
+        if(length(group_genes) > 0) {
+            pca <- prcomp(t(mat[group_genes, ]), scale. = TRUE)
+            eigenvalues <- pca$sdev^2
+            scaled_mat <- as.matrix(mat[group_genes, ] / eigenvalues[1])
+            return(list(scaled_mat = scaled_mat, eigenvalues = eigenvalues))
+        } else {
+            return(list(scaled_mat = as.matrix(mat[group_genes, ]), eigenvalues = 1))
+        }
+    })
 
+    # Extract eigenvalues and matrices from the results
+    scaffold$eigenvalues <- sapply(mat, `[[`, "eigenvalues")
+    names(scaffold$eigenvalues) <- names(scaffold$DEgenes)
+    mat <- do.call(rbind, lapply(mat, `[[`, "scaled_mat"))
+
+
+    # rank
+    if(ranking) mat <- apply(mat, 2, rank)
+
+    # scaffold$DEgenes <- unique(unlist(scaffold$DEgenes))
     # dimension reduction
     message("Reducing dimensions.")
-    scaffold$pca <- stats::prcomp(t(mat), scale = pca_scale)
+    scaffold$pca <- stats::prcomp(t(mat), scale. = TRUE)
     if (add_umap) scaffold$umap <- uwot::umap(t(mat), ret_model = TRUE)
 
     message("Scaffold is built.")

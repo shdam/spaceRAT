@@ -55,6 +55,7 @@ projectSample <- function(
         pheno = NULL,
         colname = NULL,
         assay = NULL,
+        ranking = FALSE,
         dimred = "PCA",
         dims = c(1, 2),
         plot_mode = "dot",
@@ -78,7 +79,8 @@ projectSample <- function(
 
     # add absent genes then subset eset_sample so counts_scaffold
     # and counts_project contain same genes
-    absent_genes <- scaffold$DEgenes[!(scaffold$DEgenes %in% rownames(sample))]
+    all_genes <- unique(unlist(scaffold$DEgenes))
+    absent_genes <- all_genes[!(all_genes %in% rownames(sample))]
     absent_counts <- matrix(
         0,length(absent_genes), ncol(sample),
         dimnames = list(absent_genes, colnames(sample)))
@@ -91,23 +93,34 @@ projectSample <- function(
         "with imputed expression level 0.")
     }
 
-    if (length(absent_genes)/length(scaffold$DEgenes)>1/4){
+    if (length(absent_genes)/length(all_genes)>1/4){
         warning("More than 1/4 genes are added to sample with imputed ",
                 "expression level 0!")
     }
 
     # Subset sample to DEgenes
-    sample <- sample[scaffold$DEgenes, ]
+
+    if (all(sample[1:2] == as.integer(sample[1:2]))) sample <- log2(sample[all_genes, ]+ 0.06)
+
+    # ranked_sample <- lapply(names(scaffold$DEgenes), function(group) {
+    #     group_genes <- scaffold$DEgenes[[group]]
+    #     sample <- as.matrix(sample[group_genes, ] / scaffold$eigenvalues[[group]][1])
+    # })
+    # ranked_sample <- do.call(rbind, ranked_sample)
 
     # rank and transform sample and multiply with the percent of
     # missing values, to retain comparable numeric range
-    ranked_sample <- apply(sample, 2, rank) *
-        (1+(length(absent_genes)/length(scaffold$DEgenes))); rm(sample)
+    # ranked_sample <- apply(sample, 2, rank) *
+    #     (1+(length(absent_genes)/length(scaffold$DEgenes))); rm(sample)
+    ranked_sample <- sample/(scaffold$pca$sdev[1]^2)#*
+    # (1+(length(absent_genes)/length(all_genes)))
+    if(ranking) ranked_sample <- apply(ranked_sample, 2, rank) *
+        (1+(length(absent_genes)/length(scaffold$DEgenes)))
 
     if(toupper(dimred) == "PCA"){
         # PCA transform the sample data
         transformed_sample <- stats::predict(
-            scaffold$pca, newdata = t(ranked_sample)); rm(ranked_sample)
+            scaffold$pca, newdata = t(ranked_sample))#; rm(ranked_sample)
     } else if(toupper(dimred) == "UMAP"){
         transformed_sample <- uwot::umap_transform(
             t(ranked_sample), scaffold$umap)

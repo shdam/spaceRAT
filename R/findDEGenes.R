@@ -15,8 +15,6 @@
 findDEGenes <- function(mat, label, pval_cutoff = 0.05,
                         lfc_cutoff = 2){
 
-    message("Finding differentially expressed genes")
-
     # remove cell types with less than 2 cells
     count_table <- data.frame(table(label))
     keep_labels <- count_table[count_table$Freq>1, 1]
@@ -46,5 +44,40 @@ findDEGenes <- function(mat, label, pval_cutoff = 0.05,
             lfc = lfc_cutoff, p.value = pval_cutoff,
             adjust.method = "fdr"))
     })
-    return(unique(unlist(de_genes)))
+    names(de_genes) <- keep_labels
+    return(de_genes)
+}
+
+
+findDEGenes2 <- function(mat, group, labels, pval_cutoff = 0.05, lfc_cutoff = 2) {
+    message("Finding differentially expressed genes")
+
+    # Validate that group is in labels
+    if (!(group %in% labels)) {
+        stop("Specified group not found in labels.")
+    }
+
+    # Create binary vector indicating whether each label is the group of interest
+    group_indicator <- as.factor(labels == group)
+
+    # Limma analysis
+    design <- model.matrix(~ group_indicator)
+    fit <- limma::lmFit(mat, design)
+
+    # Define contrast for group vs. all others
+    # The contrast matrix should have two rows to match the coefficients in the linear model
+    contrast_matrix <- matrix(c(0, 1), nrow = 2)  # Compare the group of interest against others
+    colnames(contrast_matrix) <- "GroupEffect"
+
+    fit <- limma::contrasts.fit(fit, contrasts = contrast_matrix)
+    fit <- limma::eBayes(fit)
+
+    # Extract differentially expressed genes for the specified contrast
+    de_genes <- rownames(limma::topTable(
+        fit, coef = "GroupEffect", number = Inf,
+        lfc = lfc_cutoff, p.value = pval_cutoff,
+        adjust.method = "fdr"
+    ))
+
+    return(de_genes)
 }
