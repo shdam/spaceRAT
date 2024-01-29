@@ -81,7 +81,7 @@ projectSample <- function(
     # and counts_project contain same genes
     all_genes <- unique(unlist(scaffold$DEgenes))
     absent_genes <- all_genes[!(all_genes %in% rownames(sample))]
-    overlap_genes <- all_genes[(all_genes %in% rownames(sample))]
+    overlap_genes <- intersect(unique(unlist(scaffold$DEgenes)), rownames(sample))
     absent_counts <- matrix(
         0,length(absent_genes), ncol(sample),
         dimnames = list(absent_genes, colnames(sample)))
@@ -107,9 +107,8 @@ projectSample <- function(
     # Subset sample to DEgenes
 
     # Subset genes ----
-    if(!is(subset_genes, "NULL")){
-        scaffold$rank <- scaffold$rank[, overlap_genes]
-    }
+    scaffold$rank <-  apply(scaffold$rank[overlap_genes, ], 2, rank)
+    scaffold$pca <- stats::prcomp(t(scaffold$rank), scale = TRUE)
 
     # if (all(sample[1:2] == as.integer(sample[1:2]))) sample <- log2(sample + 0.06)
     #
