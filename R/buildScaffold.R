@@ -113,7 +113,7 @@ buildScaffold <- function(
         threshold = 10,
         add_umap = FALSE,
         classes = NULL,
-        ranking = FALSE,
+        ranking = TRUE,
         pval_cutoff = 0.05,
         lfc_cutoff = 2,
         pca_scale = TRUE,
@@ -185,9 +185,12 @@ buildScaffold <- function(
             pca <- prcomp(t(mat[group_genes, ]), scale. = TRUE)
             eigenvalues <- pca$sdev^2
             scaled_mat <- as.matrix(mat[group_genes, ] / eigenvalues[1])
+            rownames(scaled_mat) <- paste(group_genes, group, sep = "_")
             return(list(scaled_mat = scaled_mat, eigenvalues = eigenvalues))
         } else {
-            return(list(scaled_mat = as.matrix(mat[group_genes, ]), eigenvalues = 1))
+            scaled_mat <- as.matrix(mat)
+            rownames(scaled_mat) <- paste(rownames(scaled_mat), group, sep = "_")
+            return(list(scaled_mat = scaled_mat, eigenvalues = 1))
         }
     })
 
@@ -199,7 +202,7 @@ buildScaffold <- function(
 
     # rank
     if(ranking) mat <- apply(mat, 2, rank)
-
+    scaffold$rank <- mat
     # scaffold$DEgenes <- unique(unlist(scaffold$DEgenes))
     # dimension reduction
     message("Reducing dimensions.")

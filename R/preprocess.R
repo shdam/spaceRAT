@@ -14,38 +14,41 @@ preprocess <- function(
             colData(object), row.names = rownames(colData(object)))
         rm(object)
     } else{# Check matrix or data.frame
-        mat <- checkMatrix(object)
+        mat <- spaceRAT:::checkMatrix(object)
     }
     if( # If colname not in pheno data
         !is(colname, "NULL") && !is(pheno, "NULL") &&
         !(colname %in% colnames(pheno))) stop(
             "Column ", colname, " was not found in pheno/colData data.")
+
+    # Prefiltering ----
+    if(is.numeric(threshold)) mat <- spaceRAT:::preFilter(
+        mat, data = data, threshold = threshold)
+
     # Convert gene names
     if (is.na(annotation) || is(annotation, "NULL")) {
         warning(
-        "Gene identifier has not been resolved.
+            "Gene identifier has not been resolved.
         Please manually make sure that projected samples uses same
         gene identifier as scaffold dataset")
-    } else { mat <- convertGeneName(mat, to = annotation)}
+    } else { mat <- spaceRAT:::convertGeneName(mat, to = annotation)}
 
-    # Prefiltering ----
-    if(is.numeric(threshold)) mat <- preFilter(
-        mat, data = data, threshold = threshold)
+
     # Match counts and pheno ----
     if(!is(pheno, "NULL")){
         if(is(colname, "NULL")) colname <- colnames(pheno)[1]
-        pheno <- formatPheno(pheno, colname, classes = classes)
+        pheno <- spaceRAT:::formatPheno(pheno, colname, classes = classes)
 
         # Remove missing information
-        mat <- missingAnnotation(mat, pheno)
-        pheno <- missingExpression(mat, pheno)
+        mat <- spaceRAT:::missingAnnotation(mat, pheno)
+        pheno <- spaceRAT:::missingExpression(mat, pheno)
 
         # Ensure annotation data order matches expression data
-        pheno <- matchToExpression(mat, pheno)
+        pheno <- spaceRAT:::matchToExpression(mat, pheno)
 
     }
     # Remove NAs ----
-    mat <- removeNAs(mat)
+    mat <- spaceRAT:::removeNAs(mat)
     message("Preprocessing complete.")
     return(list("mat" = mat, "pheno" = pheno))
 }

@@ -55,14 +55,14 @@ projectSample <- function(
         pheno = NULL,
         colname = NULL,
         assay = NULL,
-        ranking = FALSE,
+        ranking = TRUE,
         dimred = "PCA",
         dims = c(1, 2),
         plot_mode = "dot",
         title = "Samples projected onto scaffold PCA",
         verbose = TRUE,
         annotation = "ensembl_gene"){
-    if(is(scaffold, "NULL") | is(sample, "NULL")){
+    if(is(scaffold, "NULL") || is(sample, "NULL")){
         warning("No scaffold or sample provided.")
         return(NULL)}
     # Preprocess data
@@ -81,11 +81,17 @@ projectSample <- function(
     # and counts_project contain same genes
     all_genes <- unique(unlist(scaffold$DEgenes))
     absent_genes <- all_genes[!(all_genes %in% rownames(sample))]
+    overlap_genes <- all_genes[(all_genes %in% rownames(sample))]
     absent_counts <- matrix(
         0,length(absent_genes), ncol(sample),
         dimnames = list(absent_genes, colnames(sample)))
     rownames(absent_counts) <- absent_genes
-    sample <- rbind(sample, absent_counts)
+    sample <- sample[overlap_genes, ]
+    #sample <- rbind(sample, absent_counts)
+    # scaffold$pca$x <- scaffold$pca$x[overlap_genes, ]  # Subset scores
+    # scaffold$pca$rotation <- scaffold$pca$rotation[overlap_genes,]
+    # scaffold$pca$center <- scaffold$pca$center[overlap_genes]
+    # scaffold$pca$scale <- scaffold$pca$scale[overlap_genes]
 
     if (verbose){
         message(
@@ -100,23 +106,41 @@ projectSample <- function(
 
     # Subset sample to DEgenes
 
-    if (all(sample[1:2] == as.integer(sample[1:2]))) sample <- log2(sample[all_genes, ]+ 0.06)
+    # Subset genes ----
+    if(!is(subset_genes, "NULL")){
+        scaffold$rank <- scaffold$rank[, overlap_genes]
+    }
 
-    # ranked_sample <- lapply(names(scaffold$DEgenes), function(group) {
-    #     group_genes <- scaffold$DEgenes[[group]]
-    #     sample <- as.matrix(sample[group_genes, ] / scaffold$eigenvalues[[group]][1])
-    # })
-    # ranked_sample <- do.call(rbind, ranked_sample)
+    # if (all(sample[1:2] == as.integer(sample[1:2]))) sample <- log2(sample + 0.06)
+    #
+    sample <- lapply(names(scaffold$DEgenes), function(group) {
+        group_genes <- scaffold$DEgenes[[group]]
+
+        # sample <- as.matrix(sample[group_genes, ])
+        if(length(group_genes)>0){
+            # sample <- as.matrix(sample[group_genes, ] / scaffold$eigenvalues[[group]][1])
+            sample <- as.matrix(sample[group_genes, ])
+            rownames(sample) <- paste(group_genes, group, sep = "_")
+        } else{
+            sample <- as.matrix(sample)
+            rownames(sample) <- paste(rownames(sample), group, sep = "_")
+            }
+        sample
+    })
+    sample <- do.call(rbind, sample)
 
     # rank and transform sample and multiply with the percent of
     # missing values, to retain comparable numeric range
     # ranked_sample <- apply(sample, 2, rank) *
-    #     (1+(length(absent_genes)/length(scaffold$DEgenes))); rm(sample)
+    #     (1+(length(absent_genes)/length(all_genes)))#; rm(sample)
     ranked_sample <- sample/(scaffold$pca$sdev[1]^2)#*
     # (1+(length(absent_genes)/length(all_genes)))
+    ranked_sample <- sample
     if(ranking) ranked_sample <- apply(ranked_sample, 2, rank) *
-        (1+(length(absent_genes)/length(scaffold$DEgenes)))
+        (1+(length(absent_genes)/length(all_genes)))
 
+    print(dim(ranked_sample))
+    print(ranked_sample[1:6,1:6])
     if(toupper(dimred) == "PCA"){
         # PCA transform the sample data
         transformed_sample <- stats::predict(
