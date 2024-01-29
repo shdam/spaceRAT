@@ -78,12 +78,15 @@ projectSample <- function(
 
     # add absent genes then subset eset_sample so counts_scaffold
     # and counts_project contain same genes
+    all_genes <- unique(unlist(scaffold$DEgenes))
+    overlap_genes <- intersect(unique(unlist(scaffold$DEgenes)), rownames(sample))#all_genes[(all_genes %in% rownames(sample))]
     absent_genes <- scaffold$DEgenes[!(scaffold$DEgenes %in% rownames(sample))]
     absent_counts <- matrix(
         0,length(absent_genes), ncol(sample),
         dimnames = list(absent_genes, colnames(sample)))
     rownames(absent_counts) <- absent_genes
-    sample <- rbind(sample, absent_counts)
+    # sample <- rbind(sample, absent_counts)
+    sample <- sample[overlap_genes, ]
 
     if (verbose){
         message(
@@ -97,12 +100,15 @@ projectSample <- function(
     }
 
     # Subset sample to DEgenes
-    sample <- sample[scaffold$DEgenes, ]
+    #sample <- sample[scaffold$DEgenes, ]
+    # Rebuild scaffold
+    scaffold$rank <-  apply(scaffold$rank[overlap_genes, ], 2, rank)
+    scaffold$pca <- stats::prcomp(t(scaffold$rank), scale = TRUE)
 
     # rank and transform sample and multiply with the percent of
     # missing values, to retain comparable numeric range
-    ranked_sample <- apply(sample, 2, rank) *
-        (1+(length(absent_genes)/length(scaffold$DEgenes))); rm(sample)
+    ranked_sample <- apply(sample, 2, rank) #*
+        #(1+(length(absent_genes)/length(scaffold$DEgenes))); rm(sample)
 
     if(toupper(dimred) == "PCA"){
         # PCA transform the sample data

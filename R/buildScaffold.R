@@ -158,6 +158,7 @@ buildScaffold <- function(
 
     # rank
     mat <- apply(mat, 2, rank)
+    scaffold$rank <- mat
 
     # dimension reduction
     message("Reducing dimensions.")
