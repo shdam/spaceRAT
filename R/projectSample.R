@@ -158,7 +158,8 @@ projectSample <- function(
 
     graph <- plotScaffold(
         scaffold = scaffold, title = title,
-        dimred = dimred, plot_mode = plot_mode)
+        dimred = dimred, plot_mode = plot_mode,
+        dims = dims)
 
 
     if (is(pheno, "NULL")){
