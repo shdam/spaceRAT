@@ -107,13 +107,11 @@ projectSample <- function(
     # Subset sample to DEgenes
 
     # Subset genes ----
-    scaffold$rank <-  apply(scaffold$rank[overlap_genes, ], 2, rank)
-    scaffold$pca <- stats::prcomp(t(scaffold$rank), scale = TRUE)
-
     # if (all(sample[1:2] == as.integer(sample[1:2]))) sample <- log2(sample + 0.06)
     #
     sample <- lapply(names(scaffold$DEgenes), function(group) {
         group_genes <- scaffold$DEgenes[[group]]
+        group_genes <- group_genes[group_genes %in% overlap_genes]
 
         # sample <- as.matrix(sample[group_genes, ])
         if(length(group_genes)>0){
@@ -127,6 +125,10 @@ projectSample <- function(
         sample
     })
     sample <- do.call(rbind, sample)
+
+
+    scaffold$rank <-  apply(scaffold$rank[rownames(sample), ], 2, rank)
+    scaffold$pca <- stats::prcomp(t(scaffold$rank), scale = TRUE)
 
     # rank and transform sample and multiply with the percent of
     # missing values, to retain comparable numeric range
