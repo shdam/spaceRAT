@@ -140,8 +140,6 @@ projectSample <- function(
     if(ranking) ranked_sample <- apply(ranked_sample, 2, rank) *
         (1+(length(absent_genes)/length(all_genes)))
 
-    print(dim(ranked_sample))
-    print(ranked_sample[1:6,1:6])
     if(toupper(dimred) == "PCA"){
         # PCA transform the sample data
         transformed_sample <- stats::predict(
