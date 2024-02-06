@@ -51,7 +51,6 @@ findDEGenes <- function(mat, label, pval_cutoff = 0.05,
 
 findDEGenes2 <- function(mat, group, labels, pval_cutoff = 0.05, lfc_cutoff = 2,
                          n_genes = 15) {
-    message("Finding differentially expressed genes")
 
     # Validate that group is in labels
     if (!(group %in% labels)) {

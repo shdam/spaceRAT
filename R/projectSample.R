@@ -128,13 +128,13 @@ projectSample <- function(
             else sample <- as.matrix(sample[group_genes, ])
             rownames(sample) <- paste(group_genes, group, sep = "_")
         } else{
+            # print(group)
             sample <- as.matrix(sample)
             rownames(sample) <- paste(rownames(sample), group, sep = "_")
             }
         sample
     })
     sample <- do.call(rbind, sample)
-    ranked_sample <- apply(sample, 2, rank)
 
     # print(rownames(sample) |> stringr::str_remove("^.*_") |> table())
 
@@ -143,9 +143,11 @@ projectSample <- function(
     # print(rownames(scaffold$rank) |> stringr::str_remove("^.*_") |> table())
     scaffold$pca <- stats::prcomp(t(scaffold$rank), scale = TRUE)
 
+    # if (scale) sample <- sample / scaffold$pca$sdev[1]^2
+    ranked_sample <- apply(sample, 2, rank)
     # print(scaffold$pca)
     # print(scaffold$label)
-    # sample <- sample / scaffold$pca$sdev[1]^2
+
 
     # rank and transform sample and multiply with the percent of
     # missing values, to retain comparable numeric range
