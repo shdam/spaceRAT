@@ -43,6 +43,17 @@ labels to each data point.}
 \item{dims}{A numeric vector containing 2 numbers, indicating
 which two principle components to plot.}
 
+\item{classes}{Cell types to use in plot
+For example, set \code{annotation="hgnc_symbol"} will convert the row names
+(gene identifiers) of \code{counts_scaffold} to hgnc symbol,
+so will the expression data and the resulting PCA scaffold.
+If this attempted translation fails, or your desired gene identifier is
+not supported (especially when you are analyzing non-human data),
+please set \code{annotation="hgnc_symbol"} to avoid translation.
+In this case, please manually make sure that the row names
+(gene identifiers) of \code{counts_scaffold} and
+\code{counts_sample} are the same.}
+
 \item{plot_mode}{A character indicating whether to add tiny
 By default \code{plot_mode="dot"} and tiny labels will not be attached.
 If more than 12 cell types are to be displayed, setting
