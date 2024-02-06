@@ -108,10 +108,10 @@ projectSample <- function(
         # "with imputed expression level 0.")
     }
 
-    if (length(absent_genes)/length(all_genes)>1/4){
-        warning("More than 1/4 genes are added to sample with imputed ",
-                "expression level 0!")
-    }
+    # if (length(absent_genes)/length(all_genes)>1/4){
+    #     warning("More than 1/4 genes are added to sample with imputed ",
+    #             "expression level 0!")
+    # }
 
 
 
