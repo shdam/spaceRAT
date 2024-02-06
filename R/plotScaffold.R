@@ -100,11 +100,12 @@ plotScaffold <- function(
                 mapping=ggplot2::aes(
                     .data$Dim1,.data$Dim2, color=.data$Scaffold_group)) +
             ggplot2::scale_color_manual(name="Scaffold_group",values=my_col) +
-            ggplot2::geom_label(data=centroids_df,ggplot2::aes(
+            ggplot2::geom_text(data=centroids_df,ggplot2::aes(
                 x = .data$mean_Dim1,
                 y = .data$mean_Dim2,
                 label=.data$Scaffold_group,color=.data$Scaffold_group),
-                fontface="bold",show.legend = FALSE) +
+                fontface="bold",
+                show.legend = FALSE) +
             ggplot2::labs(
                 title = title,
                 x = xlabel,
