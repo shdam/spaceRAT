@@ -55,7 +55,6 @@ projectSample <- function(
         pheno = NULL,
         colname = NULL,
         assay = NULL,
-        ranking = TRUE,
         dimred = "PCA",
         dims = c(1, 2),
         plot_mode = "dot",
@@ -66,7 +65,7 @@ projectSample <- function(
         warning("No scaffold or sample provided.")
         return(NULL)}
     # Preprocess data
-    sample <- preprocess(
+    sample <- spaceRAT:::preprocess(
         sample,
         colname = colname,
         pheno = pheno,
@@ -130,15 +129,18 @@ projectSample <- function(
     scaffold$rank <-  apply(scaffold$rank[rownames(sample), ], 2, rank)
     scaffold$pca <- stats::prcomp(t(scaffold$rank), scale = TRUE)
 
+    # sample <- sample / scaffold$pca$sdev[1]^2
+
     # rank and transform sample and multiply with the percent of
     # missing values, to retain comparable numeric range
     # ranked_sample <- apply(sample, 2, rank) *
     #     (1+(length(absent_genes)/length(all_genes)))#; rm(sample)
-    ranked_sample <- sample/(scaffold$pca$sdev[1]^2)#*
+    # ranked_sample <- sample#*
     # (1+(length(absent_genes)/length(all_genes)))
-    ranked_sample <- sample
-    if(ranking) ranked_sample <- apply(ranked_sample, 2, rank) *
-        (1+(length(absent_genes)/length(all_genes)))
+    # ranked_sample <- sample
+    ranked_sample <- apply(sample, 2, rank)
+    #*
+    #    (1+(length(absent_genes)/length(all_genes)))
 
     if(toupper(dimred) == "PCA"){
         # PCA transform the sample data
