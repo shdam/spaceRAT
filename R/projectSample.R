@@ -57,6 +57,8 @@ projectSample <- function(
         assay = NULL,
         dimred = "PCA",
         dims = c(1, 2),
+        classes = NULL,
+        scale = FALSE,
         plot_mode = "dot",
         title = "Samples projected onto scaffold PCA",
         verbose = TRUE,
@@ -76,15 +78,23 @@ projectSample <- function(
     pheno <- sample$pheno
     sample <- sample$mat
 
+    # Subset to classes
+    if(!is(classes, "NULL")){
+        scaffold$DEgenes <- scaffold$DEgenes[classes]
+        keep <- scaffold$label %in% classes
+        scaffold$label <- scaffold$label[keep]
+        scaffold$rank <- scaffold$rank[, keep]
+    }
+
     # add absent genes then subset eset_sample so counts_scaffold
     # and counts_project contain same genes
-    all_genes <- unique(unlist(scaffold$DEgenes))
-    absent_genes <- all_genes[!(all_genes %in% rownames(sample))]
+    # all_genes <- unique(unlist(scaffold$DEgenes))
+    # absent_genes <- all_genes[!(all_genes %in% rownames(sample))]
     overlap_genes <- intersect(unique(unlist(scaffold$DEgenes)), rownames(sample))
-    absent_counts <- matrix(
-        0,length(absent_genes), ncol(sample),
-        dimnames = list(absent_genes, colnames(sample)))
-    rownames(absent_counts) <- absent_genes
+    # absent_counts <- matrix(
+    #     0,length(absent_genes), ncol(sample),
+    #     dimnames = list(absent_genes, colnames(sample)))
+    # rownames(absent_counts) <- absent_genes
     sample <- sample[overlap_genes, ]
     #sample <- rbind(sample, absent_counts)
     # scaffold$pca$x <- scaffold$pca$x[overlap_genes, ]  # Subset scores
@@ -93,9 +103,9 @@ projectSample <- function(
     # scaffold$pca$scale <- scaffold$pca$scale[overlap_genes]
 
     if (verbose){
-        message(
-        length(absent_genes)," genes are added to count matrix ",
-        "with imputed expression level 0.")
+        # message(
+        # length(absent_genes)," genes are added to count matrix ",
+        # "with imputed expression level 0.")
     }
 
     if (length(absent_genes)/length(all_genes)>1/4){
@@ -103,7 +113,7 @@ projectSample <- function(
                 "expression level 0!")
     }
 
-    # Subset sample to DEgenes
+
 
     # Subset genes ----
     # if (all(sample[1:2] == as.integer(sample[1:2]))) sample <- log2(sample + 0.06)
@@ -114,8 +124,8 @@ projectSample <- function(
 
         # sample <- as.matrix(sample[group_genes, ])
         if(length(group_genes)>0){
-            # sample <- as.matrix(sample[group_genes, ] / scaffold$eigenvalues[[group]][1])
-            sample <- as.matrix(sample[group_genes, ])
+            if (scale) sample <- as.matrix(sample[group_genes, ] / scaffold$eigenvalues[[group]][1])
+            else sample <- as.matrix(sample[group_genes, ])
             rownames(sample) <- paste(group_genes, group, sep = "_")
         } else{
             sample <- as.matrix(sample)
@@ -124,11 +134,17 @@ projectSample <- function(
         sample
     })
     sample <- do.call(rbind, sample)
+    ranked_sample <- apply(sample, 2, rank)
 
+    # print(rownames(sample) |> stringr::str_remove("^.*_") |> table())
 
-    scaffold$rank <-  apply(scaffold$rank[rownames(sample), ], 2, rank)
+    # Recompute scaffold
+    scaffold$rank <- apply(scaffold$rank[rownames(sample), ], 2, rank)
+    # print(rownames(scaffold$rank) |> stringr::str_remove("^.*_") |> table())
     scaffold$pca <- stats::prcomp(t(scaffold$rank), scale = TRUE)
 
+    # print(scaffold$pca)
+    # print(scaffold$label)
     # sample <- sample / scaffold$pca$sdev[1]^2
 
     # rank and transform sample and multiply with the percent of
@@ -138,7 +154,7 @@ projectSample <- function(
     # ranked_sample <- sample#*
     # (1+(length(absent_genes)/length(all_genes)))
     # ranked_sample <- sample
-    ranked_sample <- apply(sample, 2, rank)
+
     #*
     #    (1+(length(absent_genes)/length(all_genes)))
 

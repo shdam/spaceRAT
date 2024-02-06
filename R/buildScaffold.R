@@ -110,6 +110,7 @@ buildScaffold <- function(
         assay = NULL,
         data = NULL,
         subset_deg = TRUE,
+        n_genes = Inf,
         threshold = 10,
         add_umap = FALSE,
         classes = NULL,
@@ -171,7 +172,8 @@ buildScaffold <- function(
         scaffold$DEgenes <- lapply(unique(scaffold$label), function(group){
             findDEGenes2(
                 mat = mat, group = group, labels = scaffold$label,
-                pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff)
+                pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff,
+                n_genes = n_genes)
         })
         names(scaffold$DEgenes) <- unique(scaffold$label)
 

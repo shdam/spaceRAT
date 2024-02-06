@@ -49,7 +49,8 @@ findDEGenes <- function(mat, label, pval_cutoff = 0.05,
 }
 
 
-findDEGenes2 <- function(mat, group, labels, pval_cutoff = 0.05, lfc_cutoff = 2) {
+findDEGenes2 <- function(mat, group, labels, pval_cutoff = 0.05, lfc_cutoff = 2,
+                         n_genes = 15) {
     message("Finding differentially expressed genes")
 
     # Validate that group is in labels
@@ -74,8 +75,8 @@ findDEGenes2 <- function(mat, group, labels, pval_cutoff = 0.05, lfc_cutoff = 2)
 
     # Extract differentially expressed genes for the specified contrast
     de_genes <- rownames(limma::topTable(
-        fit, coef = "GroupEffect", number = Inf,
-        lfc = lfc_cutoff, p.value = pval_cutoff,
+        fit, coef = "GroupEffect", number = n_genes,
+        lfc = lfc_cutoff, p.value = pval_cutoff, sort.by = "logFC",
         adjust.method = "fdr"
     ))
 
