@@ -56,6 +56,7 @@ projectSample <- function(
         colname = NULL,
         assay = NULL,
         dimred = "PCA",
+        pca_scale = FALSE,
         dims = c(1, 2),
         plot_mode = "dot",
         title = "Samples projected onto scaffold PCA",
@@ -103,7 +104,7 @@ projectSample <- function(
     #sample <- sample[scaffold$DEgenes, ]
     # Rebuild scaffold
     scaffold$rank <-  apply(scaffold$rank[overlap_genes, ], 2, rank)
-    scaffold$pca <- stats::prcomp(t(scaffold$rank), scale = TRUE)
+    scaffold$pca <- stats::prcomp(t(scaffold$rank), scale. = pca_scale)
 
     # rank and transform sample and multiply with the percent of
     # missing values, to retain comparable numeric range

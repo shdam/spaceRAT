@@ -116,6 +116,7 @@ buildScaffold <- function(
         pval_cutoff = 0.05,
         lfc_cutoff = 2,
         pca_scale = FALSE,
+        n_genes = Inf, sort.by = "B",
         annotation = "ensembl_gene"){
 
     # Check prebuilt
@@ -152,7 +153,8 @@ buildScaffold <- function(
     if(subset_deg){
         scaffold$DEgenes <- findDEGenes(
             mat, scaffold$label,
-            pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff)
+            pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff,
+            n_genes = n_genes, sort.by = sort.by)
         mat <- mat[scaffold$DEgenes, ]
     }
 

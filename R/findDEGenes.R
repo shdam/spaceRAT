@@ -13,7 +13,7 @@
 #' @importFrom limma lmFit contrasts.fit eBayes topTable
 #' @noRd
 findDEGenes <- function(mat, label, pval_cutoff = 0.05,
-                        lfc_cutoff = 2){
+                        lfc_cutoff = 2, n_genes = Inf, sort.by = "B"){
 
     message("Finding differentially expressed genes")
 
@@ -42,7 +42,7 @@ findDEGenes <- function(mat, label, pval_cutoff = 0.05,
     fit <- limma::eBayes(fit)
     de_genes <- lapply(colnames(cm), function(name){
         rownames(limma::topTable(
-            fit, coef = name, number = Inf,
+            fit, coef = name, number = n_genes, sort.by = sort.by,
             lfc = lfc_cutoff, p.value = pval_cutoff,
             adjust.method = "fdr"))
     })
