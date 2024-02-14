@@ -56,7 +56,8 @@ projectSample <- function(
         colname = NULL,
         assay = NULL,
         dimred = "PCA",
-        pca_scale = FALSE,
+        pca_scale = TRUE,
+        subset_intersection = FALSE,
         dims = c(1, 2),
         plot_mode = "dot",
         title = "Samples projected onto scaffold PCA",
@@ -79,47 +80,57 @@ projectSample <- function(
 
     # add absent genes then subset eset_sample so counts_scaffold
     # and counts_project contain same genes
-    all_genes <- unique(unlist(scaffold$DEgenes))
-    overlap_genes <- intersect(unique(unlist(scaffold$DEgenes)), rownames(sample))#all_genes[(all_genes %in% rownames(sample))]
-    absent_genes <- scaffold$DEgenes[!(scaffold$DEgenes %in% rownames(sample))]
+    scaffold_genes <- unique(unlist(scaffold$DEgenes))
+    sample_genes <- rownames(sample)
+    overlap_genes <- intersect(scaffold_genes, sample_genes)#all_genes[(all_genes %in% rownames(sample))]
+    absent_genes <- scaffold_genes[!(scaffold_genes %in% sample_genes)]
     absent_counts <- matrix(
         0,length(absent_genes), ncol(sample),
         dimnames = list(absent_genes, colnames(sample)))
     rownames(absent_counts) <- absent_genes
-    # sample <- rbind(sample, absent_counts)
     sample <- sample[overlap_genes, ]
+    if (!subset_intersection) sample <- rbind(sample, absent_counts)
 
-    if (verbose){
+    if (verbose & !subset_intersection){
         message(
         length(absent_genes)," genes are added to count matrix ",
         "with imputed expression level 0.")
     }
 
-    if (length(absent_genes)/length(scaffold$DEgenes)>1/4){
+    if (subset_intersection & (length(absent_genes)/length(scaffold$DEgenes)>1/4) ){
         warning("More than 1/4 genes are added to sample with imputed ",
                 "expression level 0!")
     }
 
     # Subset sample to DEgenes
     #sample <- sample[scaffold$DEgenes, ]
+    
+    ranked_sample <- apply(sample, 2, rank)
+    
     # Rebuild scaffold
-    scaffold$rank <-  apply(scaffold$rank[overlap_genes, ], 2, rank)
-    scaffold$pca <- stats::prcomp(t(scaffold$rank), scale. = pca_scale)
+    if (subset_intersection){
+        scaffold$rank <- apply(scaffold$rank[overlap_genes, ], 2, rank)
+        scaffold$pca <- stats::prcomp(t(scaffold$rank), scale. = pca_scale)
+    } else{
+        # rank and transform sample and multiply with the percent of
+        # missing values, to retain comparable numeric range
+        ranked_sample <- ranked_sample *
+            (1 + (length(absent_genes) / length(scaffold$DEgenes)))
+    }
 
-    # rank and transform sample and multiply with the percent of
-    # missing values, to retain comparable numeric range
-    ranked_sample <- apply(sample, 2, rank) #*
+    
+    # ranked_sample <- apply(sample, 2, rank) #*
         #(1+(length(absent_genes)/length(scaffold$DEgenes))); rm(sample)
 
-    if(toupper(dimred) == "PCA"){
+    if (toupper(dimred) == "PCA"){
         # PCA transform the sample data
         transformed_sample <- stats::predict(
-            scaffold$pca, newdata = t(ranked_sample)); rm(ranked_sample)
-    } else if(toupper(dimred) == "UMAP"){
+            scaffold$pca, newdata = t(ranked_sample))
+    } else if (toupper(dimred) == "UMAP"){
         transformed_sample <- uwot::umap_transform(
             t(ranked_sample), scaffold$umap)
     }
-
+    rm(ranked_sample)
     # Prepare dataframe for ggplot
     df_sample <- data.frame(
         "Dim1" = transformed_sample[, dims[1]],
