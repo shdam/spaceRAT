@@ -43,8 +43,6 @@ projectSample <- function(
         colname = NULL,
         assay = NULL,
         dimred = "PCA",
-        pca_scale = TRUE,
-        rank_scale = FALSE,
         classes = NULL,
         subset_intersection = FALSE,
         dims = c(1, 2),
@@ -67,13 +65,17 @@ projectSample <- function(
     pheno <- sample$pheno
     sample <- sample$mat
     
+    if (is(scaffold$pca_scale, "NULL")) scaffold$pca_scale <- FALSE
+    if (is(scaffold$rank_scale, "NULL")) scaffold$rank_scale <- FALSE
+    
     # Subset to classes
     if(!is(classes, "NULL")){
         scaffold$DEgenes <- scaffold$DEgenes[classes]
         keep <- scaffold$label %in% classes
         scaffold$label <- scaffold$label[keep]
         scaffold$rank <- scaffold$rank[, keep]
-        scaffold$pca <- stats::prcomp(t(scaffold$rank), scale = pca_scale)
+        scaffold$pca <- stats::prcomp(
+            t(scaffold$rank), scale. = scaffold$pca_scale)
     }
 
     # add absent genes then subset eset_sample so counts_scaffold
@@ -81,36 +83,35 @@ projectSample <- function(
     scaffold_genes <- unique(unlist(scaffold$DEgenes))
     sample_genes <- rownames(sample)
     overlap_genes <- intersect(scaffold_genes, sample_genes)#all_genes[(all_genes %in% rownames(sample))]
-    absent_genes <- scaffold_genes[!(scaffold_genes %in% sample_genes)]
-    absent_counts <- matrix(
-        0,length(absent_genes), ncol(sample),
-        dimnames = list(absent_genes, colnames(sample)))
-    rownames(absent_counts) <- absent_genes
+    
     sample <- sample[overlap_genes, ]
-    if (!subset_intersection) sample <- rbind(sample, absent_counts)
-
-    if (verbose & !subset_intersection){
-        message(
-        length(absent_genes)," genes are added to count matrix ",
-        "with imputed expression level 0.")
-    }
-
-    if (subset_intersection & (length(absent_genes)/length(scaffold_genes)>1/4) ){
-        warning("More than 1/4 genes are added to sample with imputed ",
-                "expression level 0!")
+    if (!subset_intersection) {
+        absent_genes <- scaffold_genes[!(scaffold_genes %in% sample_genes)]
+        absent_counts <- matrix(
+            0,length(absent_genes), ncol(sample),
+            dimnames = list(absent_genes, colnames(sample)))
+        rownames(absent_counts) <- absent_genes
+        sample <- rbind(sample, absent_counts)
+        
+        if (verbose) message(
+          length(absent_genes)," genes are added to count matrix ",
+          "with imputed expression level 0.")
+        if ((length(absent_genes)/length(scaffold_genes))>1/4) warning(
+          "More than 1/4 genes are added to sample with imputed ",
+          "expression level 0!")
     }
 
     # Subset sample to DEgenes
     #sample <- sample[scaffold$DEgenes, ]
-    ranked_sample <- ranking(sample, rank_scale = rank_scale)
+    ranked_sample <- ranking(sample, rank_scale = scaffold$rank_scale)
     
     # Rebuild scaffold
     if (subset_intersection){
-        scaffold$rank <- ranking(scaffold$rank[overlap_genes, ], rank_scale = rank_scale)
-        scaffold$pca <- stats::prcomp(t(scaffold$rank), scale. = pca_scale)
-    } else if (!rank_scale){
-      ranked_sample <- ranked_sample * 
-          (1+(length(absent_genes)/length(scaffold$DEgenes)))
+        scaffold$rank <- ranking(scaffold$rank[overlap_genes, ], rank_scale = scaffold$rank_scale)
+        scaffold$pca <- stats::prcomp(t(scaffold$rank), scale. = scaffold$pca_scale)
+    } else if (!scaffold$rank_scale){
+      ranked_sample <- ranked_sample *
+          (1 + (length(absent_genes) / length(scaffold$DEgenes)))
     }
     
     # ranked_sample <- apply(sample, 2, rank) #*

@@ -1,7 +1,7 @@
 Package: spaceRAT
 Type: Package
 Title: Ranked Analysis for Transcriptomes (spaceRAT)
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: c(
     person(given = "Søren Helweg",
            family = "Dam",

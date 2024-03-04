@@ -103,7 +103,8 @@ buildScaffold <- function(
         lfc_cutoff = 2,
         pca_scale = TRUE,
         rank_scale = FALSE,
-        n_genes = Inf, sort.by = "B",
+        n_genes = Inf, 
+        sort.by = "B",
         annotation = "ensembl_gene"){
 
     # Check prebuilt
@@ -131,7 +132,9 @@ buildScaffold <- function(
         annotation = annotation,
         classes = classes
         )
-    pheno <- object$pheno; mat <- object$mat; rm(object)
+    pheno <- object$pheno
+    mat <- object$mat
+    rm(object)
 
     # Define scaffold space
     scaffold <- list("label" = pheno[, colname])
@@ -148,12 +151,15 @@ buildScaffold <- function(
     # rank
     mat <- ranking(mat, rank_scale = rank_scale)
     scaffold$rank <- mat
+    scaffold$rank_scale <- rank_scale
 
     # dimension reduction
     message("Reducing dimensions.")
     scaffold$pca <- stats::prcomp(t(mat), scale. = pca_scale)
+    scaffold$pca_scale <- pca_scale
     if (add_umap) scaffold$umap <- uwot::umap(t(mat), ret_model = TRUE)
 
+    scaffold$spaceRATVersion <- packageVersion("spaceRAT")
     message("Scaffold is built.")
     return(scaffold)
 }
