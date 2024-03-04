@@ -6,20 +6,23 @@
 or a new one calculated from input expression matrix}
 \usage{
 buildScaffold(
-    object,
-    pheno = NULL,
-    colname = NULL,
-    assay = NULL,
-    data = NULL,
-    subset_deg = TRUE,
-    threshold = 10,
-    add_umap = FALSE,
-    classes = NULL,
-    pval_cutoff = 0.05,
-    lfc_cutoff = 2,
-    pca_scale = FALSE,
-    annotation = "ensembl_gene"
-    )
+  object,
+  pheno = NULL,
+  colname = NULL,
+  assay = NULL,
+  data = NULL,
+  subset_deg = TRUE,
+  threshold = 10,
+  add_umap = FALSE,
+  classes = NULL,
+  pval_cutoff = 0.05,
+  lfc_cutoff = 2,
+  pca_scale = TRUE,
+  rank_scale = FALSE,
+  n_genes = Inf,
+  sort.by = "B",
+  annotation = "ensembl_gene"
+)
 }
 \arguments{
 \item{object}{An count or expression matrix of class
@@ -79,6 +82,16 @@ differentially expressed genes. By default \code{lfc_cutoff=2}.}
 
 \item{pca_scale}{A logical variable determining whether to
 normalize rows when plotting PCA}
+
+\item{rank_scale}{A logical determining if ranks should be scaled on min}
+
+\item{sort.by}{
+    character string specifying which statistic to rank the genes by.
+    Possible values for \code{topTable} are \code{"logFC"}, \code{"AveExpr"}, \code{"t"}, \code{"P"}, \code{"p"}, \code{"B"} or \code{"none"}.
+    (Permitted synonyms are \code{"M"} for \code{"logFC"}, \code{"A"} or \code{"Amean"} for \code{"AveExpr"}, \code{"T"} for \code{"t"} and \code{"p"} for \code{"P"}.)
+    Possible values for \code{topTableF} are \code{"F"} or \code{"none"}.
+    \code{topTreat} accepts the same values as \code{topTable} except for \code{"B"}.
+  }
 
 \item{annotation}{Type of gene identifier to use for scaffold.
 Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol",

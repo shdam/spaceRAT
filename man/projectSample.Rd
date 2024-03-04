@@ -5,17 +5,22 @@
 \title{Project new sample(s) onto existing scaffold PCA plot}
 \usage{
 projectSample(
-    scaffold, sample,
-    pheno = NULL,
-    colname = NULL,
-    assay = NULL,
-    dimred = "PCA",
-    dims = c(1, 2),
-    plot_mode = "dot",
-    title = "Samples projected onto scaffold PCA",
-    verbose = TRUE,
-    annotation = "ensembl_gene"
-    )
+  scaffold,
+  sample,
+  pheno = NULL,
+  colname = NULL,
+  assay = NULL,
+  dimred = "PCA",
+  pca_scale = TRUE,
+  rank_scale = FALSE,
+  classes = NULL,
+  subset_intersection = FALSE,
+  dims = c(1, 2),
+  plot_mode = "dot",
+  title = "Samples projected onto scaffold PCA",
+  verbose = TRUE,
+  annotation = "ensembl_gene"
+)
 }
 \arguments{
 \item{scaffold}{A scaffold space object, returned by function
@@ -39,6 +44,22 @@ Bioconductor object.}
 \item{dimred}{A character indicating the method for
 dimensionality reduction. Currently "PCA" and "UMAP" are supported.
 labels to each data point.}
+
+\item{pca_scale}{A logical variable determining whether to
+normalize rows when plotting PCA}
+
+\item{rank_scale}{A logical determining if ranks should be scaled on min}
+
+\item{classes}{Cell types to use in plot
+For example, set \code{annotation="hgnc_symbol"} will convert the row names
+(gene identifiers) of \code{counts_scaffold} to hgnc symbol,
+so will the expression data and the resulting PCA scaffold.
+If this attempted translation fails, or your desired gene identifier is
+not supported (especially when you are analyzing non-human data),
+please set \code{annotation="hgnc_symbol"} to avoid translation.
+In this case, please manually make sure that the row names
+(gene identifiers) of \code{counts_scaffold} and
+\code{counts_sample} are the same.}
 
 \item{dims}{A numeric vector containing 2 numbers, indicating
 which two principle components to plot.}

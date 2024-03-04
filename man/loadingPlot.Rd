@@ -9,7 +9,7 @@ loadingPlot(
   dims = c(1, 2),
   num_genes = 3,
   gene_name = "hgnc_symbol",
-  angle = 0,
+  angle = 30,
   df_only = FALSE
 )
 }

@@ -3,7 +3,7 @@
 #' This function performs DE analysis using limma to find
 #'   differentially expressed genes between cell X and non-X for all
 #'   types of cells that has at least 2 samples in the count matrix.
-#'
+#' @inheritParams buildScaffold
 #' @param pval_cutoff A cutoff value for p value when selecting
 #' differentially expressed genes. By default \code{pval_cutoff=0.05}
 #' @param lfc_cutoff A cutoff value for log fold change when selecting
@@ -46,5 +46,5 @@ findDEGenes <- function(mat, label, pval_cutoff = 0.05,
             lfc = lfc_cutoff, p.value = pval_cutoff,
             adjust.method = "fdr"))
     })
-    return(unique(unlist(de_genes)))
+    return(de_genes)
 }

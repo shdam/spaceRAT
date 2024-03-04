@@ -40,6 +40,7 @@
 #' Counts of several transcript ID corresponding to same gene will
 #' be added and recorded as the counts of the gene.
 #'
+#' @inheritParams limma::topTable
 #' @param pheno Phenotype table corresponding to
 #' the expression matrix.
 #' Row names are sample names, identical to column names of \code{object}.
@@ -63,6 +64,7 @@
 #' differentially expressed genes. By default \code{lfc_cutoff=2}.
 #' @param pca_scale A logical variable determining whether to
 #' normalize rows when plotting PCA
+#' @param rank_scale A logical determining if ranks should be scaled on min
 #' @param add_umap Add a UMAP space to the scaffold
 #' @param annotation Type of gene identifier to use for scaffold.
 #' Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol",
@@ -77,22 +79,6 @@
 #' In this case, please manually make sure that the row names
 #' (gene identifiers) of \code{counts_scaffold} and
 #' \code{counts_sample} are the same.
-#' @usage
-#' buildScaffold(
-#'     object,
-#'     pheno = NULL,
-#'     colname = NULL,
-#'     assay = NULL,
-#'     data = NULL,
-#'     subset_deg = TRUE,
-#'     threshold = 10,
-#'     add_umap = FALSE,
-#'     classes = NULL,
-#'     pval_cutoff = 0.05,
-#'     lfc_cutoff = 2,
-#'     pca_scale = FALSE,
-#'     annotation = "ensembl_gene"
-#'     )
 #' @importFrom methods is
 #' @importFrom stats prcomp
 #' @importFrom uwot umap
@@ -115,7 +101,8 @@ buildScaffold <- function(
         classes = NULL,
         pval_cutoff = 0.05,
         lfc_cutoff = 2,
-        pca_scale = FALSE,
+        pca_scale = TRUE,
+        rank_scale = FALSE,
         n_genes = Inf, sort.by = "B",
         annotation = "ensembl_gene"){
 
@@ -155,11 +142,11 @@ buildScaffold <- function(
             mat, scaffold$label,
             pval_cutoff = pval_cutoff, lfc_cutoff = lfc_cutoff,
             n_genes = n_genes, sort.by = sort.by)
-        mat <- mat[scaffold$DEgenes, ]
+        mat <- mat[unique(unlist(scaffold$DEgenes)), ]
     }
 
     # rank
-    mat <- apply(mat, 2, rank)
+    mat <- ranking(mat, rank_scale = rank_scale)
     scaffold$rank <- mat
 
     # dimension reduction
