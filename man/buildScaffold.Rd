@@ -129,6 +129,6 @@ principle component analysis (PCA) using ranks.
 }
 \examples{
 utils::data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
-buildScaffold(DMAP_exprs,DMAP_pData,"cell_types", data = "exprs",
+scaffold <- buildScaffold(DMAP_exprs,DMAP_pData,"cell_types", data = "exprs",
 pval_cutoff=0.01,pca_scale=TRUE)
 }

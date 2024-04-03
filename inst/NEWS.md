@@ -4,6 +4,7 @@
 * Update rank-scaling
 * Update documentation
 * Move uwot to suggests
+* Phenotype names are added to DEgenes list
 
 # spaceRAT 0.99.0
 

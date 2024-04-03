@@ -40,7 +40,7 @@ findDEGenes <- function(mat, label, pval_cutoff = 0.05,
     fit <- limma::lmFit(mat, design)
     fit <- limma::contrasts.fit(fit, contrast=cm)
     fit <- limma::eBayes(fit)
-    de_genes <- lapply(colnames(cm), function(name){
+    de_genes <- lapply(setNames(colnames(cm), colnames(cm)), function(name){
         rownames(limma::topTable(
             fit, coef = name, number = n_genes, sort.by = sort.by,
             lfc = lfc_cutoff, p.value = pval_cutoff,
