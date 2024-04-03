@@ -1,3 +1,7 @@
+# spaceRAT 0.99.1
+
+* Return sample data in output plot
+
 # spaceRAT 0.99.0
 
 * Streamline plot code in `projectSample`

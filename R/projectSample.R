@@ -109,16 +109,13 @@ projectSample <- function(
     if (subset_intersection){
         scaffold$rank <- ranking(scaffold$rank[overlap_genes, ], rank_scale = scaffold$rank_scale)
         scaffold$pca <- stats::prcomp(t(scaffold$rank), scale. = scaffold$pca_scale)
-    } else if (!scaffold$rank_scale){
-      ranked_sample <- ranked_sample *
-          (1 + (length(absent_genes) / length(scaffold$DEgenes)))
+    } else if (!scaffold$rank_scale){ # or scale ranks
+        ranked_sample <- ranked_sample *
+            (1 + (length(absent_genes) / length(scaffold$DEgenes)))
     }
-    
-    # ranked_sample <- apply(sample, 2, rank) #*
-    # (1+(length(absent_genes)/length(scaffold$DEgenes))); rm(sample)
 
+    # Transform the sample data
     if (toupper(dimred) == "PCA"){
-        # PCA transform the sample data
         transformed_sample <- stats::predict(
             scaffold$pca, newdata = t(ranked_sample))
     } else if (toupper(dimred) == "UMAP"){
@@ -126,13 +123,13 @@ projectSample <- function(
             t(ranked_sample), scaffold$umap)
     }
     rm(ranked_sample)
+    
     # Prepare dataframe for ggplot
-    df_sample <- data.frame(
-        "Dim1" = transformed_sample[, dims[1]],
-        "Dim2" = transformed_sample[, dims[2]],
-        "shape" = "19", "Scaffold_group" = "New_samples")
-    rm(transformed_sample)
+    transformed_sample <- as.data.frame(transformed_sample)
+    transformed_sample$shape <- "19"
+    transformed_sample$Scaffold_group <- "New_samples"
 
+    # Create scaffold plot
     graph <- plotScaffold(
         scaffold = scaffold, title = title,
         dimred = dimred, plot_mode = plot_mode,
@@ -144,8 +141,8 @@ projectSample <- function(
         # Hide shape from legend
         graph <- graph + ggplot2::guides(shape = "none")
     } else{
-        df_sample$shape <- pheno[, colname]
-        shapes <- seq_along(unique(df_sample$shape))
+      transformed_sample$shape <- pheno[, colname]
+        shapes <- seq_along(unique(transformed_sample$shape))
     }
     # calculate correct color scale
     p <- ggplot2::ggplot_build(graph)$data[[2]]
@@ -157,12 +154,12 @@ projectSample <- function(
     suppressMessages(
         g <- graph +
             ggplot2::geom_point(
-                data = df_sample,
-                mapping = ggplot2::aes(
-                    x = .data$Dim1,
-                    y = .data$Dim2,
-                    color = .data$Scaffold_group,
-                    shape = .data$shape)) +
+                data = transformed_sample,
+                mapping = ggplot2::aes_string(
+                    x = colnames(transformed_sample)[dims[1]],
+                    y = colnames(transformed_sample)[dims[2]],
+                    color = "Scaffold_group",
+                    shape = "shape")) +
             ggplot2::scale_color_manual(values = cols) +
             ggplot2::scale_shape_manual(values = shapes) +
             ggplot2::coord_fixed() +
@@ -171,5 +168,8 @@ projectSample <- function(
                 title = title)
         )
 
+    # Add sample data to graph output
+    g$sample <- transformed_sample
+    
     return(g)
 }
