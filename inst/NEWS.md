@@ -1,6 +1,9 @@
 # spaceRAT 0.99.1
 
 * Return sample data in output plot
+* Update rank-scaling
+* Update documentation
+* Move uwot to suggests
 
 # spaceRAT 0.99.0
 

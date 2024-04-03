@@ -85,6 +85,9 @@ normalize rows when plotting PCA}
 
 \item{rank_scale}{A logical determining if ranks should be scaled on min}
 
+\item{n_genes}{(Default: Inf) The number of significant genes to extract
+from limma output per group in the scaffold}
+
 \item{sort.by}{
     character string specifying which statistic to rank the genes by.
     Possible values for \code{topTable} are \code{"logFC"}, \code{"AveExpr"}, \code{"t"}, \code{"P"}, \code{"p"}, \code{"B"} or \code{"none"}.

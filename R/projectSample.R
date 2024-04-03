@@ -18,18 +18,16 @@
 #' This argument should be set together with \code{pheno}.
 #' If \code{pheno} is not specified, this argument will be ignored,
 #' and the output plot will not show legends for new samples.
-#' @param annotation Annotation type to use for scaffold.
-#' counts_scaffold rownames using alternative identifiers will be translated.
-#' Currently ensembl_gene, entrez, hgnc_symbol, and refseq_mrna are supported.
-#' set to "NA", to avoid translation
-#' (both scaffold and projected samples must be the same)
+#' @param annotation (DEPRECATED) Please set the annotation when building the 
+#' scaffold
+#' @param subset_intersection (Default: FALSE) Setting this to TRUE will 
+#' rebuild the scaffold on the overlapping genes between scaffold and sample
 #' @param title Title of the plot.
 #' @param verbose A logical vector indicating whether to report the number of
 #' genes imputed to make \code{sample} compatible with
 #' \code{scaffold}
 #' @export
 #' @importFrom stats predict
-#' @importFrom uwot umap_transform
 #' @import ggplot2
 #' @return ggplot object with new samples projected to existing scaffold plot
 #' @examples
@@ -50,16 +48,24 @@ projectSample <- function(
         title = "Samples projected onto scaffold PCA",
         verbose = TRUE,
         annotation = "ensembl_gene"){
-    if(is(scaffold, "NULL") | is(sample, "NULL")){
+    if (is(scaffold, "NULL") | is(sample, "NULL")){
         warning("No scaffold or sample provided.")
         return(NULL)}
+  if (is(scaffold$annotation, "NULL")) {
+    scaffold$annotation <- annotation
+  }
+  if (toupper(dimred) == "UMAP" && !requireNamespace("uwot")) {
+    stop("To use UMAP space, please install uwot:\n",
+         "install.packages(\"uwot\")")
+  }
+  
     # Preprocess data
     sample <- preprocess(
         sample,
         colname = colname,
         pheno = pheno,
         assay = assay,
-        annotation = annotation,
+        annotation = scaffold$annotation,
         threshold = NULL
         )
     pheno <- sample$pheno

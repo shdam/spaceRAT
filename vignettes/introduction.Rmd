@@ -95,7 +95,7 @@ library(spaceRAT)
 ilaria_counts <- loadData("ilaria_counts")
 
 # Load custom or prebuilt scaffold
-scaffold <- buildScaffold("DMAP") # Get the lateset DMAP scaffold
+scaffold <- buildScaffold("DMAP") # Get the latest DMAP scaffold
 
 # Project sample
 projectSample(

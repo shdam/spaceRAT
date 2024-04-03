@@ -31,14 +31,15 @@ Imports:
     utils, stats, methods,
     SummarizedExperiment,
     ggplot2, RColorBrewer, grDevices,
-    limma,
-    uwot
+    limma
 RoxygenNote: 7.2.3
 Depends: 
     spaceRATScaffolds,
     R (>= 4.2.0)
 Suggests: 
     rmarkdown,
+    BiocStyle,
+    uwot,
     S4Vectors,
     tibble,
     knitr,

@@ -11,32 +11,32 @@ test_that("buildScaffold() returns a proper space",{
 
     space2 <- buildScaffold(scaffold,classes=c("HSC","MONO","ERY"), data = "exprs", add_umap = TRUE)
     expect_type(space2,"list")
-    expect_setequal(names(space2), c("label","DEgenes", "pca", "umap"))
+    expect_true("umap" %in% names(space2))
     expect_setequal(as.character(unique(space2$label)), c("HSC","MONO","ERY"))
 
     space3 <- buildScaffold(scaffold,classes=c("BASO","EOS","GRAN"), data = "exprs")
     expect_type(space3,"list")
-    expect_setequal(names(space3), c("label","DEgenes", "pca"))
+    expect_false("umap" %in% names(space3))
     expect_setequal(as.character(unique(space3$label)), c("BASO","EOS","GRAN"))
 
     space4 <- buildScaffold(scaffold,classes=c("MEGA","ERY","MEP","HSC"), data = "exprs")
     expect_type(space4,"list")
-    expect_setequal(names(space4), c("label","DEgenes", "pca"))
+    expect_false("umap" %in% names(space4))
     expect_setequal(as.character(unique(space4$label)), c("MEGA","ERY","MEP","HSC"))
 
     # test newly-built scaffold
     space5 <- buildScaffold(DMAP_exprs, DMAP_pData, "cell_types", data = "exprs")
     expect_type(space5,"list")
-    expect_setequal(names(space5), c("label","DEgenes", "pca"))
+    expect_false("umap" %in% names(space5))
 
     space6 <- buildScaffold(DMAP_exprs,DMAP_pData,"cell_types",classes=c("HSC","MEP","ERY"), data = "exprs")
     expect_type(space6,"list")
-    expect_setequal(names(space6), c("label","DEgenes", "pca"))
+    expect_false("umap" %in% names(space6))
     expect_setequal(as.character(unique(space6$label)), c("HSC","MEP","ERY"))
 
     space7 <- buildScaffold(DMAP_exprs, DMAP_pData,"cell_types", data = "exprs", add_umap = TRUE)
     expect_type(space7,"list")
-    expect_setequal(names(space7), c("label","DEgenes", "pca", "umap"))
+    expect_true("umap" %in% names(space7))
 
 })
 

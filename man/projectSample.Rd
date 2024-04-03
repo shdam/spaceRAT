@@ -11,8 +11,6 @@ projectSample(
   colname = NULL,
   assay = NULL,
   dimred = "PCA",
-  pca_scale = TRUE,
-  rank_scale = FALSE,
   classes = NULL,
   subset_intersection = FALSE,
   dims = c(1, 2),
@@ -45,11 +43,6 @@ Bioconductor object.}
 dimensionality reduction. Currently "PCA" and "UMAP" are supported.
 labels to each data point.}
 
-\item{pca_scale}{A logical variable determining whether to
-normalize rows when plotting PCA}
-
-\item{rank_scale}{A logical determining if ranks should be scaled on min}
-
 \item{classes}{Cell types to use in plot
 For example, set \code{annotation="hgnc_symbol"} will convert the row names
 (gene identifiers) of \code{counts_scaffold} to hgnc symbol,
@@ -60,6 +53,9 @@ please set \code{annotation="hgnc_symbol"} to avoid translation.
 In this case, please manually make sure that the row names
 (gene identifiers) of \code{counts_scaffold} and
 \code{counts_sample} are the same.}
+
+\item{subset_intersection}{(Default: FALSE) Setting this to TRUE will 
+rebuild the scaffold on the overlapping genes between scaffold and sample}
 
 \item{dims}{A numeric vector containing 2 numbers, indicating
 which two principle components to plot.}
@@ -77,11 +73,8 @@ in "tiny_label" mode.}
 genes imputed to make \code{sample} compatible with
 \code{scaffold}}
 
-\item{annotation}{Annotation type to use for scaffold.
-counts_scaffold rownames using alternative identifiers will be translated.
-Currently ensembl_gene, entrez, hgnc_symbol, and refseq_mrna are supported.
-set to "NA", to avoid translation
-(both scaffold and projected samples must be the same)}
+\item{annotation}{(DEPRECATED) Please set the annotation when building the 
+scaffold}
 }
 \value{
 ggplot object with new samples projected to existing scaffold plot

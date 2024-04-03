@@ -39,7 +39,7 @@ scaffold <- buildScaffold(
     pheno = DMAP_pData,
     data = "exprs",
     colname = colname,
-    add_umap = TRUE
+    rank_scale = TRUE
 )
 
 # Plot scaffold
@@ -124,11 +124,20 @@ scaffold <- buildScaffold(
     pheno = DMAP_pData,
     data = "exprs",
     colname = colname,
-    add_umap = FALSE # Set to TRUE if you also want UMAP space in the scaffold
+    add_umap = FALSE, # Set to TRUE if you also want UMAP space in the scaffold
+    rank_scale = TRUE # This will scale the ranks to account for zeros
 )
 
 
 str(scaffold)
+```
+
+If you want to add a UMAP and run into irlba/Matrix issues, it can be solved
+by reinstalling both packages from source:
+
+```{r, eval=FALSE}
+install.packages("Matrix", type = "source")
+install.packages("irlba", type = "source")
 ```
 
 `buildScaffold()` performs the following steps:
@@ -145,13 +154,21 @@ differentially expressed genes (DE genes).
 By default `buildScaffold()` takes in a counts matrix.
 It can also handle expression data if `data = "exprs"` is specified. 
 
-The resulting scaffold has 3-4 slots:
+The resulting scaffold has 8-9 slots:
 
 - `DEgene`: The differentially expressed genes, determined using
 `r  BiocStyle::Biocpkg("limma")`.
 - `label`: The phenotype labels from the provided pheno data.
 - `pca`: The PCA space
 - `umap`: The UMAP space
+- `annotation`: The annotation used for the scaffold
+- `rank`: The ranks computed for the scaffold 
+(in case the PCA needs recompution)
+- `pca_scale`: Whether the PCA was scaled
+- `rank_scale`: Whether ranks were scaled to the maximum rank 
+(i.e., the lowest expression value)
+- `spaceRATVersion`: The version of spaceRAT the scaffold was built with.
+
 
 
 The scaffold space can be plotted with `plotScaffold`:
@@ -214,7 +231,8 @@ scaffold <- buildScaffold(
     se,
     assay = "exprs",
     data = "exprs",
-    colname = colname
+    colname = colname,
+    rank_scale = TRUE
 )
 
 # Plot scaffold

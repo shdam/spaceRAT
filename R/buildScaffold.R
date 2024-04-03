@@ -58,6 +58,8 @@
 #' @param assay (Default: NULL) The assay slot to use with your
 #' Bioconductor object.
 #' @param threshold (Default: 10) Prefiltering threshold for count row sums.
+#' @param n_genes (Default: Inf) The number of significant genes to extract
+#' from limma output per group in the scaffold
 #' @param pval_cutoff A cutoff value for p value when selecting
 #' differentially expressed genes. By default \code{pval_cutoff=0.05}.
 #' @param lfc_cutoff A cutoff value for logFC when selecting
@@ -81,8 +83,8 @@
 #' \code{counts_sample} are the same.
 #' @importFrom methods is
 #' @importFrom stats prcomp
-#' @importFrom uwot umap
 #' @importFrom spaceRATScaffolds listScaffolds
+#' @importFrom utils packageVersion
 #' @export
 #' @return A scaffold space
 #' @examples
@@ -119,9 +121,15 @@ buildScaffold <- function(
 
     stopifnot("Please ensure unique column names in data." = all(
         !duplicated(colnames(object))))
-    if(!is(pheno, "NULL") & is(colname, "NULL")) stop(
+    if (!is(pheno, "NULL") & is(colname, "NULL")) stop(
         "Please specify colname for pheno data")
 
+    if (add_umap && !requireNamespace("uwot")) {
+      stop("To add UMAP, please install uwot:\n",
+           "install.packages(\"uwot\")")
+      }
+    
+    
     # Preprocessing
     object <- preprocess(
         object,
@@ -137,7 +145,9 @@ buildScaffold <- function(
     rm(object)
 
     # Define scaffold space
-    scaffold <- list("label" = pheno[, colname])
+    scaffold <- list(
+      "label" = pheno[, colname],
+      "annotation" = annotation)
 
     # Find DE genes
     if(subset_deg){

@@ -27,7 +27,12 @@ knitr::opts_chunk$set(
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install(c("SummarizedExperiment", "S4Vectors"))
+BiocManager::install(c("SummarizedExperiment", "S4Vectors", "BiocStyle"))
+
+# If you run into Matrix/irlba issues, 
+# try reinstalling both from source and restart your R session:
+install.packages("Matrix", type = "source")
+install.packages("irlba", type = "source")
 
 # Install spaceRATScaffolds from github
 remotes::install_github("shdam/spaceRATScaffolds", build_vignettes = TRUE)
@@ -100,7 +105,6 @@ projectSample(
     scaffold = scaffold, 
     plot_mode = "dot",
     dims = c(1,2),
-    dimred = "PCA",
     title = "Samples projected into DMAP scaffold in PCA space")
 
 ```
