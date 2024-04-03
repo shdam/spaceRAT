@@ -134,6 +134,8 @@ projectSample <- function(
     transformed_sample <- as.data.frame(transformed_sample)
     transformed_sample$shape <- "19"
     transformed_sample$Scaffold_group <- "New_samples"
+    dim1 <- colnames(transformed_sample)[[dims[1]]]
+    dim2 <- colnames(transformed_sample)[[dims[2]]]
 
     # Create scaffold plot
     graph <- plotScaffold(
@@ -161,11 +163,13 @@ projectSample <- function(
         g <- graph +
             ggplot2::geom_point(
                 data = transformed_sample,
-                mapping = ggplot2::aes_string(
-                    x = colnames(transformed_sample)[dims[1]],
-                    y = colnames(transformed_sample)[dims[2]],
-                    color = "Scaffold_group",
-                    shape = "shape")) +
+                mapping = ggplot2::aes(
+                    # x = colnames(transformed_sample)[dims[1]],
+                    # y = colnames(transformed_sample)[dims[2]],
+                    x = .data[[dim1]],
+                    y = .data[[dim2]],
+                    color = Scaffold_group,
+                    shape = shape)) +
             ggplot2::scale_color_manual(values = cols) +
             ggplot2::scale_shape_manual(values = shapes) +
             ggplot2::coord_fixed() +
