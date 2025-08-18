@@ -77,22 +77,8 @@
 #' In this case, please manually make sure that the row names
 #' (gene identifiers) of \code{counts_scaffold} and
 #' \code{counts_sample} are the same.
-#' @usage
-#' buildScaffold(
-#'     object,
-#'     pheno = NULL,
-#'     colname = NULL,
-#'     assay = NULL,
-#'     data = NULL,
-#'     subset_deg = TRUE,
-#'     threshold = 10,
-#'     add_umap = FALSE,
-#'     classes = NULL,
-#'     pval_cutoff = 0.05,
-#'     lfc_cutoff = 2,
-#'     pca_scale = FALSE,
-#'     annotation = "ensembl_gene"
-#'     )
+#' @param path Path to store or load prebuilt scaffolds. Deafult NULL, always
+#' draws from Zenodo.
 #' @importFrom methods is
 #' @importFrom stats prcomp
 #' @importFrom uwot umap
@@ -118,13 +104,15 @@ buildScaffold <- function(
         pval_cutoff = 0.05,
         lfc_cutoff = 2,
         pca_scale = TRUE,
-        annotation = "ensembl_gene"){
+        annotation = "ensembl_gene",
+        path = NULL){
 
     # Check prebuilt
     if(is(object, "character")) {
-        object <- checkPrebuilt(object, classes)
-        if(!is(object$pca, "NULL")) return(object)
-        else{ # Extract modified prebuilt scaffold
+        object <- checkPrebuilt(object, classes, path)
+        if(!is.null(object$pca)) {
+            return(object)
+        } else{ # Extract modified prebuilt scaffold
             pheno <- object$pheno
             colname <- object$colname
             object <- object$object

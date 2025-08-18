@@ -18,6 +18,7 @@
 #' This argument should be set together with \code{pheno}.
 #' If \code{pheno} is not specified, this argument will be ignored,
 #' and the output plot will not show legends for new samples.
+#' @param sample_name Name of new sample label in legend. Default "New_samples"
 #' @param annotation Annotation type to use for scaffold.
 #' counts_scaffold rownames using alternative identifiers will be translated.
 #' Currently ensembl_gene, entrez, hgnc_symbol, and refseq_mrna are supported.
@@ -27,19 +28,6 @@
 #' @param verbose A logical vector indicating whether to report the number of
 #' genes imputed to make \code{sample} compatible with
 #' \code{scaffold}
-#' @usage
-#' projectSample(
-#'     scaffold, sample,
-#'     pheno = NULL,
-#'     colname = NULL,
-#'     assay = NULL,
-#'     dimred = "PCA",
-#'     dims = c(1, 2),
-#'     plot_mode = "dot",
-#'     title = "Samples projected onto scaffold PCA",
-#'     verbose = TRUE,
-#'     annotation = "ensembl_gene"
-#'     )
 #' @export
 #' @importFrom stats predict
 #' @importFrom uwot umap_transform
@@ -59,6 +47,7 @@ projectSample <- function(
         dims = c(1, 2),
         classes = NULL,
         scale = FALSE,
+        sample_name = "New_samples",
         plot_mode = "dot",
         title = "Samples projected onto scaffold PCA",
         verbose = TRUE,
@@ -97,51 +86,59 @@ projectSample <- function(
     # rownames(absent_counts) <- absent_genes
     sample <- sample[overlap_genes, ]
     #sample <- rbind(sample, absent_counts)
-    # scaffold$pca$x <- scaffold$pca$x[overlap_genes, ]  # Subset scores
-    # scaffold$pca$rotation <- scaffold$pca$rotation[overlap_genes,]
-    # scaffold$pca$center <- scaffold$pca$center[overlap_genes]
-    # scaffold$pca$scale <- scaffold$pca$scale[overlap_genes]
 
-    if (verbose){
+    # if (verbose){
         # message(
         # length(absent_genes)," genes are added to count matrix ",
         # "with imputed expression level 0.")
-    }
+    # }
 
-    if (length(absent_genes)/length(all_genes)>1/4){
-        warning("More than 1/4 genes are added to sample with imputed ",
-                "expression level 0!")
-    }
+    # if (length(absent_genes)/length(all_genes)>1/4){
+    #     warning("More than 1/4 genes are added to sample with imputed ",
+    #             "expression level 0!")
+    # }
 
 
 
     # Subset genes ----
     # if (all(sample[1:2] == as.integer(sample[1:2]))) sample <- log2(sample + 0.06)
-    #
-    sample <- lapply(names(scaffold$DEgenes), function(group) {
+
+    if (!is.null(names(scaffold$DEgenes))) {
+      sample <- lapply(names(scaffold$DEgenes), function(group) {
         group_genes <- scaffold$DEgenes[[group]]
         group_genes <- group_genes[group_genes %in% overlap_genes]
 
-        # sample <- as.matrix(sample[group_genes, ])
         if(length(group_genes)>0){
-            if (scale) sample <- as.matrix(sample[group_genes, ] / scaffold$eigenvalues[[group]][1])
-            else sample <- as.matrix(sample[group_genes, ])
-            rownames(sample) <- paste(group_genes, group, sep = "_")
+          if (scale) sample <- as.matrix(sample[group_genes, ] / scaffold$eigenvalues[[group]][1])
+          else sample <- as.matrix(sample[group_genes, ])
+          rownames(sample) <- paste(group_genes, group, sep = "_")
         } else{
-            # print(group)
-            sample <- as.matrix(sample)
-            rownames(sample) <- paste(rownames(sample), group, sep = "_")
-            }
-        sample
-    })
-    sample <- do.call(rbind, sample)
+          # print(group)
+          sample <- as.matrix(sample)
+          rownames(sample) <- paste(rownames(sample), group, sep = "_")
 
-    # print(rownames(sample) |> stringr::str_remove("^.*_") |> table())
+        }
+        sample[rownames(sample) %in% rownames(scaffold$rank), ]
+      })
+      sample <- do.call(rbind, sample)
+    }
 
     # Recompute scaffold
-    scaffold$rank <- apply(scaffold$rank[rownames(sample), ], 2, rank)
-    # print(rownames(scaffold$rank) |> stringr::str_remove("^.*_") |> table())
-    scaffold$pca <- stats::prcomp(t(scaffold$rank), scale = TRUE)
+    if (!is.null(scaffold$rank)) {
+      scaffold$rank <- apply(scaffold$rank[rownames(sample), ], 2, rank)
+      scaffold$pca <- stats::prcomp(t(scaffold$rank), scale = TRUE)
+    } else {
+      # Subset PCA if cannot recompute
+      scaffold$pca$rotation <- scaffold$pca$rotation[overlap_genes,]
+      scaffold$pca$center <- scaffold$pca$center[overlap_genes]
+
+      # Or add absent
+      # absent_counts <- matrix(
+      #     0,length(absent_genes), ncol(sample),
+      #     dimnames = list(absent_genes, colnames(sample)))
+      # rownames(absent_counts) <- absent_genes
+      #sample <- rbind(sample, absent_counts)
+    }
 
     # if (scale) sample <- sample / scaffold$pca$sdev[1]^2
     ranked_sample <- apply(sample, 2, rank)
@@ -170,16 +167,20 @@ projectSample <- function(
     }
 
     # Prepare dataframe for ggplot
-    df_sample <- data.frame(
-        "Dim1" = transformed_sample[, dims[1]],
-        "Dim2" = transformed_sample[, dims[2]],
-        "shape" = "19", "Scaffold_group" = "New_samples")
-    rm(transformed_sample)
+    # df_sample <- data.frame(
+    #     "Dim1" = transformed_sample[, dims[1]],
+    #     "Dim2" = transformed_sample[, dims[2]],
+    #     "shape" = "19", "Scaffold_group" = "New_samples")
+    # rm(transformed_sample)
+    transformed_sample <- as.data.frame(transformed_sample)
+    transformed_sample$shape <- "19"
+    transformed_sample$Scaffold_group <- sample_name
 
     graph <- plotScaffold(
         scaffold = scaffold, title = title,
-        dimred = dimred, plot_mode = plot_mode,
+        dimred = dimred, plot_mode = plot_mode, #sample_name = sample_name,
         dims = dims)
+
 
 
     if (is(pheno, "NULL")){
@@ -187,9 +188,10 @@ projectSample <- function(
         # Hide shape from legend
         graph <- graph + ggplot2::guides(shape = "none")
     } else{
-        df_sample$shape <- pheno[, colname]
-        shapes <- seq_along(unique(df_sample$shape))
+      transformed_sample$shape <- pheno[, colname]
+        shapes <- seq_along(unique(transformed_sample$shape))
     }
+    dims <- colnames(transformed_sample)[dims]
     # calculate correct color scale
     p <- ggplot2::ggplot_build(graph)$data[[2]]
     cols <- unique(p[["colour"]])
@@ -200,10 +202,10 @@ projectSample <- function(
     suppressMessages(
         g <- graph +
             ggplot2::geom_point(
-                data = df_sample,
+                data = transformed_sample,
                 mapping = ggplot2::aes(
-                    x = .data$Dim1,
-                    y = .data$Dim2,
+                    x = .data[[dims[1]]],
+                    y = .data[[dims[2]]],
                     color = .data$Scaffold_group,
                     shape = .data$shape)) +
             ggplot2::scale_color_manual(values = cols) +
@@ -211,7 +213,8 @@ projectSample <- function(
             ggplot2::coord_fixed() +
             ggplot2::labs(
                 shape = colname,
-                title = title)
+                title = title,
+                color = sample_name)
         )
 
     return(g)

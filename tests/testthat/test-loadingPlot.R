@@ -1,9 +1,9 @@
 utils::data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
-space <- buildScaffold(DMAP_exprs, DMAP_pData, "cell_types", data = "logged")
+scaffold <- buildScaffold(DMAP_exprs, DMAP_pData, "cell_types", data = "logged")
 
 test_that("loadingPlot works", {
-    l <- loadingPlot(space)
-    df <- loadingPlot(space, df_only = TRUE)
+    l <- loadingPlot(scaffold)
+    df <- loadingPlot(scaffold, df_only = TRUE)
     expect_s3_class(l, "ggplot")
     expect_s3_class(df, "data.frame")
     expect_equal(nrow(df), 12)

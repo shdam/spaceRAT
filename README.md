@@ -61,7 +61,7 @@ library(spaceRAT)
 data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
 scaffold <- buildScaffold(
     DMAP_exprs, pheno = DMAP_pData,
-    colname = "cell_types", data = "exprs")
+    colname = "cell_types", data = "exprs", pca_scale = TRUE)
 #> Preprocessing complete.
 #> Finding differentially expressed genes
 #> Reducing dimensions.
@@ -80,7 +80,10 @@ Get a list of available prebuilt scaffolds with:
 ``` r
 library("spaceRATScaffolds")
 listScaffolds()
-#> [1] "TCGA.v1" "GTEx.v1" "DMAP.v1"
+#> ℹ Successfully fetched list of published records - page 1
+#> ✔ Successfully fetched list of published records!
+#> ✔ Successfully fetched record for DOI '10.5281/zenodo.10842509'!
+#> [1] "TCGA.v2" "DMAP.v1" "GTEx.v1" "TCGA.v1"
 ```
 
 Project a sample of interest into a custom built or prebuilt scaffold:
@@ -91,6 +94,9 @@ data("ilaria_counts", package="spaceRATScaffolds")
 
 # Load custom or prebuilt scaffold
 scaffold <- buildScaffold("DMAP") # omitting '.vX' gets the latest version
+#> ℹ Successfully fetched list of published records - page 1
+#> ✔ Successfully fetched list of published records!
+#> ✔ Successfully fetched record for DOI '10.5281/zenodo.10842509'!
 
 # Project sample
 projectSample(
@@ -99,9 +105,9 @@ projectSample(
     plot_mode = "dot",
     dims = c(1,2),
     dimred = "PCA",
+    sample_name = "New Samples",
     title = "Samples projected into DMAP scaffold in PCA space")
 #> Preprocessing complete.
-#> 6 genes are added to count matrix with imputed expression level 0.
 ```
 
 <img src="man/figures/README-project-1.png" width="100%" />

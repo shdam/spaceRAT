@@ -75,7 +75,7 @@ scaffold <- buildScaffold(
     DMAP_exprs,
     data = "exprs",
     pheno = DMAP_pData,
-    colname = colname
+    colname = colname,
 )
 
 # Plot scaffold
@@ -95,12 +95,12 @@ library(spaceRAT)
 ilaria_counts <- loadData("ilaria_counts")
 
 # Load custom or prebuilt scaffold
-scaffold <- buildScaffold("DMAP") # Get the lateset DMAP scaffold
+scaffold <- buildScaffold("DMAP", path = "../scaffolds") # Get the latest DMAP scaffold
 
 # Project sample
 projectSample(
     scaffold = scaffold,
-    sample = ilaria_counts,
+    sample = ilaria_counts, 
     title = "Samples projected into DMAP scaffold")
 ```
 

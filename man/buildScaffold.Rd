@@ -6,20 +6,23 @@
 or a new one calculated from input expression matrix}
 \usage{
 buildScaffold(
-    object,
-    pheno = NULL,
-    colname = NULL,
-    assay = NULL,
-    data = NULL,
-    subset_deg = TRUE,
-    threshold = 10,
-    add_umap = FALSE,
-    classes = NULL,
-    pval_cutoff = 0.05,
-    lfc_cutoff = 2,
-    pca_scale = FALSE,
-    annotation = "ensembl_gene"
-    )
+  object,
+  pheno = NULL,
+  colname = NULL,
+  assay = NULL,
+  data = NULL,
+  subset_deg = TRUE,
+  n_genes = Inf,
+  threshold = 10,
+  add_umap = FALSE,
+  classes = NULL,
+  ranking = TRUE,
+  pval_cutoff = 0.05,
+  lfc_cutoff = 2,
+  pca_scale = TRUE,
+  annotation = "ensembl_gene",
+  path = NULL
+)
 }
 \arguments{
 \item{object}{An count or expression matrix of class
@@ -83,6 +86,9 @@ normalize rows when plotting PCA}
 \item{annotation}{Type of gene identifier to use for scaffold.
 Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol",
 and "refseq_mrna" are supported.}
+
+\item{path}{Path to store or load prebuilt scaffolds. Deafult NULL, always
+draws from Zenodo.}
 }
 \value{
 A scaffold space

@@ -5,17 +5,21 @@
 \title{Project new sample(s) onto existing scaffold PCA plot}
 \usage{
 projectSample(
-    scaffold, sample,
-    pheno = NULL,
-    colname = NULL,
-    assay = NULL,
-    dimred = "PCA",
-    dims = c(1, 2),
-    plot_mode = "dot",
-    title = "Samples projected onto scaffold PCA",
-    verbose = TRUE,
-    annotation = "ensembl_gene"
-    )
+  scaffold,
+  sample,
+  pheno = NULL,
+  colname = NULL,
+  assay = NULL,
+  dimred = "PCA",
+  dims = c(1, 2),
+  classes = NULL,
+  scale = FALSE,
+  sample_name = "New_samples",
+  plot_mode = "dot",
+  title = "Samples projected onto scaffold PCA",
+  verbose = TRUE,
+  annotation = "ensembl_gene"
+)
 }
 \arguments{
 \item{scaffold}{A scaffold space object, returned by function
@@ -53,6 +57,8 @@ please set \code{annotation="hgnc_symbol"} to avoid translation.
 In this case, please manually make sure that the row names
 (gene identifiers) of \code{counts_scaffold} and
 \code{counts_sample} are the same.}
+
+\item{sample_name}{Name of new sample label in legend. Default "New_samples"}
 
 \item{plot_mode}{A character indicating whether to add tiny
 By default \code{plot_mode="dot"} and tiny labels will not be attached.

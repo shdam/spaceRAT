@@ -101,6 +101,7 @@ projectSample(
     plot_mode = "dot",
     dims = c(1,2),
     dimred = "PCA",
+    sample_name = "New Samples",
     title = "Samples projected into DMAP scaffold in PCA space")
 
 ```

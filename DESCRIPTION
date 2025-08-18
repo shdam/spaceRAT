@@ -1,7 +1,7 @@
 Package: spaceRAT
 Type: Package
 Title: Ranked Analysis for Transcriptomes (spaceRAT)
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: c(
     person(given = "Søren Helweg",
            family = "Dam",
@@ -33,7 +33,7 @@ Imports:
     ggplot2, RColorBrewer, grDevices,
     limma,
     uwot
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Depends: 
     spaceRATScaffolds,
     R (>= 4.2.0)

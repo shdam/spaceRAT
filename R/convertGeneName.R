@@ -12,7 +12,9 @@
 #' @noRd
 convertGeneName <- function(mat, assay = "counts", to = "ensembl_gene") {
 
-    cur_genes <- gsub("\\.[0-9]+$","", rownames(mat)) # remove version number
+    cur_genes <- gsub("_.*$", "", rownames(mat))
+    cur_genes <- gsub("\\.[0-9]+$","", cur_genes) # remove version number
+
     gene_mapper <- mapGene(cur_genes, to = to) # get gene mapper data frame
 
     if (is.null(gene_mapper)){ # case1: mapGene fails to infer gene id
@@ -31,6 +33,8 @@ convertGeneName <- function(mat, assay = "counts", to = "ensembl_gene") {
     # case 3: conversion between gene id and gene id or transcript id.
     matches <- match(cur_genes, gene_mapper[[from]], nomatch = 0)
     cur_genes[which(matches != 0)] <- gene_mapper[[to]][matches]
+
+    cur_genes <- paste0(cur_genes, sub("^.*?(_.*$)", "\\1", rownames(mat)))
 
     if(any(matches == 0)){ # Remove nomatches
         mat <- mat[which(matches != 0), ]
