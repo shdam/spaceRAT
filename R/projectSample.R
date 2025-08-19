@@ -139,7 +139,8 @@ projectSample <- function(
     # Rebuild scaffold
     if (subset_intersection & !is.null(scaffold$rank)){
         scaffold$rank <- ranking(scaffold$rank[rownames(sample), ], rank_scale = scaffold$rank_scale)
-        scaffold$pca <- stats::prcomp(t(scaffold$rank), scale. = scaffold$pca$scale)
+        # scaffold$pca <- stats::prcomp(t(scaffold$rank), scale. = scaffold$pca$scale) # OLD
+        scaffold$pca <- stats::prcomp(t(scaffold$rank), scale. = scaffold$pca$scale[rownames(sample)]) # HW
     } else if (!scaffold$rank_scale){ # or scale ranks
         ranked_sample <- ranked_sample *
             (1 + (length(absent_genes) / length(scaffold$DEgenes)))
