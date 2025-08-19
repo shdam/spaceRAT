@@ -183,7 +183,7 @@ projectSample <- function(
     }
 
     # calculate correct color scale
-    p <- ggplot2::ggplot_build(graph)$data[[2]]
+    p <- ggplot2::ggplot_build(projection)$data[[2]]
     cols <- unique(p[["colour"]])
     label <- as.character(p[["label"]])
     cols <- append(cols, "#000000")
