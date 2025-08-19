@@ -14,3 +14,4 @@
 ^doc$
 .robustRank
 scaffolds
+.filen.*

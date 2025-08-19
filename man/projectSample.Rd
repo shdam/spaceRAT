@@ -8,12 +8,13 @@ projectSample(
   scaffold,
   sample,
   pheno = NULL,
-  colname = NULL,
+  colname = "Classes",
   assay = NULL,
   dimred = "PCA",
   classes = NULL,
   subset_intersection = FALSE,
   dims = c(1, 2),
+  sample_name = "New samples",
   plot_mode = "dot",
   title = "Samples projected onto scaffold PCA",
   verbose = TRUE,
@@ -54,11 +55,13 @@ In this case, please manually make sure that the row names
 (gene identifiers) of \code{counts_scaffold} and
 \code{counts_sample} are the same.}
 
-\item{subset_intersection}{(Default: FALSE) Setting this to TRUE will 
+\item{subset_intersection}{(Default: FALSE) Setting this to TRUE will
 rebuild the scaffold on the overlapping genes between scaffold and sample}
 
 \item{dims}{A numeric vector containing 2 numbers, indicating
 which two principle components to plot.}
+
+\item{sample_name}{Name of new sample label in legend. Default "New_samples"}
 
 \item{plot_mode}{A character indicating whether to add tiny
 By default \code{plot_mode="dot"} and tiny labels will not be attached.
@@ -73,7 +76,7 @@ in "tiny_label" mode.}
 genes imputed to make \code{sample} compatible with
 \code{scaffold}}
 
-\item{annotation}{(DEPRECATED) Please set the annotation when building the 
+\item{annotation}{(DEPRECATED) Please set the annotation when building the
 scaffold}
 }
 \value{

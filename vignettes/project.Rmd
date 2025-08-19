@@ -30,7 +30,7 @@ library(spaceRAT)
 ilaria_counts <- loadData("ilaria_counts")
 
 # Load custom or prebuilt scaffold
-scaffold <- buildScaffold("DMAP")
+scaffold <- buildScaffold("DMAP", path = "../scaffolds")
 
 # Project sample
 projectSample(
@@ -65,7 +65,7 @@ Getting a prebuilt scaffold:
 ```{r setup}
 library(spaceRAT)
 
-scaffold <- buildScaffold("DMAP.v1") # omit .v1 to get the latest version
+scaffold <- buildScaffold("DMAP.v1", path = "../scaffolds") # omit .v1 to get the latest version
 ```
 
 

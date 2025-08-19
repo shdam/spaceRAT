@@ -1,7 +1,7 @@
 data("gene_id_converter_hs", package = "spaceRATScaffolds")
 
 test_that("convertGeneName() converts between Ensembl_gene and Entrez",{
-    exprs_entrez <- suppressWarnings(convertGeneName(DMAP_exprs,to="entrez"))
+    exprs_entrez <- suppressWarnings(convertGeneName(DMAP_exprs, to="entrez"))
     expect_true(all(rownames(exprs_entrez) %in% gene_id_converter_hs$entrez))
     expect_true(ncol(exprs_entrez)==ncol(DMAP_exprs))
     expect_true(nrow(exprs_entrez)<=nrow(DMAP_exprs))

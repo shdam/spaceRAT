@@ -45,6 +45,7 @@ loadingPlot <- function(
     # determine most important genes
     pc1 <- paste0("PC", pc1); pc2 <- paste0("PC", pc2)
     datapc <- as.data.frame(pca$rotation[,dims])
+    # rownames(datapc) <- gsub("_.*", "", rownames(datapc))
     datapc <- convertGeneName(datapc,to=gene_name)
     df <- extractGenes(datapc, num_genes)
 

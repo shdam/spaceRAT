@@ -5,11 +5,13 @@
 \title{Plot a scaffoldSpace object}
 \usage{
 plotScaffold(
-scaffold,
-dimred = "PCA",
-title = "Scaffold plot",
-plot_mode = "dot",
-dims = c(1, 2))
+  scaffold,
+  dimred = "PCA",
+  title = "Scaffold plot",
+  plot_mode = "dot",
+  class_name = "Classes",
+  dims = c(1, 2)
+)
 }
 \arguments{
 \item{scaffold}{A \code{scaffoldSpace} object returned by
@@ -27,6 +29,8 @@ If more than 12 cell types are to be displayed, setting
 \code{plot_mode="tiny_label"} may yield better visualization.
 Shorter names for phenotypes (e.g. cell types) is strongly recommended
 in "tiny_label" mode.}
+
+\item{class_name}{Legend title for classes}
 
 \item{dims}{A numeric vector containing 2 numbers, indicating
 which two principle components to plot.}

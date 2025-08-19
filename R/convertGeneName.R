@@ -10,9 +10,17 @@
 #' @return A count matrix with transformed gene names as row names.
 #' @importFrom stats aggregate
 #' @noRd
-convertGeneName <- function(mat, assay = "counts", to = "ensembl_gene") {
+convertGeneName <- function(mat, to = "ensembl_gene") {
 
-    cur_genes <- gsub("\\.[0-9]+$","", rownames(mat)) # remove version number
+    if (grepl("^NM", rownames(mat)[1])) {
+        cur_genes <- rownames(mat)
+    } else {
+        cur_genes <-  gsub("_.*$", "", rownames(mat))
+    }
+
+    # if (!grepl("^NM", rownames(mat)[1])) cur_genes <- gsub("_.*$", "", rownames(mat)) else cur_genes <- rownames(mat)
+    cur_genes <- gsub("\\.[0-9]+$","", cur_genes) # remove version number
+
     gene_mapper <- mapGene(cur_genes, to = to) # get gene mapper data frame
 
     if (is.null(gene_mapper)){ # case1: mapGene fails to infer gene id
@@ -31,6 +39,9 @@ convertGeneName <- function(mat, assay = "counts", to = "ensembl_gene") {
     # case 3: conversion between gene id and gene id or transcript id.
     matches <- match(cur_genes, gene_mapper[[from]], nomatch = 0)
     cur_genes[which(matches != 0)] <- gene_mapper[[to]][matches]
+
+    if (grepl("_.*$", rownames(mat)[1]) & !grepl("^NM", rownames(mat)[1])) cur_genes <- paste0(
+        cur_genes, sub("^.*?(_.*$)", "\\1", rownames(mat)))
 
     if(any(matches == 0)){ # Remove nomatches
         mat <- mat[which(matches != 0), ]

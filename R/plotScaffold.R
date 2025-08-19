@@ -16,19 +16,13 @@
 #' labels to each data point.
 #' @param dims A numeric vector containing 2 numbers, indicating
 #' which two principle components to plot.
+#' @param class_name Legend title for classes
 #' @export
 #' @importFrom stats aggregate
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom grDevices colorRampPalette
 #' @import ggplot2
 #' @return ggplot object.
-#' @usage
-#' plotScaffold(
-#' scaffold,
-#' dimred = "PCA",
-#' title = "Scaffold plot",
-#' plot_mode = "dot",
-#' dims = c(1, 2))
 #' @examples
 #' scaffold <- buildScaffold("DMAP")
 #' plotScaffold(scaffold, "Scaffold plot title", dimred = "PCA")
@@ -37,13 +31,15 @@ plotScaffold <- function(
         dimred = "PCA",
         title = "Scaffold plot",
         plot_mode = "dot",
+        class_name = "Classes",
         dims = c(1, 2)){
 
+    dimred <- toupper(dimred)
     stopifnot(
         "Please use either 'PCA' or 'UMAP' as dimred." =
-            toupper(dimred) %in% c("PCA", "UMAP"))
+            dimred %in% c("PCA", "UMAP"))
 
-    if(toupper(dimred) == "PCA"){
+    if(dimred == "PCA"){
         stopifnot("No PCA space in scaffold" = !is(scaffold$pca, "NULL"))
         # calculate variance explained and add percentage to axis labels
         var_sum <- sum(scaffold$pca$sdev^2)
@@ -69,17 +65,18 @@ plotScaffold <- function(
     }
 
 
-    df <- data.frame(Dim1,Dim2,"Scaffold_group" = scaffold$label)
+    df <- data.frame(Dim1,Dim2, scaffold$label)
+    colnames(df) <- c("Dim1", "Dim2", class_name)
 
 
     # calculate centroids
     centroids_df <- stats::aggregate(
-        cbind(Dim1, Dim2) ~ df$Scaffold_group, FUN = mean)
-    colnames(centroids_df) <- c("Scaffold_group", "mean_Dim1", "mean_Dim2")
+        cbind(Dim1, Dim2) ~ df[[class_name]], FUN = mean)
+    colnames(centroids_df) <- c(class_name, "mean_Dim1", "mean_Dim2")
 
 
     # define color scheme
-    total_types <- length(unique(df$Scaffold_group))
+    total_types <- length(unique(df[[class_name]]))
     if (total_types>12){
         my_col <- RColorBrewer::brewer.pal(12, "Paired")
         pal <- grDevices::colorRampPalette(my_col)
@@ -98,14 +95,15 @@ plotScaffold <- function(
         g <- ggplot2::ggplot(data=df) +
             ggplot2::geom_point(
                 mapping=ggplot2::aes(
-                    .data$Dim1,.data$Dim2, color=.data$Scaffold_group)) +
-            ggplot2::scale_color_manual(name="Scaffold_group",values=my_col) +
-            ggplot2::geom_text(data=centroids_df,ggplot2::aes(
+                    .data$Dim1,.data$Dim2, color = .data[[class_name]])) +
+            ggplot2::scale_color_manual(name = class_name, values = my_col) +
+            ggplot2::geom_text(data = centroids_df, ggplot2::aes(
                 x = .data$mean_Dim1,
                 y = .data$mean_Dim2,
-                label=.data$Scaffold_group,color=.data$Scaffold_group),
-                fontface="bold",
-                show.legend = FALSE) +
+                label = .data[[class_name]], color = .data[[class_name]]),
+                fontface = "bold",
+                show.legend = FALSE
+                ) +
             ggplot2::labs(
                 title = title,
                 x = xlabel,
@@ -121,30 +119,30 @@ plotScaffold <- function(
         message(
         "plot_mode='tiny_label', shorter names for cell types in
         phenotype table yields better visualization.")
-        g <- ggplot2::ggplot()+
-            ggplot2::geom_point(data=df,mapping=ggplot2::aes(
+        g <- ggplot2::ggplot() +
+            ggplot2::geom_point(data = df, mapping = ggplot2::aes(
                 x = .data$Dim1,
                 y = .data$Dim2,
-                color=.data$Scaffold_group),
+                color=.data[[class_name]]),
                 size = 0.8)+
             ggplot2::geom_text(
                 data=df,ggplot2::aes(
                     x = .data$Dim1, y = .data$Dim2,
-                    label = .data$Scaffold_group, color = .data$Scaffold_group),
-                alpha=0.5,size=3,show.legend = FALSE)+
-            ggplot2::geom_label(data=centroids_df,ggplot2::aes(
-                .data$mean_Dim1,.data$mean_Dim2,
-                label=.data$Scaffold_group,color=.data$Scaffold_group,
-                fontface="bold"),show.legend = FALSE)+
+                    label = .data[[class_name]], color = .data[[class_name]]),
+                alpha = 0.5,size=3, show.legend = FALSE)+
+            ggplot2::geom_label(data = centroids_df, ggplot2::aes(
+                .data$mean_Dim1, .data$mean_Dim2,
+                label = .data[[class_name]], color = .data[[class_name]],
+                fontface="bold"), show.legend = FALSE)+
             ggplot2::guides(colour = ggplot2::guide_legend(
-                override.aes = list(size=2)))+
+                override.aes = list(size=2))) +
             ggplot2::labs(
                 title = title,
                 x = xlabel,
                 y = ylabel
             ) +
-            ggplot2::scale_color_manual(name="Scaffold_group",values=my_col)+
-            ggplot2::theme_bw()+
+            ggplot2::scale_color_manual(name = class_name, values = my_col) +
+            ggplot2::theme_bw() +
             ggplot2::coord_fixed()
         return(g)
     }

@@ -74,7 +74,7 @@ library(spaceRAT)
 data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
 scaffold <- buildScaffold(
     DMAP_exprs, pheno = DMAP_pData,
-    colname = "cell_types", data = "exprs")
+    colname = "cell_types", data = "exprs", pca_scale = TRUE)
 plotScaffold(
     scaffold, title = "Scaffold Plot",
     dimred = "PCA", dims = c(1,2), plot_mode = "dot")
@@ -105,6 +105,8 @@ projectSample(
     scaffold = scaffold, 
     plot_mode = "dot",
     dims = c(1,2),
+    dimred = "PCA",
+    sample_name = "New Samples",
     title = "Samples projected into DMAP scaffold in PCA space")
 
 ```

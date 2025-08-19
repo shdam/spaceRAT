@@ -12,6 +12,8 @@ buildScaffold(
   assay = NULL,
   data = NULL,
   subset_deg = TRUE,
+  n_genes = Inf,
+  sort.by = "B",
   threshold = 10,
   add_umap = FALSE,
   classes = NULL,
@@ -19,9 +21,9 @@ buildScaffold(
   lfc_cutoff = 2,
   pca_scale = TRUE,
   rank_scale = FALSE,
-  n_genes = Inf,
-  sort.by = "B",
-  annotation = "ensembl_gene"
+  group_scale = TRUE,
+  annotation = "ensembl_gene",
+  path = NULL
 )
 }
 \arguments{
@@ -59,6 +61,17 @@ If the count matrix is raw counts, please specify \code{data="counts"}}
 \item{subset_deg}{(Default: TRUE) Inform whether the scaffold should be
 built using all genes or only the differentially expressed ones in the input.}
 
+\item{n_genes}{(Default: Inf) The number of significant genes to extract
+from limma output per group in the scaffold}
+
+\item{sort.by}{
+    character string specifying which statistic to rank the genes by.
+    Possible values for \code{topTable} are \code{"logFC"}, \code{"AveExpr"}, \code{"t"}, \code{"P"}, \code{"p"}, \code{"B"} or \code{"none"}.
+    (Permitted synonyms are \code{"M"} for \code{"logFC"}, \code{"A"} or \code{"Amean"} for \code{"AveExpr"}, \code{"T"} for \code{"t"} and \code{"p"} for \code{"P"}.)
+    Possible values for \code{topTableF} are \code{"F"} or \code{"none"}.
+    \code{topTreat} accepts the same values as \code{topTable} except for \code{"B"}.
+  }
+
 \item{threshold}{(Default: 10) Prefiltering threshold for count row sums.}
 
 \item{add_umap}{Add a UMAP space to the scaffold}
@@ -85,20 +98,14 @@ normalize rows when plotting PCA}
 
 \item{rank_scale}{A logical determining if ranks should be scaled on min}
 
-\item{n_genes}{(Default: Inf) The number of significant genes to extract
-from limma output per group in the scaffold}
-
-\item{sort.by}{
-    character string specifying which statistic to rank the genes by.
-    Possible values for \code{topTable} are \code{"logFC"}, \code{"AveExpr"}, \code{"t"}, \code{"P"}, \code{"p"}, \code{"B"} or \code{"none"}.
-    (Permitted synonyms are \code{"M"} for \code{"logFC"}, \code{"A"} or \code{"Amean"} for \code{"AveExpr"}, \code{"T"} for \code{"t"} and \code{"p"} for \code{"P"}.)
-    Possible values for \code{topTableF} are \code{"F"} or \code{"none"}.
-    \code{topTreat} accepts the same values as \code{topTable} except for \code{"B"}.
-  }
+\item{group_scale}{A logical whether to scale PCA contribution for each class}
 
 \item{annotation}{Type of gene identifier to use for scaffold.
 Currently "ensembl_gene", "ensembl_transcript", "entrez", "hgnc_symbol",
 and "refseq_mrna" are supported.}
+
+\item{path}{Path to store or load prebuilt scaffolds. Deafult NULL, always
+draws from Zenodo.}
 }
 \value{
 A scaffold space
@@ -126,9 +133,4 @@ differentially expressed genes (DE genes),
 subsets the scaffold dataset to contain only the DE genes,
 ranks the genes within each sample, finally performs
 principle component analysis (PCA) using ranks.
-}
-\examples{
-utils::data("DMAP_exprs", "DMAP_pData", package = "spaceRATScaffolds")
-scaffold <- buildScaffold(DMAP_exprs,DMAP_pData,"cell_types", data = "exprs",
-pval_cutoff=0.01,pca_scale=TRUE)
 }
