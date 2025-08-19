@@ -158,7 +158,6 @@ projectSample <- function(
         transformed_sample <- uwot::umap_transform(
             t(ranked_sample), scaffold$umap)
     }
-    rm(ranked_sample)
 
     # Prepare dataframe for ggplot
     transformed_sample <- as.data.frame(transformed_sample)
@@ -168,7 +167,7 @@ projectSample <- function(
     dim2 <- colnames(transformed_sample)[dims[2]]
 
     # Create scaffold plot
-    graph <- plotScaffold(
+    projection <- plotScaffold(
         scaffold = scaffold, title = title,
         dimred = dimred, plot_mode = plot_mode,
         class_name = colname,
@@ -177,7 +176,7 @@ projectSample <- function(
     if (is(pheno, "NULL")){
         shapes <- 19
         # Hide shape from legend
-        graph <- graph + ggplot2::guides(shape = "none")
+        projection <- projection + ggplot2::guides(shape = "none")
     } else{
       transformed_sample$shape <- pheno[, colname]
         shapes <- seq_along(unique(transformed_sample$shape))
@@ -191,7 +190,7 @@ projectSample <- function(
 
     # Add projection to scaffold plot
     suppressMessages(
-        g <- graph +
+        projection <- projection +
             ggplot2::geom_point(
                 data = transformed_sample,
                 mapping = ggplot2::aes(
@@ -208,8 +207,13 @@ projectSample <- function(
                 title = title)
         )
 
-    # Add sample data to graph output
-    g$sample <- transformed_sample
+    # Add sample data to projection output
+    projection$sample <- transformed_sample
+    projection$scaffold <- scaffold
+    projection$rankedSample <- ranked_sample
+    projection$pheno <- pheno
+    projection$colnames <- colname
 
-    return(g)
+
+    return(projection)
 }
