@@ -93,26 +93,29 @@ projectSample <- function(
     overlap_genes <- intersect(scaffold_genes, sample_genes)
 
     sample <- sample[overlap_genes, ]
-
-    if (!subset_intersection) {
-        absent_genes <- scaffold_genes[!(scaffold_genes %in% sample_genes)]
-        absent_counts <- matrix(
-            0,length(absent_genes), ncol(sample),
-            dimnames = list(absent_genes, colnames(sample)))
-        rownames(absent_counts) <- absent_genes
-        sample <- rbind(sample, absent_counts)
-
-        if (verbose) message(
-            length(absent_genes)," genes are added to count matrix ",
-            "with imputed expression level 0.")
-        if ((length(absent_genes)/length(scaffold_genes))>1/4) warning(
-            "More than 1/4 genes are added to sample with imputed ",
-            "expression level 0!")
-    }
+  
+    
+    # if (!subset_intersection) {
+    #     absent_genes <- scaffold_genes[!(scaffold_genes %in% sample_genes)]
+    #     absent_counts <- matrix(
+    #         0,length(absent_genes), ncol(sample),
+    #         dimnames = list(absent_genes, colnames(sample)))
+    #     rownames(absent_counts) <- absent_genes
+    #     sample <- rbind(sample, absent_counts)
+    #     # sample <- sample[scaffold_genes, ] # get genes in the same order
+    # 
+    #     if (verbose) message(
+    #         length(absent_genes)," genes are added to count matrix ",
+    #         "with imputed expression level 0.")
+    #     if ((length(absent_genes)/length(scaffold_genes))>1/4) warning(
+    #         "More than 1/4 genes are added to sample with imputed ",
+    #         "expression level 0!")
+    # }
 
 
     if (!is.null(names(scaffold$DEgenes))) {
         sample <- lapply(names(scaffold$DEgenes), function(group) {
+          
             group_genes <- scaffold$DEgenes[[group]]
             group_genes <- group_genes[group_genes %in% overlap_genes]
 
@@ -130,11 +133,33 @@ projectSample <- function(
         })
         sample <- do.call(rbind, sample)
     }
+    
+    # Moved from before the group scaling part 
+    
+    if (!subset_intersection) {
+        pca_genes <- rownames(scaffold$pca$rotation)
+        sample_genes <- rownames(sample)
+        absent_genes <- pca_genes[!(pca_genes %in% sample_genes)]
+        absent_counts <- matrix(
+          0,length(absent_genes), ncol(sample),
+          dimnames = list(absent_genes, colnames(sample)))
+        rownames(absent_counts) <- absent_genes
+        sample <- rbind(sample, absent_counts)
+        sample <- sample[pca_genes, ] # get genes in the same order
 
+        if (verbose) message(
+            length(absent_genes)," genes are added to count matrix ",
+            "with imputed expression level 0.")
+        if ((length(absent_genes)/length(scaffold_genes))>1/4) warning(
+            "More than 1/4 genes are added to sample with imputed ",
+            "expression level 0!")
+    }
+    
+    # Move end
+   
     # Subset sample to DEgenes
     #sample <- sample[scaffold$DEgenes, ]
     ranked_sample <- ranking(sample, rank_scale = scaffold$rank_scale)
-
 
     # Rebuild scaffold
     if (subset_intersection & !is.null(scaffold$rank)){

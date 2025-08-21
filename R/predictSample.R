@@ -10,6 +10,7 @@
 #' @inheritParams projectSample
 #' @param projection A scaffold space object, returned by function
 #' \code{\link{projectSample}}. Recommended to have run with \code{subset_interaction = TRUE}
+#' @param centroid_calculation Calculate centroids by \code{'mean'} or \code{'median'} of class expressions.
 #' @param temperature Parameter for softmax function used transform distance to probability. 
 #' Larger temperature → smoother probabilities.
 #' Smaller temperature → peakier, closer to winner-takes-all.
@@ -44,6 +45,7 @@ predictSample <- function(
         # dimred = "PCA",
         # classes = NULL,
         # subset_intersection = FALSE,
+        centroid_calculation = 'mean', 
         dims = c(1, 2),
         temperature = 1e5, 
         display_numbers = FALSE, 
@@ -91,13 +93,17 @@ predictSample <- function(
     centroids <- list()
     for (i in unique(class_sample)) {
       
-      centroids[[i]] <- rowMeans(projection$scaffold$rank[,class_sample==i])
-
+      if (centroid_calculation == 'mean'){
+        centroids[[i]] <- rowMeans(projection$scaffold$rank[,class_sample==i])
+      } else if (centroid_calculation == 'median'){
+        centroids[[i]] <- apply(projection$scaffold$rank[,class_sample==i], 1, median)
+      }
+      
     }
     
     # rm(class_sample)
     
-    source('spaceRAT/R/ranking.R')
+    # source('spaceRAT/R/ranking.R')
     # Rank centroids 
     centroids_df <- as.data.frame(centroids) %>% ranking(rank_scale = projection$scaffold$rank_scale)
     
@@ -217,7 +223,7 @@ predictSample <- function(
                                     cluster_rows = FALSE, 
                                     cluster_cols = FALSE, 
                                     annotation_row = pheno, 
-                                    display_numbers = TRUE, 
+                                    display_numbers = display_numbers, 
                                     main = title_probability_pheatmap, 
                                     breaks = seq(0, 1, length.out = 100),
                                     silent = FALSE) }

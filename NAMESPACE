@@ -3,6 +3,7 @@
 export(buildScaffold)
 export(loadingPlot)
 export(plotScaffold)
+export(predictSample)
 export(projectSample)
 import(ggplot2)
 importFrom(RColorBrewer,brewer.pal)
