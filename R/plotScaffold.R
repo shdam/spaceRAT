@@ -56,7 +56,8 @@ plotScaffold <- function(
         Dim1 <- scaffold$pca$x[,dims[1]]
         Dim2 <- scaffold$pca$x[,dims[2]]
     } else if(toupper(dimred) == "UMAP"){
-        stopifnot("No UMAP space in scaffold" = !is(scaffold$umap, "NULL"))
+        scaffold$umap <- uwot::umap(t(scaffold$rank), ret_model = TRUE)
+        # stopifnot("No UMAP space in scaffold" = !is(scaffold$umap, "NULL"))
         # Prepare a dataframe for ggplot2
         Dim1 <- scaffold$umap$embedding[,1]
         Dim2 <- scaffold$umap$embedding[,2]

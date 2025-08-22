@@ -181,6 +181,7 @@ projectSample <- function(
         transformed_sample <- stats::predict(
             scaffold$pca, newdata = t(ranked_sample))
     } else if (toupper(dimred) == "UMAP"){
+        scaffold$umap <- uwot::umap(t(scaffold$rank), ret_model = TRUE)
         transformed_sample <- uwot::umap_transform(
             t(ranked_sample), scaffold$umap)
     }

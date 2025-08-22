@@ -100,7 +100,7 @@ buildScaffold <- function(
         n_genes = Inf,
         sort.by = "B",
         threshold = 10,
-        add_umap = FALSE,
+        # add_umap = FALSE,
         classes = NULL,
         pval_cutoff = 0.05,
         lfc_cutoff = 2,
@@ -130,7 +130,6 @@ buildScaffold <- function(
       stop("To add UMAP, please install uwot:\n",
            "install.packages(\"uwot\")")
       }
-
 
     # Preprocessing
     object <- preprocess(
@@ -221,7 +220,7 @@ buildScaffold <- function(
     message("Reducing dimensions.")
     scaffold$pca <- stats::prcomp(t(mat), scale. = pca_scale)
 
-    if (add_umap) scaffold$umap <- uwot::umap(t(mat), ret_model = TRUE)
+    # if (add_umap) scaffold$umap <- uwot::umap(t(mat), ret_model = TRUE)
 
     scaffold$spaceRATVersion <- packageVersion("spaceRAT")
     message("Scaffold is built.")
