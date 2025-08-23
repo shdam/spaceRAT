@@ -126,10 +126,10 @@ buildScaffold <- function(
     if (!is(pheno, "NULL") & is(colname, "NULL")) stop(
         "Please specify colname for pheno data")
 
-    if (add_umap && !requireNamespace("uwot")) {
-      stop("To add UMAP, please install uwot:\n",
-           "install.packages(\"uwot\")")
-      }
+    # if (add_umap && !requireNamespace("uwot")) {
+    #   stop("To add UMAP, please install uwot:\n",
+    #        "install.packages(\"uwot\")")
+    #   }
 
     # Preprocessing
     object <- preprocess(

@@ -47,7 +47,7 @@ predictSample <- function(
         # subset_intersection = FALSE,
         centroid_calculation = 'mean', 
         dims = c(1, 2),
-        temperature = 1e5, 
+        temperature = 1e3, 
         display_numbers = FALSE, 
         exclude_small_prob = FALSE, 
         min_prob_sum = NULL,
@@ -162,7 +162,8 @@ predictSample <- function(
         #   centroid_distances <- c(centroid_distances, dist(rbind(sample[,i], centroids[[ii]])))
         # } else if (rank == TRUE){
         # centroid_distances <- c(centroid_distances, rankdist::DistancePair(projection$rankedSample[,i], centroids[[ii]]))
-        centroid_distances <- c(centroid_distances, rankdist::DistancePair(projection$rankedSample[,i], centroids_df[,ii]))
+        # centroid_distances <- c(centroid_distances, rankdist::DistancePair(projection$rankedSample[,i], centroids_df[,ii]))
+        centroid_distances <- c(centroid_distances, dist(rbind(projection$rankedSample[,i], centroids_df[,ii])))
         # }
       }
       # names(centroid_distances) <- names(centroids)
@@ -182,11 +183,14 @@ predictSample <- function(
     options(digits = 10)
     distance_mat <- sapply(sample_distance_df, function(x) as.numeric(x))
     rownames(distance_mat) <- rownames(sample_distance_df)
-    prediction$distance_mat <- distance_mat
     
     # Prep pheno for pheatmap 
-    pheno <- projection$pheno %>% dplyr::arrange(!!sym(projection$colnames)) %>% dplyr::select(!!sym(projection$colnames))
-    distance_mat <- distance_mat[rownames(pheno), ]
+    if ('pheno' %in% names(projection)){
+      pheno <- projection$pheno %>% dplyr::arrange(!!sym(projection$colnames)) %>% dplyr::select(!!sym(projection$colnames))
+      distance_mat <- distance_mat[rownames(pheno), ]
+    } else {
+      pheno <- NA
+    }
     
     prediction$distance_pheatmap <- ggplotify::as.ggplot(
       function() { pheatmap::pheatmap(distance_mat,
@@ -216,8 +220,6 @@ predictSample <- function(
       prob_mat <- prob_mat[, colSums(prob_mat) > min_prob_sum, drop = FALSE] 
     }
     
-    prediction$probability_mat <- prob_mat
-    
     prediction$probability_pheatmap <- ggplotify::as.ggplot(
       function() { pheatmap::pheatmap(prob_mat, 
                                     cluster_rows = FALSE, 
@@ -228,6 +230,12 @@ predictSample <- function(
                                     breaks = seq(0, 1, length.out = 100),
                                     silent = FALSE) }
       )
+    
+    distance_mat <- tibble::rownames_to_column(.data = as.data.frame(distance_mat), var = 'Sample')
+    prediction$distance_mat <- distance_mat
+    
+    prob_mat <- tibble::rownames_to_column(.data = base::as.data.frame(prob_mat), var = 'Sample')
+    prediction$probability_mat <- prob_mat
     
     # prediction$probability_pheatmap <- probability_pheatmap
     
